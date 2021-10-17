@@ -1,0 +1,7 @@
+name: sdlink
+version: '${project.version}'
+main: me.hypherionmc.sdlink.SimpleDiscordLink
+api-version: 1.16
+load: STARTUP
+description: "A simple Minecraft to Discord chat link bot with Whitelisting"
+author: "HypherionMC"
