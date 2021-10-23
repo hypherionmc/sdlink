@@ -79,7 +79,7 @@
         <dependency>
             <groupId>me.hypherionmc</groupId>
             <artifactId>sdlink-lib</artifactId>
-            <version>1.2</version>
+            <version>1.2.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
