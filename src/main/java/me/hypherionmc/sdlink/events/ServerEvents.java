@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import static org.bukkit.Bukkit.getServer;
+
 public class ServerEvents implements MinecraftEventHandler, Listener {
 
     private final ModConfig modConfig;
@@ -56,7 +58,7 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
                 }
             }
         }
-        server = Bukkit.getServer();
+        server = getServer();
     }
 
     public void onServerStarted() {
@@ -70,9 +72,10 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
 
     @EventHandler
     public void serverStoppingEvent(PluginDisableEvent event) {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.general.enabled && event.getPlugin() == plugin) {
             if (modConfig.chatConfig.serverStopping) {
                 botEngine.sendToDiscord(modConfig.messageConfig.serverStopping, "", "", false);
+                this.serverStoppedEvent();
             }
         }
     }

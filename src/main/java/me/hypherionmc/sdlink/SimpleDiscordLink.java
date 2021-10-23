@@ -19,8 +19,5 @@ public final class SimpleDiscordLink extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (events != null) {
-            events.serverStoppedEvent();
-        }
     }
 }
