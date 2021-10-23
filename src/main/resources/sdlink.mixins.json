@@ -1,10 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.hypherionmc.sdlinkforge.mixin",
+  "package": "me.hypherionmc.sdlink.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "sdlinkforge.refmap.json",
-  "mixins": [
+  "refmap": "sdlink.refmap.json",
+  "server": [
+    "MinecraftServerMixin"
   ],
   "client": [
   ],

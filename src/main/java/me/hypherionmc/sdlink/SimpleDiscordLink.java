@@ -9,9 +9,12 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 @Mod("sdlink")
 public class SimpleDiscordLink {
 
+    public static ServerEvents serverEvents;
+
     public SimpleDiscordLink() {
         if (FMLEnvironment.dist != Dist.CLIENT) {
-            MinecraftForge.EVENT_BUS.register(new ServerEvents());
+            serverEvents = new ServerEvents();
+            MinecraftForge.EVENT_BUS.register(serverEvents);
         }
     }
 

@@ -232,4 +232,10 @@ public class ServerEvents implements MinecraftEventHandler {
         }
         return new ArrayList<>();
     }
+
+    public void onServerCrashed() {
+        if (botEngine != null && modConfig.general.enabled) {
+            botEngine.sendToDiscord("Server has crashed!...", "", "", false);
+        }
+    }
 }
