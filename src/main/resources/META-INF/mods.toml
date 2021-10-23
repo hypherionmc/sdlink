@@ -8,7 +8,7 @@ version = "1.17.x-${version}" #mandatory
 displayName = "sdlink" #mandatory
 #updateJSONURL="http://myurl.me/" #optional
 displayURL="https://github.com/hypherionmc/sdlink" #optional
-#logoFile="sdlink-forge.png" #optional
+logoFile="sdlink_logo.png" #optional
 authors="HypherionMC" #optional
 description = '''A simple Minecraft to Discord Chat bot with Whitelisting'''
 
