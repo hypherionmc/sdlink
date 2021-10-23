@@ -7,15 +7,15 @@ import me.hypherionmc.sdlinklib.config.ConfigEngine;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotEngine;
 import me.hypherionmc.sdlinklib.discord.utils.MinecraftEventHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.server.management.WhiteList;
-import net.minecraft.server.management.WhitelistEntry;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.server.players.UserWhiteList;
+import net.minecraft.server.players.UserWhiteListEntry;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -23,10 +23,10 @@ import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,7 +139,7 @@ public class ServerEvents implements MinecraftEventHandler {
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
-        if (event.getEntityLiving() instanceof PlayerEntity) {
+        if (event.getEntityLiving() instanceof Player) {
             if (botEngine != null && modConfig.general.enabled) {
                 if (modConfig.chatConfig.deathMessages) {
                     botEngine.sendToDiscord(event.getSource().getLocalizedDeathMessage(event.getEntityLiving()).getString(), "", "", false);
@@ -151,7 +151,7 @@ public class ServerEvents implements MinecraftEventHandler {
     @SubscribeEvent
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (botEngine != null && event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
-            botEngine.sendToDiscord(event.getPlayer().getDisplayName().getString() + " has made the advancement [" + TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()) + "]: " + TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString()), "", "", false);
+            botEngine.sendToDiscord(event.getPlayer().getDisplayName().getString() + " has made the advancement [" + ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()) + "]: " + ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString()), "", "", false);
         }
     }
 
@@ -160,7 +160,7 @@ public class ServerEvents implements MinecraftEventHandler {
     public void discordMessageReceived(String s, String s1) {
         if (server.getPlayerList() != null && !server.getPlayerList().getPlayers().isEmpty()) {
             server.getPlayerList().getPlayers().forEach(player -> {
-                player.displayClientMessage(new StringTextComponent(TextFormatting.YELLOW + "[Discord] " + TextFormatting.RESET + s + ": " + s1), false);
+                player.displayClientMessage(new TextComponent(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), false);
             });
         }
     }
@@ -173,10 +173,10 @@ public class ServerEvents implements MinecraftEventHandler {
     @Override
     public String whitelistPlayer(String s, UUID uuid) {
         GameProfile profile = new GameProfile(uuid, s);
-        WhiteList whiteList = server.getPlayerList().getWhiteList();
+        UserWhiteList whiteList = server.getPlayerList().getWhiteList();
 
         if (!whiteList.isWhiteListed(profile)) {
-            whiteList.add(new WhitelistEntry(profile));
+            whiteList.add(new UserWhiteListEntry(profile));
             server.getPlayerList().reloadWhiteList();
             return s + " is now whitelisted";
         } else {
@@ -187,10 +187,10 @@ public class ServerEvents implements MinecraftEventHandler {
     @Override
     public String unWhitelistPlayer(String s, UUID uuid) {
         GameProfile profile = new GameProfile(uuid, s);
-        WhiteList whiteList = server.getPlayerList().getWhiteList();
+        UserWhiteList whiteList = server.getPlayerList().getWhiteList();
 
         if (whiteList.isWhiteListed(profile)) {
-            whiteList.remove(new WhitelistEntry(profile));
+            whiteList.remove(new UserWhiteListEntry(profile));
             server.getPlayerList().reloadWhiteList();
             kickNonWhitelisted();
             return s + " has been removed from the whitelist";
@@ -201,11 +201,11 @@ public class ServerEvents implements MinecraftEventHandler {
 
     private void kickNonWhitelisted() {
         PlayerList playerlist = server.getPlayerList();
-        WhiteList whitelist = playerlist.getWhiteList();
+        UserWhiteList whitelist = playerlist.getWhiteList();
 
-        for(ServerPlayerEntity serverplayerentity : Lists.newArrayList(playerlist.getPlayers())) {
+        for(ServerPlayer serverplayerentity : Lists.newArrayList(playerlist.getPlayers())) {
             if (!whitelist.isWhiteListed(serverplayerentity.getGameProfile())) {
-                serverplayerentity.connection.disconnect(new TranslationTextComponent("multiplayer.disconnect.not_whitelisted"));
+                serverplayerentity.connection.disconnect(new TranslatableComponent("multiplayer.disconnect.not_whitelisted"));
             }
         }
     }

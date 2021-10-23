@@ -24,12 +24,12 @@ if (System.getenv('BUILD_NUMBER') != null) {
 }
 
 java {
-    archivesBaseName = 'SimpleDiscordLink-Forge-1.16.5'
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
+    archivesBaseName = 'SimpleDiscordLink-Forge-1.17.x'
+    toolchain.languageVersion = JavaLanguageVersion.of(16)
 }
 
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
+    mappings channel: 'official', version: '1.17.1'
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -87,11 +87,18 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.0'
-    implementation ("me.hypherionmc:sdlink-lib:${library_ver}") {
-        exclude group: 'org.apache.commons', module: 'commons-lang3'
-    }
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.103'
+    implementation ("me.hypherionmc:sdlink-lib:${library_ver}")
     annotationProcessor 'org.spongepowered:mixin:0.8:processor'
+}
+
+configurations.implementation {
+    transitive = false
+    exclude group: 'org.apache.commons', module: '.*'
+    exclude group: 'org.apache.logging.log4j', module: '.*'
+    exclude group: 'shadow.apache.commons', module: '.*'
+    exclude group: 'shadow.apache.logging.log4j', module: '.*'
+    exclude group: 'javax', module: 'annotation'
 }
 
 jar {
@@ -103,7 +110,7 @@ jar {
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "HypherionMC",
-                "MixinConfigs"            : "sdlink-forge.mixins.json",
+                "MixinConfigs"            : "sdlink.mixins.json",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

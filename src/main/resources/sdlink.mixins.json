@@ -2,10 +2,9 @@
   "required": true,
   "minVersion": "0.8",
   "package": "me.hypherionmc.sdlink.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "refmap": "sdlink.refmap.json",
   "server": [
-    "MinecraftServerMixin"
   ],
   "client": [
   ],
