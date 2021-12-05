@@ -21,12 +21,12 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +54,7 @@ public class ServerEvents implements MinecraftEventHandler {
 
     // Forge Events
     @SubscribeEvent
-    public void serverStartedEvent(FMLServerAboutToStartEvent event) {
+    public void serverStartedEvent(ServerAboutToStartEvent event) {
         server = event.getServer();
         if (botEngine != null && modConfig.general.enabled) {
             botEngine.initWhitelisting();
@@ -65,7 +65,7 @@ public class ServerEvents implements MinecraftEventHandler {
     }
 
     @SubscribeEvent
-    public void serverStartingEvent(FMLServerStartingEvent event) {
+    public void serverStartingEvent(ServerStartingEvent event) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.serverStarted) {
                 botEngine.sendToDiscord(modConfig.messageConfig.serverStarted, "", "", false);
@@ -74,7 +74,7 @@ public class ServerEvents implements MinecraftEventHandler {
     }
 
     @SubscribeEvent
-    public void serverStoppingEvent(FMLServerStoppingEvent event) {
+    public void serverStoppingEvent(ServerStoppingEvent event) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.serverStopping) {
                 botEngine.sendToDiscord(modConfig.messageConfig.serverStopping, "", "", false);
@@ -83,7 +83,7 @@ public class ServerEvents implements MinecraftEventHandler {
     }
 
     @SubscribeEvent
-    public void serverStoppedEvent(FMLServerStoppedEvent event) {
+    public void serverStoppedEvent(ServerStoppedEvent event) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.serverStopped) {
                 botEngine.sendToDiscord(modConfig.messageConfig.serverStopped, "", "", false);

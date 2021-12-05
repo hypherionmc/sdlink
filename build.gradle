@@ -21,12 +21,12 @@ if (System.getenv('BUILD_NUMBER') != null) {
 }
 
 java {
-    archivesBaseName = 'SimpleDiscordLink-Forge-1.17.x'
-    toolchain.languageVersion = JavaLanguageVersion.of(16)
+    archivesBaseName = 'SimpleDiscordLink-Forge-1.18.x'
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: '1.18'
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -74,11 +74,11 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenLocal()
-    maven { url = "https://maven.hypherionmc.com/releases" }
+    maven { url = "https://maven.firstdarkdev.xyz/releases" }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.103'
+    minecraft 'net.minecraftforge:forge:1.18-38.0.14'
     implementation ("me.hypherionmc:sdlink-lib:${library_ver}")
 }
 
@@ -89,6 +89,7 @@ configurations.implementation {
     exclude group: 'shadow.apache.commons', module: '.*'
     exclude group: 'shadow.apache.logging.log4j', module: '.*'
     exclude group: 'javax', module: 'annotation'
+    exclude group: 'org.jetbrains', module: 'annotations'
 }
 
 jar {
