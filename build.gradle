@@ -13,11 +13,10 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 
 group = 'me.hypherionmc'
-version = '1.0'
+version = mod_version
 
 if (System.getenv('BUILD_NUMBER') != null) {
-    version = version + "-dev-" + System.getenv('BUILD_NUMBER')
-    jar.archiveName = archivesBaseName + "-dev-" + System.getenv('BUILD_NUMBER') + ".jar"
+    version += "." + System.getenv('BUILD_NUMBER') + "d"
 }
 
 java {
