@@ -5,3 +5,11 @@ api-version: 1.16
 load: STARTUP
 description: "A simple Minecraft to Discord chat link bot with Whitelisting"
 author: "HypherionMC"
+commands:
+  whois:
+    description: "View the Discord name of a linked account"
+    usage: "whois PlayerUsername"
+
+  discord:
+    description: "Get the Discord Server link of this Minecraft server"
+    usage: "discord"

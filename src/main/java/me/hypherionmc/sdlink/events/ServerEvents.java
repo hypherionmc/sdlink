@@ -5,6 +5,7 @@ import me.hypherionmc.sdlinklib.config.ConfigEngine;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotEngine;
 import me.hypherionmc.sdlinklib.discord.utils.MinecraftEventHandler;
+import me.hypherionmc.sdlinklib.utils.SystemUtils;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -31,6 +33,7 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     private final BotEngine botEngine;
     private Server server;
     private final SimpleDiscordLink plugin;
+    private long uptime = System.currentTimeMillis();
 
     public ServerEvents(SimpleDiscordLink plugin) {
         this.plugin = plugin;
@@ -224,5 +227,34 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
             playerNames.add(onlinePlayers.getName());
         });
         return playerNames;
+    }
+
+    @Override
+    public long getServerUptime() {
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - uptime);
+    }
+
+    @Override
+    public float getTPS() {
+        // TODO Implement
+        return (float) 0f;
+    }
+
+    @Override
+    public String getServerVersion() {
+        return server.getName() + " - " + server.getVersion();
+    }
+
+    @Override
+    public void sendStopCommand() {
+        server.shutdown();
+    }
+
+    public ModConfig getModConfig() {
+        return modConfig;
+    }
+
+    public BotEngine getBotEngine() {
+        return botEngine;
     }
 }
