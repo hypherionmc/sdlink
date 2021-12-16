@@ -104,6 +104,9 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     @EventHandler
     public void onCommandEvent(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
+        if (!command.startsWith("say") || !command.startsWith("me")) {
+            command = command.split(" ")[0];
+        }
 
         if (modConfig.chatConfig.broadcastCommands) {
             botEngine.sendToDiscord(event.getPlayer().getDisplayName() + " **executed command: " + command + "**", event.getPlayer().getDisplayName(), "", false);
