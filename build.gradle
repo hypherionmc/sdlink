@@ -12,10 +12,14 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle'
 
+ext {
+    release=project.properties['release'] ?: false
+}
+
 group = 'me.hypherionmc'
 version = mod_version
 
-if (System.getenv('BUILD_NUMBER') != null) {
+if (System.getenv('BUILD_NUMBER') != null && project.release == false) {
     version += "." + System.getenv('BUILD_NUMBER') + "d"
 }
 

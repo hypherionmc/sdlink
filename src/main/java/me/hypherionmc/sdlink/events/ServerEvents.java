@@ -119,6 +119,9 @@ public class ServerEvents implements MinecraftEventHandler {
     @SubscribeEvent
     public void commandEvent(CommandEvent event) {
         String command = event.getParseResults().getReader().getString().replaceFirst(Pattern.quote("/"), "");
+        if (!command.startsWith("say") || !command.startsWith("me")) {
+            command = command.split(" ")[0];
+        }
 
         if (modConfig.chatConfig.broadcastCommands) {
             botEngine.sendToDiscord(event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString() + " **executed command: " + command + "**", event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(), "", false);
