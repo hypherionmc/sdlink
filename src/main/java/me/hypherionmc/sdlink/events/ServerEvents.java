@@ -2,11 +2,16 @@ package me.hypherionmc.sdlink.events;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.hypherionmc.sdlink.commands.DiscordCommand;
+import me.hypherionmc.sdlink.commands.WhoisCommand;
 import me.hypherionmc.sdlinklib.config.ConfigEngine;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotEngine;
 import me.hypherionmc.sdlinklib.discord.utils.MinecraftEventHandler;
+import me.hypherionmc.sdlinklib.utils.SystemUtils;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -17,6 +22,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
@@ -32,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -41,6 +48,7 @@ public class ServerEvents implements MinecraftEventHandler {
     private final ModConfig modConfig;
     private final BotEngine botEngine;
     private MinecraftServer server;
+    private long uptime = System.currentTimeMillis();
 
     public ServerEvents() {
         ConfigEngine configEngine = new ConfigEngine(System.getProperty("user.dir") + "/config");
@@ -53,6 +61,13 @@ public class ServerEvents implements MinecraftEventHandler {
     }
 
     // Forge Events
+    @SubscribeEvent
+    public void onCommandRegister(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        DiscordCommand.register(dispatcher);
+        WhoisCommand.register(dispatcher);
+    }
+
     @SubscribeEvent
     public void serverStartedEvent(ServerAboutToStartEvent event) {
         server = event.getServer();
@@ -150,7 +165,7 @@ public class ServerEvents implements MinecraftEventHandler {
 
     @SubscribeEvent
     public void onPlayerAdvancement(AdvancementEvent event) {
-        if (botEngine != null && event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
+        if (botEngine != null && event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat() && modConfig.chatConfig.advancementMessages) {
             botEngine.sendToDiscord(event.getPlayer().getDisplayName().getString() + " has made the advancement [" + ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()) + "]: " + ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString()), "", "", false);
         }
     }
@@ -231,6 +246,35 @@ public class ServerEvents implements MinecraftEventHandler {
             return Arrays.asList(server.getPlayerNames());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public long getServerUptime() {
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - uptime);
+    }
+
+    @Override
+    public float getTPS() {
+        float meanTickTime = (float) (SystemUtils.meanTime(server.tickTimes) * 1.0E-6D);
+        return (float) Math.min(1000.0 / meanTickTime, 20);
+    }
+
+    @Override
+    public String getServerVersion() {
+        return server.getServerModName() + " - " + server.getServerVersion();
+    }
+
+    @Override
+    public void sendStopCommand() {
+        server.halt(false);
+    }
+
+    public ModConfig getModConfig() {
+        return modConfig;
+    }
+
+    public BotEngine getBotEngine() {
+        return botEngine;
     }
 
     public void onServerCrashed() {
