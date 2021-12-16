@@ -4,7 +4,7 @@ license = "MIT"
 issueTrackerURL="https://github.com/hypherionmc/sdlink/issues" #optional
 [[mods]] #mandatory
 modId = "sdlink" #mandatory
-version = "1.17.x-${version}" #mandatory
+version = "1.18.x-${version}" #mandatory
 displayName = "sdlink" #mandatory
 #updateJSONURL="http://myurl.me/" #optional
 displayURL="https://github.com/hypherionmc/sdlink" #optional
