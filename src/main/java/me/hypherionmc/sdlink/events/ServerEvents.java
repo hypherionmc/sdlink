@@ -11,7 +11,9 @@ import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotEngine;
 import me.hypherionmc.sdlinklib.discord.utils.MinecraftEventHandler;
 import me.hypherionmc.sdlinklib.utils.SystemUtils;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -180,7 +182,7 @@ public class ServerEvents implements MinecraftEventHandler {
     // Mod Events
     @Override
     public void discordMessageReceived(String s, String s1) {
-        server.sendMessage(new TextComponent(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), null);
+        server.getPlayerList().broadcastMessage(new TextComponent(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), ChatType.CHAT, Util.NIL_UUID);
     }
 
     @Override
