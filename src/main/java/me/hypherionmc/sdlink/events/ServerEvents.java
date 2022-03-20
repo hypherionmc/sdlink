@@ -118,8 +118,12 @@ public class ServerEvents implements MinecraftEventHandler {
 
     @SubscribeEvent
     public void commandEvent(CommandEvent event) {
-        String command = event.getParseResults().getReader().getString().replaceFirst(Pattern.quote("/"), "");
-        if (!command.startsWith("say") || !command.startsWith("me")) {
+        String command = event.getParseResults().getReader().getString();
+        if (command.startsWith("/")) {
+            command = command.replaceFirst("/", "");
+        }
+
+        if (!command.startsWith("say") && !command.startsWith("me")) {
             command = command.split(" ")[0];
         }
 
@@ -128,7 +132,7 @@ public class ServerEvents implements MinecraftEventHandler {
         }
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
-            String msg = command.startsWith("say") ? command.substring(4) : command.substring(3);
+            String msg = command.startsWith("say") ? command.replace("say ", "").replace("say", "") : command.replace("me ", "").replace("me", "");
             try {
                 botEngine.sendToDiscord(msg, event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(), event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString(), true);
             } catch (CommandSyntaxException e) {
@@ -176,11 +180,7 @@ public class ServerEvents implements MinecraftEventHandler {
     // Mod Events
     @Override
     public void discordMessageReceived(String s, String s1) {
-        if (server.getPlayerList() != null && !server.getPlayerList().getPlayers().isEmpty()) {
-            server.getPlayerList().getPlayers().forEach(player -> {
-                player.displayClientMessage(new TextComponent(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), false);
-            });
-        }
+        server.sendMessage(new TextComponent(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), null);
     }
 
     @Override
