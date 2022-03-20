@@ -14,7 +14,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <revision>1.1</revision>
+        <revision>1.2</revision>
     </properties>
 
     <build>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>me.hypherionmc</groupId>
             <artifactId>sdlink-lib</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

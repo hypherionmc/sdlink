@@ -104,7 +104,11 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     @EventHandler
     public void onCommandEvent(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
-        if (!command.startsWith("say") || !command.startsWith("me")) {
+        if (command.startsWith("/")) {
+            command = command.replaceFirst("/", "");
+        }
+
+        if (!command.startsWith("say") && !command.startsWith("me")) {
             command = command.split(" ")[0];
         }
 
@@ -153,11 +157,9 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     //Mod Events
     @Override
     public void discordMessageReceived(String s, String s1) {
-        if (server.getOnlinePlayers() != null && !server.getOnlinePlayers().isEmpty()) {
-            server.getOnlinePlayers().forEach(player -> {
-                player.sendMessage(ChatColor.YELLOW + "[Discord] " + ChatColor.RESET + s + ": " + s1);
-            });
-        }
+        server.getOnlinePlayers().forEach(player -> {
+            player.sendMessage(ChatColor.YELLOW + "[Discord] " + ChatColor.RESET + s + ": " + s1);
+        });
     }
 
     @Override
