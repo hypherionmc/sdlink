@@ -118,7 +118,7 @@ reobf {
         }
         //archivesBaseName = project.archiveBaseName
         classifier ''
-        relocate 'com.fasterxml.jackson.databind', 'shadow.fasterxml.jackson.databind'
+        relocate 'com.fasterxml', 'shadow.fasterxml'
     }
 }
 
