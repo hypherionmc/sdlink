@@ -1,0 +1,36 @@
+{
+    "schemaVersion": 1,
+    "id": "sdlink",
+    "version": "${version}",
+
+    "name": "Simple Discord Link",
+    "description": "A simple Minecraft to Discord Chat bot with Whitelisting",
+    "authors": [
+      "HypherionSA"
+    ],
+    "contact": {
+      "homepage": "https://github.com/hypherionmc/sdlink",
+      "issues": "https://github.com/hypherionmc/sdlink/issues",
+      "discord": "https://discord.firstdarkdev.xyz"
+    },
+
+    "license": "MIT",
+
+    "environment": "server",
+    "entrypoints": {
+      "server": [
+        "me.hypherionmc.sdlink.SDLinkFabric"
+      ]
+    },
+    "mixins": [
+      "sdlink.mixins.json",
+      "sdlink.fabric.mixins.json"
+    ],
+
+    "depends": {
+      "fabricloader": ">=0.12",
+      "fabric": "*",
+      "minecraft": "1.18.x",
+      "java": ">=17"
+    }
+  }

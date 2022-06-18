@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[38,)"
+license="MIT"
+issueTrackerURL="https://github.com/hypherionmc/sdlink/issues"
+
+[[mods]]
+modId="sdlink"
+version="${file.jarVersion}"
+displayName="Simple Discord Link"
+logoFile="sdlink_logo.png"
+authors="HypherionSA"
+description='''A simple Minecraft to Discord Chat bot with Whitelisting'''
+
+[[dependencies.sdlink]]
+    modId="forge"
+    mandatory=true
+    versionRange="[38,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.sdlink]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18,1.19)"
+    ordering="NONE"
+    side="BOTH"

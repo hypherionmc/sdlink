@@ -1,8 +1,8 @@
-package me.hypherionmc.sdlink.commands;
+package me.hypherionmc.sdlink.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import me.hypherionmc.sdlink.SimpleDiscordLink;
+import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
@@ -16,14 +16,14 @@ public class DiscordCommand {
                 Commands.literal("discord")
                         .requires((commandSource) -> commandSource.hasPermission(0))
                         .executes(context -> {
-                            if (SimpleDiscordLink.serverEvents != null && SimpleDiscordLink.serverEvents.getModConfig().chatConfig.inviteCommandEnabled) {
+                            if (ServerEvents.getInstance().getModConfig().chatConfig.inviteCommandEnabled) {
                                 Style style = Style.EMPTY;
-                                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, SimpleDiscordLink.serverEvents.getModConfig().general.inviteLink));
+                                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ServerEvents.getInstance().getModConfig().general.inviteLink));
                                 context.getSource().sendSuccess(
                                         new TextComponent(
-                                                SimpleDiscordLink.serverEvents
+                                                ServerEvents.getInstance()
                                                         .getModConfig().messageConfig
-                                                        .inviteMessage.replace("%inviteurl%", SimpleDiscordLink.serverEvents.getModConfig().general.inviteLink)
+                                                        .inviteMessage.replace("%inviteurl%", ServerEvents.getInstance().getModConfig().general.inviteLink)
                                         ).setStyle(style)
                                         , true);
                             }
