@@ -1,6 +1,8 @@
 plugins {
     id 'fabric-loom' version '0.10-SNAPSHOT'
     id 'idea'
+    id "com.modrinth.minotaur" version "2.+"
+    id "me.hypherionmc.cursegradle" version "2.0.1"
 }
 
 archivesBaseName = "${mod_name}-fabric-${minecraft_version}"
@@ -65,3 +67,49 @@ task delDevJar {
 }
 build.finalizedBy delDevJar
 
+modrinth {
+    debugMode = false
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "Sh0YauEf"
+    versionNumber = "${minecraft_version}-${version}f"
+    versionType = "release"
+    changelog = rootProject.file("changelog-fabric.md").text.trim()
+    uploadFile = remapJar
+    versionName = "[Fabric/Quilt ${minecraft_version}] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.18.1", "1.18.2"]
+    loaders = [ "fabric", "quilt" ]
+    dependencies {
+        required.project "P7dR8mSH"
+    }
+}
+
+curseforge {
+    if (System.getenv("CURSE_TOKEN") !== null) {
+        apiKey = System.getenv("CURSE_TOKEN")
+    } else {
+        apiKey = ""
+    }
+    project {
+        id = "541320"
+        releaseType = "release"
+        addGameVersion "1.18.2"
+        addGameVersion "1.18.1"
+        addGameVersion "Fabric"
+        addGameVersion "Quilt"
+        addGameVersion "Java 17"
+        changelogType = "markdown"
+        changelog = rootProject.file("changelog-fabric.md")
+        mainArtifact(remapJar) {
+            displayName = "[Fabric/Quilt ${minecraft_version}] Simple Discord Link - ${project.version}"
+        }
+    }
+    options {
+        forgeGradleIntegration = false
+        debug = false
+        fabricIntegration = false
+    }
+}
+
+afterEvaluate {
+    tasks.curseforge541320.dependsOn remapJar
+}

@@ -11,6 +11,8 @@ buildscript {
 }
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id "com.modrinth.minotaur" version "2.+"
+    id "me.hypherionmc.cursegradle" version "2.0.1"
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
@@ -114,3 +116,45 @@ reobf {
 build.dependsOn reobfShadowJar
 jar.finalizedBy('reobfJar')
 
+modrinth {
+    debugMode = false
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "Sh0YauEf"
+    versionNumber = "${minecraft_version}-${version}"
+    versionType = "release"
+    changelog = rootProject.file("changelog-forge.md").text.trim()
+    uploadFile = jar
+    versionName = "[FORGE ${minecraft_version}] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.18.1", "1.18.2"]
+    loaders = [ "forge" ]
+}
+
+curseforge {
+    if (System.getenv("CURSE_TOKEN") !== null) {
+        apiKey = System.getenv("CURSE_TOKEN")
+    } else {
+        apiKey = ""
+    }
+    project {
+        id = "541320"
+        releaseType = "release"
+        addGameVersion "1.18.2"
+        addGameVersion "1.18.1"
+        addGameVersion "Forge"
+        addGameVersion "Java 17"
+        changelogType = "markdown"
+        changelog = rootProject.file("changelog-forge.md")
+        mainArtifact(jar) {
+            displayName = "[FORGE ${minecraft_version}] Simple Discord Link - ${project.version}"
+        }
+    }
+    options {
+        forgeGradleIntegration = false
+        debug = false
+        fabricIntegration = false
+    }
+}
+
+afterEvaluate {
+    tasks.curseforge541320.dependsOn reobfShadowJar
+}
