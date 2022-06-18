@@ -59,9 +59,12 @@ subprojects {
     }
 
     task copyAllArtifacts(type: Copy) {
-        from "$buildDir/libs"
-        into "$rootDir/artifacts"
-        include("*.jar")
+        if (project.name !== "Common") {
+            from "$buildDir/libs"
+            into "$rootDir/artifacts"
+            include("*.jar")
+            delete("$rootDir/artifacts/*-common-*.jar")
+        }
     }
 
     build.finalizedBy(copyAllArtifacts)
