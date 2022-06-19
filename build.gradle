@@ -1,7 +1,7 @@
 subprojects {
     apply plugin: 'java'
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
     def version_base = "${version}"
     version = version_base + (version_patch > 0 ? ".${version_patch}" : "")
@@ -47,7 +47,6 @@ subprojects {
 
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = 'UTF-8'
-        it.options.release = 17
     }
 
     tasks.withType(GenerateModuleMetadata) {

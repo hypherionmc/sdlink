@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.7-SNAPSHOT'
     id 'idea'
     id "com.modrinth.minotaur" version "2.+"
     id "me.hypherionmc.cursegradle" version "2.0.1"
@@ -14,7 +14,6 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     include("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
-    implementation project(":Common")
 }
 
 loom {
@@ -36,9 +35,6 @@ loom {
 
 
 processResources {
-    from project(":Common").sourceSets.main.resources
-    inputs.property "version", project.version
-
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
@@ -46,10 +42,6 @@ processResources {
     filesMatching('*.mixins.json') {
         expand "refmap_target": "${archivesBaseName}-"
     }
-}
-
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
 }
 
 jar {

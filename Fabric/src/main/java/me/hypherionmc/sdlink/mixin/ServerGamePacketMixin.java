@@ -19,10 +19,10 @@ public class ServerGamePacketMixin {
 
     @Shadow public ServerPlayer player;
 
-    @Inject(method = "handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Ljava/util/function/Function;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", shift = At.Shift.BEFORE))
-    public void onGameMessage(TextFilter.FilteredText filteredText, CallbackInfo ci) {
-        if (!filteredText.getRaw().startsWith("/")) {
-            SDLinkFabric.serverEvents.onServerChatEvent(filteredText.getRaw(), player.getDisplayName().getString(), player.getUUID());
+    @Inject(method = "handleChat(Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", shift = At.Shift.BEFORE))
+    public void onGameMessage(String string, CallbackInfo ci) {
+        if (!string.startsWith("/")) {
+            SDLinkFabric.serverEvents.onServerChatEvent(string, player.getDisplayName().getString(), player.getUUID());
         }
     }
 
