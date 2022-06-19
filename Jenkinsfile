@@ -3,7 +3,7 @@ pipeline {
         label "master"
     }
     tools {
-        jdk "JAVA17"
+        jdk "JAVA8"
     }
     stages {
         stage("Notify Discord") {
