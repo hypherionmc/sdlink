@@ -10,7 +10,7 @@ subprojects {
     ext {
         release=project.properties['release'] ?: false
     }
-    if (System.getenv('BUILD_NUMBER') != null) {
+    if (System.getenv('BUILD_NUMBER') != null && project.release == false) {
         version = version_base + "." + System.getenv('BUILD_NUMBER') + "d"
     }
 
