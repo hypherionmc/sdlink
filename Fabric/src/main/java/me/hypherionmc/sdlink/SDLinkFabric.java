@@ -2,7 +2,7 @@ package me.hypherionmc.sdlink;
 
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 public class SDLinkFabric implements DedicatedServerModInitializer {
@@ -13,7 +13,7 @@ public class SDLinkFabric implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         serverEvents = ServerEvents.getInstance();
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> serverEvents.onCommandRegister(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> serverEvents.onCommandRegister(dispatcher));
 
         ServerLifecycleEvents.SERVER_STARTING.register(serverEvents::onServerStarting);
         ServerLifecycleEvents.SERVER_STARTED.register(server -> serverEvents.onServerStarted());

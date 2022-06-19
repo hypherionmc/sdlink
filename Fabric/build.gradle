@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'idea'
     id "com.modrinth.minotaur" version "2.+"
     id "me.hypherionmc.cursegradle" version "2.0.1"
@@ -75,8 +75,8 @@ modrinth {
     versionType = "release"
     changelog = rootProject.file("changelog-fabric.md").text.trim()
     uploadFile = remapJar
-    versionName = "[Fabric/Quilt ${minecraft_version}] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.18.1", "1.18.2"]
+    versionName = "[Fabric/Quilt 1.19.x] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.19"]
     loaders = [ "fabric", "quilt" ]
     dependencies {
         required.project "P7dR8mSH"
@@ -92,15 +92,14 @@ curseforge {
     project {
         id = "541320"
         releaseType = "release"
-        addGameVersion "1.18.2"
-        addGameVersion "1.18.1"
+        addGameVersion "1.19"
         addGameVersion "Fabric"
         addGameVersion "Quilt"
         addGameVersion "Java 17"
         changelogType = "markdown"
         changelog = rootProject.file("changelog-fabric.md")
         mainArtifact(remapJar) {
-            displayName = "[Fabric/Quilt ${minecraft_version}] Simple Discord Link - ${project.version}"
+            displayName = "[Fabric/Quilt 1.19.x] Simple Discord Link - ${project.version}"
         }
     }
     options {

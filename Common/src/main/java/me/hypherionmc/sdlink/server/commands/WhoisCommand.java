@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class WhoisCommand {
 
@@ -18,7 +18,7 @@ public class WhoisCommand {
                             if (ServerEvents.getInstance().getBotEngine() != null) {
                                 String username = StringArgumentType.getString(context, "username");
                                 String value = ServerEvents.getInstance().getBotEngine().getDiscordName(username);
-                                context.getSource().sendSuccess(new TextComponent(value), true);
+                                context.getSource().sendSuccess(Component.literal(value), true);
                             }
                             return 1;
                         }));

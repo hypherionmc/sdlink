@@ -6,8 +6,8 @@ import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 
 public class DiscordCommand {
 
@@ -20,7 +20,7 @@ public class DiscordCommand {
                                 Style style = Style.EMPTY;
                                 style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ServerEvents.getInstance().getModConfig().general.inviteLink));
                                 context.getSource().sendSuccess(
-                                        new TextComponent(
+                                        Component.literal(
                                                 ServerEvents.getInstance()
                                                         .getModConfig().messageConfig
                                                         .inviteMessage.replace("%inviteurl%", ServerEvents.getInstance().getModConfig().general.inviteLink)

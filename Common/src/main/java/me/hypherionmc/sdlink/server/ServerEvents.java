@@ -13,8 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -151,7 +150,7 @@ public class ServerEvents implements IMinecraftHelper {
 
     public void onPlayerAdvancement(String name, String advancement, String advancement_description) {
         if (botEngine != null && modConfig.chatConfig.advancementMessages) {
-            botEngine.sendToDiscord(name + " has made the advancement [" + advancement + "]: " + advancement_description, "", "", modConfig.messageDestinations.advancementsInChat);
+            botEngine.sendToDiscord(name + " has made the advancement [" + advancement + "]: " + advancement_description, "server", "", modConfig.messageDestinations.advancementsInChat);
         }
     }
 
@@ -159,7 +158,7 @@ public class ServerEvents implements IMinecraftHelper {
 
     @Override
     public void discordMessageEvent(String s, String s1) {
-        server.getPlayerList().broadcastMessage(new TextComponent(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), ChatType.CHAT, Util.NIL_UUID);
+        server.getPlayerList().broadcastSystemMessage(Component.literal(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), ChatType.CHAT);
     }
 
     @Override
@@ -202,7 +201,7 @@ public class ServerEvents implements IMinecraftHelper {
 
         for(ServerPlayer serverplayerentity : Lists.newArrayList(playerlist.getPlayers())) {
             if (!whitelist.isWhiteListed(serverplayerentity.getGameProfile())) {
-                serverplayerentity.connection.disconnect(new TranslatableComponent("multiplayer.disconnect.not_whitelisted"));
+                serverplayerentity.connection.disconnect(Component.translatable("multiplayer.disconnect.not_whitelisted"));
             }
         }
     }
