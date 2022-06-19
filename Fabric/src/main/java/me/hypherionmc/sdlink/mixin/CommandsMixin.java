@@ -24,7 +24,7 @@ public class CommandsMixin {
 
     @Shadow @Final private CommandDispatcher<CommandSourceStack> dispatcher;
 
-    @Inject(method = "performCommand", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
+    @Inject(method = "performCommand", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
     private void injectPerformCommand(CommandSourceStack commandSourceStack, String string, CallbackInfoReturnable<Integer> cir, StringReader stringReader) {
         try {
             ParseResults<CommandSourceStack> parse = dispatcher.parse(stringReader, commandSourceStack);
