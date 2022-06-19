@@ -1,13 +1,10 @@
 package me.hypherionmc.sdlink.events;
 
 import me.hypherionmc.sdlink.SimpleDiscordLink;
-import me.hypherionmc.sdlinklib.config.ConfigEngine;
+import me.hypherionmc.sdlinklib.config.ConfigController;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotEngine;
-import me.hypherionmc.sdlinklib.discord.utils.MinecraftEventHandler;
-import me.hypherionmc.sdlinklib.utils.SystemUtils;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.bukkit.Bukkit;
+import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -27,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.bukkit.Bukkit.getServer;
 
-public class ServerEvents implements MinecraftEventHandler, Listener {
+public class ServerEvents implements IMinecraftHelper, Listener {
 
     private final ModConfig modConfig;
     private final BotEngine botEngine;
@@ -41,11 +38,11 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
         if (!confPath.exists()) {
             confPath.mkdirs();
         }
-        ConfigEngine configEngine = new ConfigEngine(confPath.getAbsolutePath());
+        ConfigController configEngine = new ConfigController(confPath.getAbsolutePath());
         modConfig = configEngine.getModConfig();
-        botEngine = new BotEngine(modConfig, this);
+        botEngine = new BotEngine(this, modConfig);
 
-        if (botEngine != null && modConfig.general.enabled) {
+        if (modConfig.general.enabled) {
             botEngine.initBot();
 
             try {
@@ -156,42 +153,48 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
 
     //Mod Events
     @Override
-    public void discordMessageReceived(String s, String s1) {
+    public void discordMessageEvent(String s, String s1) {
         server.getOnlinePlayers().forEach(player -> {
             player.sendMessage(ChatColor.YELLOW + "[Discord] " + ChatColor.RESET + s + ": " + s1);
         });
     }
 
     @Override
-    public boolean whiteListingEnabled() {
+    public boolean isWhitelistingEnabled() {
         return server.hasWhitelist();
     }
 
     @Override
-    public String whitelistPlayer(String s, UUID uuid) {
+    public boolean whitelistPlayer(String s, UUID uuid) {
         OfflinePlayer player = server.getOfflinePlayer(s);
 
         if (!server.getWhitelistedPlayers().contains(player)) {
             player.setWhitelisted(true);
             server.reloadWhitelist();
-            return s + " is now whitelisted";
+            return true;
         } else {
-            return s + " is already whitelisted";
+            return false;
         }
     }
 
     @Override
-    public String unWhitelistPlayer(String s, UUID uuid) {
+    public boolean unWhitelistPlayer(String s, UUID uuid) {
         OfflinePlayer player = server.getOfflinePlayer(s);
 
         if (server.getWhitelistedPlayers().contains(player)) {
             player.setWhitelisted(false);
             server.reloadWhitelist();
             kickNonWhitelisted();
-            return s + " has been removed from the whitelist";
+            return true;
         } else {
-            return s + " is not whitelisted";
+            return false;
         }
+    }
+
+    @Override
+    public boolean isPlayerWhitelisted(String s, UUID uuid) {
+        OfflinePlayer player = server.getOfflinePlayer(s);
+        return server.getWhitelistedPlayers().contains(player);
     }
 
     private void kickNonWhitelisted() {
@@ -216,7 +219,7 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     }
 
     @Override
-    public int getPlayerCount() {
+    public int getOnlinePlayerCount() {
         return server.getOnlinePlayers().size();
     }
 
@@ -226,7 +229,7 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     }
 
     @Override
-    public List<String> getOnlinePlayers() {
+    public List<String> getOnlinePlayerNames() {
         List<String> playerNames = new ArrayList<>();
         server.getOnlinePlayers().forEach(onlinePlayers -> {
             playerNames.add(onlinePlayers.getName());
@@ -240,19 +243,8 @@ public class ServerEvents implements MinecraftEventHandler, Listener {
     }
 
     @Override
-    public float getTPS() {
-        // TODO Implement
-        return (float) 0f;
-    }
-
-    @Override
     public String getServerVersion() {
         return server.getName() + " - " + server.getVersion();
-    }
-
-    @Override
-    public void sendStopCommand() {
-        server.shutdown();
     }
 
     public ModConfig getModConfig() {
