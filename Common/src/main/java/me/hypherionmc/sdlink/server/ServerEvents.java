@@ -65,7 +65,6 @@ public class ServerEvents implements IMinecraftHelper {
     public void onServerStarting(MinecraftServer server) {
         this.server = server;
         if (botEngine != null && modConfig.general.enabled) {
-            botEngine.initWhitelisting();
             if (modConfig.chatConfig.serverStarting) {
                 botEngine.sendToDiscord(modConfig.messageConfig.serverStarting, "server", "", modConfig.messageDestinations.stopStartInChat);
             }
@@ -74,6 +73,7 @@ public class ServerEvents implements IMinecraftHelper {
 
     public void onServerStarted() {
         if (botEngine != null && modConfig.general.enabled) {
+            botEngine.initWhitelisting();
             if (modConfig.chatConfig.serverStarted) {
                 botEngine.sendToDiscord(modConfig.messageConfig.serverStarted, "server", "", modConfig.messageDestinations.stopStartInChat);
             }
