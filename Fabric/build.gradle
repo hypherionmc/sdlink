@@ -76,7 +76,7 @@ modrinth {
     changelog = rootProject.file("changelog-fabric.md").text.trim()
     uploadFile = remapJar
     versionName = "[Fabric/Quilt 1.19.x] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.19"]
+    gameVersions = ["1.19", "1.19.1"]
     loaders = [ "fabric", "quilt" ]
     dependencies {
         required.project "P7dR8mSH"
@@ -93,6 +93,7 @@ curseforge {
         id = "541320"
         releaseType = "release"
         addGameVersion "1.19"
+        addGameVersion "1.19.1"
         addGameVersion "Fabric"
         addGameVersion "Quilt"
         addGameVersion "Java 17"
