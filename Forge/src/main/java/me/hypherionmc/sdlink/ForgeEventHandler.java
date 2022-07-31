@@ -65,7 +65,11 @@ public class ForgeEventHandler {
         try {
             uuid = event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException().getUUID();
         } catch (CommandSyntaxException ignored) {}
-        serverEvents.commandEvent(command, event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(), uuid);
+        serverEvents.commandEvent(
+                command,
+                event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(),
+                uuid
+        );
     }
 
     @SubscribeEvent
@@ -82,14 +86,21 @@ public class ForgeEventHandler {
     public void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntityLiving() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity)event.getEntityLiving();
-            serverEvents.onPlayerDeath(player, event.getSource().getLocalizedDeathMessage(event.getEntityLiving()).getString());
+            serverEvents.onPlayerDeath(
+                    player,
+                    event.getSource().getLocalizedDeathMessage(event.getEntityLiving()).getString()
+            );
         }
     }
 
     @SubscribeEvent
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
-            serverEvents.onPlayerAdvancement(event.getPlayer().getDisplayName().getString(), TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()), TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString()));
+            serverEvents.onPlayerAdvancement(
+                    event.getPlayer().getDisplayName().getString(),
+                    TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()),
+                    TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString())
+            );
         }
     }
 

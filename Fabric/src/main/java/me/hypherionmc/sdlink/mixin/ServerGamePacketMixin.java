@@ -19,7 +19,14 @@ public class ServerGamePacketMixin {
 
     @Shadow public ServerPlayer player;
 
-    @Inject(method = "handleChat(Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", shift = At.Shift.BEFORE))
+    @Inject(
+            method = "handleChat(Ljava/lang/String;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V",
+                    shift = At.Shift.BEFORE
+            )
+    )
     public void onGameMessage(String string, CallbackInfo ci) {
         if (!string.startsWith("/")) {
             SDLinkFabric.serverEvents.onServerChatEvent(string, player.getDisplayName().getString(), player.getUUID());
