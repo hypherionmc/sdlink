@@ -21,7 +21,10 @@ public class ServerPlayerMixin {
 
     @Inject(at = @At("HEAD"), method = "die")
     public void onDeath(DamageSource damageSource, CallbackInfo ci) {
-        SDLinkFabric.serverEvents.onPlayerDeath(connection.getPlayer(), damageSource.getLocalizedDeathMessage(connection.player).getString());
+        SDLinkFabric.serverEvents.onPlayerDeath(
+                connection.getPlayer(),
+                damageSource.getLocalizedDeathMessage(connection.player).getString()
+        );
     }
 
 }

@@ -4,11 +4,11 @@
   "package": "me.hypherionmc.sdlink.mixin",
   "compatibilityLevel": "JAVA_17",
   "server": [
+    "CommandsMixin",
     "PlayerAdvancementsMixin",
     "PlayerListMixin",
     "ServerGamePacketMixin",
-    "ServerPlayerMixin",
-    "CommandsMixin"
+    "ServerPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
