@@ -23,7 +23,11 @@ public class PlayerAdvancementsMixin {
     @Inject(method = "award", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancements/AdvancementRewards;grant(Lnet/minecraft/server/level/ServerPlayer;)V"))
     public void grantCriterion(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         if (advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceChat()) {
-            SDLinkFabric.serverEvents.onPlayerAdvancement(player.getDisplayName().getString(), ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()), ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString()));
+            SDLinkFabric.serverEvents.onPlayerAdvancement(
+                    player.getDisplayName().getString(),
+                    ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()),
+                    ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString())
+            );
         }
     }
 

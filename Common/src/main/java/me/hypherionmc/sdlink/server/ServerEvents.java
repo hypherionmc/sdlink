@@ -3,14 +3,12 @@ package me.hypherionmc.sdlink.server;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import me.hypherionmc.sdlink.SDLinkConstants;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
-import me.hypherionmc.sdlinklib.config.ConfigController;
 import me.hypherionmc.sdlinklib.config.ModConfig;
-import me.hypherionmc.sdlinklib.discord.BotEngine;
+import me.hypherionmc.sdlinklib.discord.BotController;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
@@ -21,18 +19,17 @@ import net.minecraft.server.players.UserWhiteList;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.minecraft.world.entity.player.Player;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
+import static me.hypherionmc.sdlinklib.config.ConfigController.modConfig;
 
 public class ServerEvents implements IMinecraftHelper {
 
-    private final ModConfig modConfig;
-    private final BotEngine botEngine;
+    private final BotController botEngine;
     private MinecraftServer server;
     private final long uptime = System.currentTimeMillis();
 
@@ -46,13 +43,8 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     private ServerEvents() {
-        ConfigController configController = new ConfigController(System.getProperty("user.dir") + File.separator + "config");
-        modConfig = configController.getModConfig();
-        botEngine = new BotEngine(this, modConfig);
-
-        if (modConfig.general.enabled) {
-            botEngine.initBot();
-        }
+        botEngine = new BotController(this, SDLinkConstants.LOG);
+        botEngine.initializeBot();
     }
 
     // Modloader Events
@@ -65,16 +57,26 @@ public class ServerEvents implements IMinecraftHelper {
         this.server = server;
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.serverStarting) {
-                botEngine.sendToDiscord(modConfig.messageConfig.serverStarting, "server", "", modConfig.messageDestinations.stopStartInChat);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.serverStarting,
+                        "server",
+                        "",
+                        modConfig.messageDestinations.stopStartInChat
+                );
             }
         }
     }
 
     public void onServerStarted() {
         if (botEngine != null && modConfig.general.enabled) {
-            botEngine.initWhitelisting();
+            botEngine.checkWhitelisting();
             if (modConfig.chatConfig.serverStarted) {
-                botEngine.sendToDiscord(modConfig.messageConfig.serverStarted, "server", "", modConfig.messageDestinations.stopStartInChat);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.serverStarted,
+                        "server",
+                        "",
+                        modConfig.messageDestinations.stopStartInChat
+                );
             }
         }
     }
@@ -82,7 +84,12 @@ public class ServerEvents implements IMinecraftHelper {
     public void onServerStopping() {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.serverStopping) {
-                botEngine.sendToDiscord(modConfig.messageConfig.serverStopping, "server", "", modConfig.messageDestinations.stopStartInChat);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.serverStopping,
+                        "server",
+                        "",
+                        modConfig.messageDestinations.stopStartInChat
+                );
             }
         }
     }
@@ -90,7 +97,12 @@ public class ServerEvents implements IMinecraftHelper {
     public void onServerStoppedEvent() {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.serverStopped) {
-                botEngine.sendToDiscord(modConfig.messageConfig.serverStopped, "server", "", modConfig.messageDestinations.stopStartInChat);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.serverStopped,
+                        "server",
+                        "",
+                        modConfig.messageDestinations.stopStartInChat
+                );
             }
             botEngine.shutdownBot();
         }
@@ -99,7 +111,12 @@ public class ServerEvents implements IMinecraftHelper {
     public void onServerChatEvent(String message, String user, UUID uuid) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.playerMessages) {
-                botEngine.sendToDiscord(message.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", ""), user, uuid.toString(), true);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.chat.replace("%player%", user).replace("%message%", message.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
+                        user,
+                        uuid.toString(),
+                        true
+                );
             }
         }
     }
@@ -127,7 +144,12 @@ public class ServerEvents implements IMinecraftHelper {
     public void playerJoinEvent(Player player) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
-                botEngine.sendToDiscord(modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()), "server", "", modConfig.messageDestinations.joinLeaveInChat);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()),
+                        "server",
+                        "",
+                        modConfig.messageDestinations.joinLeaveInChat
+                );
             }
         }
     }
@@ -135,7 +157,12 @@ public class ServerEvents implements IMinecraftHelper {
     public void playerLeaveEvent(Player player) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
-                botEngine.sendToDiscord(modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()), "server", "", modConfig.messageDestinations.joinLeaveInChat);
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()),
+                        "server",
+                        "",
+                        modConfig.messageDestinations.joinLeaveInChat
+                );
             }
         }
     }
@@ -143,14 +170,24 @@ public class ServerEvents implements IMinecraftHelper {
     public void onPlayerDeath(Player player, String message) {
         if (botEngine != null && modConfig.general.enabled) {
             if (modConfig.chatConfig.deathMessages) {
-                botEngine.sendToDiscord(message, "server", "", modConfig.messageDestinations.deathInChat);
+                botEngine.sendToDiscord(
+                        message,
+                        "server",
+                        "",
+                        modConfig.messageDestinations.deathInChat
+                );
             }
         }
     }
 
     public void onPlayerAdvancement(String name, String advancement, String advancement_description) {
         if (botEngine != null && modConfig.chatConfig.advancementMessages) {
-            botEngine.sendToDiscord(name + " has made the advancement [" + advancement + "]: " + advancement_description, "server", "", modConfig.messageDestinations.advancementsInChat);
+            botEngine.sendToDiscord(
+                    modConfig.messageConfig.achievements.replace("%player%", name).replace("%title%", advancement).replace("%description%", advancement_description),
+                    "server",
+                    "",
+                    modConfig.messageDestinations.advancementsInChat
+            );
         }
     }
 
@@ -158,7 +195,10 @@ public class ServerEvents implements IMinecraftHelper {
 
     @Override
     public void discordMessageEvent(String s, String s1) {
-        server.getPlayerList().broadcastSystemMessage(Component.literal(ChatFormatting.YELLOW + "[Discord] " + ChatFormatting.RESET + s + ": " + s1), ChatType.CHAT);
+        server.getPlayerList().broadcastSystemMessage(
+                Component.literal(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1),
+                ChatType.SYSTEM
+        );
     }
 
     @Override
@@ -201,14 +241,16 @@ public class ServerEvents implements IMinecraftHelper {
 
         for(ServerPlayer serverplayerentity : Lists.newArrayList(playerlist.getPlayers())) {
             if (!whitelist.isWhiteListed(serverplayerentity.getGameProfile())) {
-                serverplayerentity.connection.disconnect(Component.translatable("multiplayer.disconnect.not_whitelisted"));
+                serverplayerentity.connection.disconnect(
+                        Component.translatable("multiplayer.disconnect.not_whitelisted")
+                );
             }
         }
     }
 
     @Override
     public List<String> getWhitelistedPlayers() {
-        return Arrays.stream(server.getPlayerList().getPlayerNamesArray()).collect(Collectors.toList());
+        return Arrays.stream(server.getPlayerList().getWhiteList().getUserList()).toList();
     }
 
     @Override
@@ -249,7 +291,7 @@ public class ServerEvents implements IMinecraftHelper {
 
     // Other
 
-    public BotEngine getBotEngine() {
+    public BotController getBotEngine() {
         return botEngine;
     }
 

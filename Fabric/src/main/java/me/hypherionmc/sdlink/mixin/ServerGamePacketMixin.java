@@ -20,11 +20,20 @@ public class ServerGamePacketMixin {
 
     @Shadow public ServerPlayer player;
 
-    @Inject(method = "handleChat(Lnet/minecraft/network/protocol/game/ServerboundChatPacket;Lnet/minecraft/server/network/FilteredText;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/ChatDecorator;decorateChat(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/network/FilteredText;Lnet/minecraft/network/chat/MessageSignature;Z)Ljava/util/concurrent/CompletableFuture;", shift = At.Shift.BEFORE))
+    @Inject(
+            method = "handleChat(Lnet/minecraft/network/protocol/game/ServerboundChatPacket;Lnet/minecraft/server/network/FilteredText;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/chat/ChatDecorator;decorateChat(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/network/FilteredText;Lnet/minecraft/network/chat/MessageSignature;Z)Ljava/util/concurrent/CompletableFuture;",
+                    shift = At.Shift.BEFORE)
+    )
     public void onGameMessage(ServerboundChatPacket serverboundChatPacket, FilteredText<String> filteredText, CallbackInfo ci) {
         if (!filteredText.raw().startsWith("/")) {
-            SDLinkFabric.serverEvents.onServerChatEvent(filteredText.raw(), player.getDisplayName().getString(), player.getUUID());
+            SDLinkFabric.serverEvents.onServerChatEvent(
+                    filteredText.raw(),
+                    player.getDisplayName().getString(),
+                    player.getUUID()
+            );
         }
     }
-
 }
