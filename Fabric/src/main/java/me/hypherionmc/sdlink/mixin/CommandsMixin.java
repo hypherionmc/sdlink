@@ -28,23 +28,22 @@ public class CommandsMixin {
             method = "performCommand",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I",
+                    target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/ParseResults;)I",
                     shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void injectPerformCommand(CommandSourceStack commandSourceStack, String string, CallbackInfoReturnable<Integer> cir, StringReader stringReader) {
+    private void injectPerformCommand(ParseResults<CommandSourceStack> parse, String string, CallbackInfoReturnable<Integer> cir, CommandSourceStack commandSourceStack) {
         try {
-            ParseResults<CommandSourceStack> parse = dispatcher.parse(stringReader, commandSourceStack);
             try {
                 SDLinkFabric.serverEvents.commandEvent(
-                        stringReader.getString(),
+                        string,
                         parse.getContext().getLastChild().getSource().getDisplayName().getString(),
                         parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID()
                 );
             } catch (CommandSyntaxException e) {
                 SDLinkFabric.serverEvents.commandEvent(
-                        stringReader.getString(),
+                        string,
                         parse.getContext().getLastChild().getSource().getDisplayName().getString(),
                         null
                 );

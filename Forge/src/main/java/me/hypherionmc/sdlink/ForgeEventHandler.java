@@ -55,7 +55,7 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void serverChatEvent(ServerChatEvent event) {
-        serverEvents.onServerChatEvent(event.getMessage(), event.getUsername(), event.getPlayer().getUUID());
+        serverEvents.onServerChatEvent(event.getMessage().getString(), event.getUsername(), event.getPlayer().getUUID());
     }
 
     @SubscribeEvent
@@ -74,20 +74,20 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void playerJoinEvent(PlayerEvent.PlayerLoggedInEvent event) {
-        serverEvents.playerJoinEvent(event.getPlayer());
+        serverEvents.playerJoinEvent(event.getEntity());
     }
 
     @SubscribeEvent
     public void playerLeaveEvent(PlayerEvent.PlayerLoggedOutEvent event) {
-        serverEvents.playerLeaveEvent(event.getPlayer());
+        serverEvents.playerLeaveEvent(event.getEntity());
     }
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
-        if (event.getEntityLiving() instanceof Player player) {
+        if (event.getEntity() instanceof Player player) {
             serverEvents.onPlayerDeath(
                     player,
-                    event.getSource().getLocalizedDeathMessage(event.getEntityLiving()).getString()
+                    event.getSource().getLocalizedDeathMessage(event.getEntity()).getString()
             );
         }
     }
@@ -96,7 +96,7 @@ public class ForgeEventHandler {
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
             serverEvents.onPlayerAdvancement(
-                    event.getPlayer().getDisplayName().getString(),
+                    event.getEntity().getDisplayName().getString(),
                     ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()),
                     ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString())
             );

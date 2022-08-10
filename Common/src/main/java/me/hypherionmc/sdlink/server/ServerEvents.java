@@ -197,7 +197,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void discordMessageEvent(String s, String s1) {
         server.getPlayerList().broadcastSystemMessage(
                 Component.literal(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1),
-                ChatType.SYSTEM
+                true
         );
     }
 

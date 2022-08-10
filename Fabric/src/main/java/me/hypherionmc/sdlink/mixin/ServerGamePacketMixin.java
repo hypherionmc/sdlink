@@ -1,6 +1,7 @@
 package me.hypherionmc.sdlink.mixin;
 
 import me.hypherionmc.sdlink.SDLinkFabric;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.FilteredText;
@@ -21,16 +22,15 @@ public class ServerGamePacketMixin {
     @Shadow public ServerPlayer player;
 
     @Inject(
-            method = "handleChat(Lnet/minecraft/network/protocol/game/ServerboundChatPacket;Lnet/minecraft/server/network/FilteredText;)V",
+            method = "broadcastChatMessage",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/network/chat/ChatDecorator;decorateChat(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/network/FilteredText;Lnet/minecraft/network/chat/MessageSignature;Z)Ljava/util/concurrent/CompletableFuture;",
-                    shift = At.Shift.BEFORE)
+                    value = "HEAD")
     )
-    public void onGameMessage(ServerboundChatPacket serverboundChatPacket, FilteredText<String> filteredText, CallbackInfo ci) {
-        if (!filteredText.raw().startsWith("/")) {
+    public void onGameMessage(PlayerChatMessage playerChatMessage, CallbackInfo ci) {
+        String filteredText = playerChatMessage.serverContent().getString();
+        if (!filteredText.startsWith("/")) {
             SDLinkFabric.serverEvents.onServerChatEvent(
-                    filteredText.raw(),
+                    filteredText,
                     player.getDisplayName().getString(),
                     player.getUUID()
             );
