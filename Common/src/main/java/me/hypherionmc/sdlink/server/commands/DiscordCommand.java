@@ -16,14 +16,14 @@ public class DiscordCommand {
                 Commands.literal("discord")
                         .requires((commandSource) -> commandSource.hasPermission(0))
                         .executes(context -> {
-                            if (ServerEvents.getInstance().getModConfig().chatConfig.inviteCommandEnabled) {
+                            if (ServerEvents.getInstance().getModConfig().generalConfig.inviteCommandEnabled) {
                                 Style style = Style.EMPTY;
-                                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ServerEvents.getInstance().getModConfig().general.inviteLink));
+                                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ServerEvents.getInstance().getModConfig().generalConfig.inviteLink));
                                 context.getSource().sendSuccess(
                                         new TextComponent(
                                                 ServerEvents.getInstance()
                                                         .getModConfig().messageConfig
-                                                        .inviteMessage.replace("%inviteurl%", ServerEvents.getInstance().getModConfig().general.inviteLink)
+                                                        .inviteMessage.replace("%inviteurl%", ServerEvents.getInstance().getModConfig().generalConfig.inviteLink)
                                         ).setStyle(style)
                                         , true);
                             }
