@@ -195,6 +195,9 @@ public class ServerEvents implements IMinecraftHelper {
 
     @Override
     public void discordMessageEvent(String s, String s1) {
+        if (modConfig.generalConfig.debugging) {
+            SDLinkConstants.LOG.info("Got message {} from {}", s1, s);
+        }
         server.getPlayerList().broadcastSystemMessage(
                 Component.literal(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1),
                 false
