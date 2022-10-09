@@ -55,7 +55,7 @@ public class ServerEvents implements IMinecraftHelper {
 
     public void onServerStarting(MinecraftServer server) {
         this.server = server;
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.serverStarting) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.serverStarting,
@@ -68,7 +68,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onServerStarted() {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             botEngine.checkWhitelisting();
             if (modConfig.chatConfig.serverStarted) {
                 botEngine.sendToDiscord(
@@ -82,7 +82,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onServerStopping() {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.serverStopping) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.serverStopping,
@@ -95,7 +95,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onServerStoppedEvent() {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.serverStopped) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.serverStopped,
@@ -109,7 +109,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onServerChatEvent(String message, String user, UUID uuid) {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.playerMessages) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.chat.replace("%player%", user).replace("%message%", message.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
@@ -129,10 +129,10 @@ public class ServerEvents implements IMinecraftHelper {
 
         if (!command.startsWith("say") && !command.startsWith("me")) {
             command = command.split(" ")[0];
-        }
 
-        if (modConfig.chatConfig.broadcastCommands) {
-            botEngine.sendToDiscord(name + " **executed command: " + command + "**", name, "", false);
+            if (modConfig.chatConfig.broadcastCommands && !modConfig.chatConfig.ignoredCommands.contains(command)) {
+                botEngine.sendToDiscord(name + " **executed command: " + command + "**", name, "", false);
+            }
         }
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
@@ -142,7 +142,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void playerJoinEvent(Player player) {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()),
@@ -155,7 +155,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void playerLeaveEvent(Player player) {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()),
@@ -168,7 +168,7 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onPlayerDeath(Player player, String message) {
-        if (botEngine != null && modConfig.general.enabled) {
+        if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.deathMessages) {
                 botEngine.sendToDiscord(
                         message,
