@@ -7,20 +7,16 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 public class SDLinkFabric implements DedicatedServerModInitializer {
 
-    public static ServerEvents serverEvents;
-
     @Override
     public void onInitializeServer() {
 
-        serverEvents = ServerEvents.getInstance();
-
         CommandRegistrationCallback.EVENT.register(
-                (dispatcher, dedicated) -> serverEvents.onCommandRegister(dispatcher)
+                (dispatcher, dedicated) -> ServerEvents.getInstance().onCommandRegister(dispatcher)
         );
 
-        ServerLifecycleEvents.SERVER_STARTING.register(serverEvents::onServerStarting);
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> serverEvents.onServerStarted());
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> serverEvents.onServerStopping());
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> serverEvents.onServerStoppedEvent());
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerEvents.getInstance()::onServerStarting);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> ServerEvents.getInstance().onServerStarted());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerEvents.getInstance().onServerStopping());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ServerEvents.getInstance().onServerStoppedEvent());
     }
 }

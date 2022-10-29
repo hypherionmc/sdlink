@@ -26,36 +26,34 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ForgeEventHandler {
 
-    private static final ServerEvents serverEvents = ServerEvents.getInstance();
-
     @SubscribeEvent
     public void onCommandRegister(RegisterCommandsEvent event) {
-        serverEvents.onCommandRegister(event.getDispatcher());
+        ServerEvents.getInstance().onCommandRegister(event.getDispatcher());
     }
 
     @SubscribeEvent
     public void serverStartedEvent(FMLServerAboutToStartEvent event) {
-        serverEvents.onServerStarting(event.getServer());
+        ServerEvents.getInstance().onServerStarting(event.getServer());
     }
 
     @SubscribeEvent
     public void serverStartedEvent(FMLServerStartingEvent event) {
-        serverEvents.onServerStarted();
+        ServerEvents.getInstance().onServerStarted();
     }
 
     @SubscribeEvent
     public void serverStoppingEvent(FMLServerStoppingEvent event) {
-        serverEvents.onServerStopping();
+        ServerEvents.getInstance().onServerStopping();
     }
 
     @SubscribeEvent
     public void serverStoppedEvent(FMLServerStoppedEvent event) {
-        serverEvents.onServerStoppedEvent();
+        ServerEvents.getInstance().onServerStoppedEvent();
     }
 
     @SubscribeEvent
     public void serverChatEvent(ServerChatEvent event) {
-        serverEvents.onServerChatEvent(event.getMessage(), event.getUsername(), event.getPlayer().getUUID());
+        ServerEvents.getInstance().onServerChatEvent(event.getMessage(), event.getUsername(), event.getPlayer().getUUID());
     }
 
     @SubscribeEvent
@@ -65,7 +63,7 @@ public class ForgeEventHandler {
         try {
             uuid = event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException().getUUID();
         } catch (CommandSyntaxException ignored) {}
-        serverEvents.commandEvent(
+        ServerEvents.getInstance().commandEvent(
                 command,
                 event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(),
                 uuid
@@ -74,19 +72,19 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void playerJoinEvent(PlayerEvent.PlayerLoggedInEvent event) {
-        serverEvents.playerJoinEvent(event.getPlayer());
+        ServerEvents.getInstance().playerJoinEvent(event.getPlayer());
     }
 
     @SubscribeEvent
     public void playerLeaveEvent(PlayerEvent.PlayerLoggedOutEvent event) {
-        serverEvents.playerLeaveEvent(event.getPlayer());
+        ServerEvents.getInstance().playerLeaveEvent(event.getPlayer());
     }
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntityLiving() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity)event.getEntityLiving();
-            serverEvents.onPlayerDeath(
+            ServerEvents.getInstance().onPlayerDeath(
                     player,
                     event.getSource().getLocalizedDeathMessage(event.getEntityLiving()).getString()
             );
@@ -96,7 +94,7 @@ public class ForgeEventHandler {
     @SubscribeEvent
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
-            serverEvents.onPlayerAdvancement(
+            ServerEvents.getInstance().onPlayerAdvancement(
                     event.getPlayer().getDisplayName().getString(),
                     TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()),
                     TextFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString())

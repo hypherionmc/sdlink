@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import me.hypherionmc.sdlink.SDLinkConstants;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
+import me.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
@@ -45,6 +46,14 @@ public class ServerEvents implements IMinecraftHelper {
         return events;
     }
 
+    public static void reloadInstance(MinecraftServer server) {
+        if (events != null) {
+            events.botEngine.shutdownBot(false);
+        }
+        events = new ServerEvents();
+        events.server = server;
+    }
+
     private ServerEvents() {
         botEngine = new BotController(this, SDLinkConstants.LOG);
         botEngine.initializeBot();
@@ -54,6 +63,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void onCommandRegister(CommandDispatcher<CommandSource> dispatcher) {
         DiscordCommand.register(dispatcher);
         WhoisCommand.register(dispatcher);
+        ReloadModCommand.register(dispatcher);
     }
 
     public void onServerStarting(MinecraftServer server) {
