@@ -1,6 +1,7 @@
 package me.hypherionmc.sdlink.mixin;
 
 import me.hypherionmc.sdlink.SDLinkFabric;
+import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.network.Connection;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -18,12 +19,12 @@ public class PlayerListMixin {
 
     @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void onPlayerJoin(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci) {
-        SDLinkFabric.serverEvents.playerJoinEvent(serverPlayer);
+        ServerEvents.getInstance().playerJoinEvent(serverPlayer);
     }
 
     @Inject(method = "remove", at = @At("HEAD"))
     private void onPlayerLeave(ServerPlayer serverPlayer, CallbackInfo ci) {
-        SDLinkFabric.serverEvents.playerLeaveEvent(serverPlayer);
+        ServerEvents.getInstance().playerLeaveEvent(serverPlayer);
     }
 
 }

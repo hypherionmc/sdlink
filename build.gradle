@@ -42,6 +42,13 @@ subprojects {
             name = 'Hypherion Maven'
             url = 'https://maven.firstdarkdev.xyz/releases/'
         }
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        }
     }
 
 

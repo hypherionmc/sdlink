@@ -12,6 +12,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation "maven.modrinth:fabrictailor:1.9.0+1.18.2"
     implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     include("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     implementation project(":Common")

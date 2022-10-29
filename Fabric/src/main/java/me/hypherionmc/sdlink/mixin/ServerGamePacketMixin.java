@@ -1,6 +1,9 @@
 package me.hypherionmc.sdlink.mixin;
 
 import me.hypherionmc.sdlink.SDLinkFabric;
+import me.hypherionmc.sdlink.SafeCalls;
+import me.hypherionmc.sdlink.server.ServerEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.network.TextFilter;
@@ -29,11 +32,15 @@ public class ServerGamePacketMixin {
     )
     public void onGameMessage(TextFilter.FilteredText filteredText, CallbackInfo ci) {
         if (!filteredText.getRaw().startsWith("/")) {
-            SDLinkFabric.serverEvents.onServerChatEvent(
-                    filteredText.getRaw(),
-                    player.getDisplayName().getString(),
-                    player.getUUID()
-            );
+            if (FabricLoader.getInstance().isModLoaded("fabrictailor")) {
+                SafeCalls.tailerPlayerMessage(player, filteredText.getRaw());
+            } else {
+                ServerEvents.getInstance().onServerChatEvent(
+                        filteredText.getRaw(),
+                        player.getDisplayName().getString(),
+                        player.getUUID().toString()
+                );
+            }
         }
     }
 

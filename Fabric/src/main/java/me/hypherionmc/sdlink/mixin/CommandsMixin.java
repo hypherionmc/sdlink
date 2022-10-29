@@ -5,6 +5,9 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.sdlink.SDLinkFabric;
+import me.hypherionmc.sdlink.SafeCalls;
+import me.hypherionmc.sdlink.server.ServerEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.spongepowered.asm.mixin.Final;
@@ -37,16 +40,20 @@ public class CommandsMixin {
         try {
             ParseResults<CommandSourceStack> parse = dispatcher.parse(stringReader, commandSourceStack);
             try {
-                SDLinkFabric.serverEvents.commandEvent(
-                        stringReader.getString(),
-                        parse.getContext().getLastChild().getSource().getDisplayName().getString(),
-                        parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID()
-                );
+                if (FabricLoader.getInstance().isModLoaded("fabrictailor")) {
+                    SafeCalls.tailorPlayerJoin(parse.getContext().getLastChild().getSource().getPlayerOrException(), string);
+                } else {
+                    ServerEvents.getInstance().commandEvent(
+                            string,
+                            parse.getContext().getLastChild().getSource().getDisplayName().getString(),
+                            parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString()
+                    );
+                }
             } catch (CommandSyntaxException e) {
-                SDLinkFabric.serverEvents.commandEvent(
+                ServerEvents.getInstance().commandEvent(
                         stringReader.getString(),
                         parse.getContext().getLastChild().getSource().getDisplayName().getString(),
-                        null
+                        ""
                 );
             }
         } catch (Exception e) {}

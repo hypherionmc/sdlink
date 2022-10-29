@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import me.hypherionmc.sdlink.SDLinkConstants;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
+import me.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
@@ -44,6 +45,14 @@ public class ServerEvents implements IMinecraftHelper {
         return events;
     }
 
+    public static void reloadInstance(MinecraftServer server) {
+        if (events != null) {
+            events.botEngine.shutdownBot(false);
+        }
+        events = new ServerEvents();
+        events.server = server;
+    }
+
     private ServerEvents() {
         botEngine = new BotController(this, SDLinkConstants.LOG);
         botEngine.initializeBot();
@@ -53,6 +62,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void onCommandRegister(CommandDispatcher<CommandSourceStack> dispatcher) {
         DiscordCommand.register(dispatcher);
         WhoisCommand.register(dispatcher);
+        ReloadModCommand.register(dispatcher);
     }
 
     public void onServerStarting(MinecraftServer server) {
@@ -110,20 +120,20 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void onServerChatEvent(String message, String user, UUID uuid) {
+    public void onServerChatEvent(String message, String user, String uuid) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.playerMessages) {
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.chat.replace("%player%", user).replace("%message%", message.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
                         user,
-                        uuid.toString(),
+                        uuid,
                         true
                 );
             }
         }
     }
 
-    public void commandEvent(String cmd, String name, UUID uuid) {
+    public void commandEvent(String cmd, String name, String uuid) {
         String command = cmd;
         if (command.startsWith("/")) {
             command = command.replaceFirst("/", "");
@@ -139,7 +149,7 @@ public class ServerEvents implements IMinecraftHelper {
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
             String msg = command.startsWith("say") ? command.replace("say ", "").replace("say", "") : command.replace("me ", "").replace("me", "");
-            botEngine.sendToDiscord(msg, name, uuid == null ? "" : uuid.toString(), true);
+            botEngine.sendToDiscord(msg, name, uuid == null ? "" : uuid, true);
         }
     }
 
