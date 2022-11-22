@@ -32,7 +32,8 @@ public class CommandsMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/StringReader;Ljava/lang/Object;)I",
-                    shift = At.Shift.BEFORE
+                    shift = At.Shift.BEFORE,
+                    remap = false
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
