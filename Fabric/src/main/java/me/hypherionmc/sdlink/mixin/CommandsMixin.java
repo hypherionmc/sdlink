@@ -26,7 +26,8 @@ public class CommandsMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lcom/mojang/brigadier/CommandDispatcher;execute(Lcom/mojang/brigadier/ParseResults;)I",
-                    shift = At.Shift.BEFORE
+                    shift = At.Shift.BEFORE,
+                    remap = false
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
