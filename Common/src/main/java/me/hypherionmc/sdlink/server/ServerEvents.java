@@ -6,14 +6,17 @@ import com.mojang.brigadier.CommandDispatcher;
 import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
 import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializer;
 import me.hypherionmc.sdlink.SDLinkConstants;
+import me.hypherionmc.sdlink.platform.PlatformHelper;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
 import me.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
+import me.hypherionmc.sdlinklib.utils.LogReader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
@@ -22,6 +25,9 @@ import net.minecraft.server.players.PlayerList;
 import net.minecraft.server.players.UserWhiteList;
 import net.minecraft.server.players.UserWhiteListEntry;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BaseCommandBlock;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +84,7 @@ public class ServerEvents implements IMinecraftHelper {
                 );
             }
         }
+        LogReader.init(botEngine);
     }
 
     public void onServerStarted() {
@@ -221,11 +228,17 @@ public class ServerEvents implements IMinecraftHelper {
         if (modConfig.generalConfig.debugging) {
             SDLinkConstants.LOG.info("Got message {} from {}", s1, s);
         }
-        MutableComponent component = modConfig.messageConfig.formatting ? MinecraftSerializer.INSTANCE.serialize(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1) : Component.literal(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1);
-        server.getPlayerList().broadcastSystemMessage(
-                component,
-                false
-        );
+        try {
+            MutableComponent component = modConfig.messageConfig.formatting ? MinecraftSerializer.INSTANCE.serialize(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1) : Component.literal(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1);
+            server.getPlayerList().broadcastSystemMessage(
+                    component,
+                    false
+            );
+        } catch (Exception e) {
+            if (modConfig.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to send message: {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -314,6 +327,17 @@ public class ServerEvents implements IMinecraftHelper {
     @Override
     public String getServerVersion() {
         return server.getServerModName() + " - " + server.getServerVersion();
+    }
+
+    @Override
+    public void executeMcCommand(String s, String s1) {
+        String command;
+        if (!s1.isEmpty()) {
+            command = s.replace("%args%", s1);
+        } else {
+            command = s.replace(" %args%", "").replace("%args%", "");
+        }
+        PlatformHelper.MOD_HELPER.executeCommand(server, command);
     }
 
     // Other
