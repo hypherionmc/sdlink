@@ -105,6 +105,7 @@ processResources {
 shadowJar {
     dependencies {
         include(dependency("me.hypherionmc.sdlink:sdlink-lib:${library_ver}"))
+        include(dependency("me.hypherionmc.sdlink:mcdiscordformatter:${formatter_ver}"))
     }
     classifier ''
 }

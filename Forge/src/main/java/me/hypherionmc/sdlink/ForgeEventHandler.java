@@ -2,7 +2,6 @@ package me.hypherionmc.sdlink;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.sdlink.server.ServerEvents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -53,7 +52,7 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void serverChatEvent(ServerChatEvent event) {
-        ServerEvents.getInstance().onServerChatEvent(event.getMessage().getString(), event.getUsername(), event.getPlayer().getUUID().toString());
+        ServerEvents.getInstance().onServerChatEvent(event.getMessage(), event.getPlayer().getDisplayName(), event.getPlayer().getUUID().toString());
     }
 
     @SubscribeEvent
@@ -65,7 +64,7 @@ public class ForgeEventHandler {
         } catch (CommandSyntaxException ignored) {}
         ServerEvents.getInstance().commandEvent(
                 command,
-                event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(),
+                event.getParseResults().getContext().getLastChild().getSource().getDisplayName(),
                 uuid != null ? uuid.toString() : ""
         );
     }
@@ -85,7 +84,7 @@ public class ForgeEventHandler {
         if (event.getEntity() instanceof Player player) {
             ServerEvents.getInstance().onPlayerDeath(
                     player,
-                    event.getSource().getLocalizedDeathMessage(event.getEntity()).getString()
+                    event.getSource().getLocalizedDeathMessage(event.getEntity())
             );
         }
     }
@@ -94,9 +93,9 @@ public class ForgeEventHandler {
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
             ServerEvents.getInstance().onPlayerAdvancement(
-                    event.getEntity().getDisplayName().getString(),
-                    ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()),
-                    ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString())
+                    event.getEntity().getDisplayName(),
+                    event.getAdvancement().getDisplay().getTitle(),
+                    event.getAdvancement().getDisplay().getDescription()
             );
         }
     }

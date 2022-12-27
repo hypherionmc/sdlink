@@ -51,6 +51,9 @@ subprojects {
         }
     }
 
+    dependencies {
+        implementation "me.hypherionmc.sdlink:mcdiscordformatter:${formatter_ver}"
+    }
 
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = 'UTF-8'

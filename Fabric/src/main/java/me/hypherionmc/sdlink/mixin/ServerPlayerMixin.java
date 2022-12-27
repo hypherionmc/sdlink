@@ -1,6 +1,5 @@
 package me.hypherionmc.sdlink.mixin;
 
-import me.hypherionmc.sdlink.SDLinkFabric;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -24,7 +23,7 @@ public class ServerPlayerMixin {
     public void onDeath(DamageSource damageSource, CallbackInfo ci) {
         ServerEvents.getInstance().onPlayerDeath(
                 connection.getPlayer(),
-                damageSource.getLocalizedDeathMessage(connection.player).getString()
+                damageSource.getLocalizedDeathMessage(connection.player)
         );
     }
 
