@@ -1,6 +1,7 @@
 package me.hypherionmc.sdlink;
 
 import me.hypherionmc.sdlink.server.ServerEvents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
@@ -15,18 +16,18 @@ public class SafeCalls {
             TailoredPlayer tp = (TailoredPlayer) player;
             ServerEvents.getInstance().commandEvent(
                     command,
-                    player.getDisplayName().getString(),
+                    player.getDisplayName(),
                     tp.getSkinValue()
             );
         }
     }
 
-    public static void tailerPlayerMessage(ServerPlayer player, String message) {
+    public static void tailerPlayerMessage(ServerPlayer player, Component message) {
         if (player instanceof TailoredPlayer) {
             TailoredPlayer tp = (TailoredPlayer) player;
             ServerEvents.getInstance().onServerChatEvent(
                     message,
-                    player.getDisplayName().getString(),
+                    player.getDisplayName(),
                     tp.getSkinValue()
             );
         }

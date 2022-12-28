@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.hypherionmc.sdlink.SDLinkFabric;
 import me.hypherionmc.sdlink.SafeCalls;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -46,15 +45,15 @@ public class CommandsMixin {
                 } else {
                     ServerEvents.getInstance().commandEvent(
                             string,
-                            parse.getContext().getLastChild().getSource().getDisplayName().getString(),
+                            parse.getContext().getLastChild().getSource().getDisplayName(),
                             parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString()
                     );
                 }
             } catch (CommandSyntaxException e) {
                 ServerEvents.getInstance().commandEvent(
                         stringReader.getString(),
-                        parse.getContext().getLastChild().getSource().getDisplayName().getString(),
-                        null
+                        parse.getContext().getLastChild().getSource().getDisplayName(),
+                        ""
                 );
             }
         } catch (Exception e) {}

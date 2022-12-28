@@ -3,13 +3,17 @@ package me.hypherionmc.sdlink.server;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
+import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializer;
 import me.hypherionmc.sdlink.SDLinkConstants;
+import me.hypherionmc.sdlink.platform.services.ForgePlatformHelper;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
 import me.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
+import me.hypherionmc.sdlinklib.utils.LogReader;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -18,9 +22,8 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.server.management.WhiteList;
 import net.minecraft.server.management.WhitelistEntry;
 import net.minecraft.util.Util;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,6 +95,7 @@ public class ServerEvents implements IMinecraftHelper {
                 );
             }
         }
+        LogReader.init(botEngine, !FMLLoader.isProduction());
     }
 
     public void onServerStopping() {
@@ -121,12 +125,18 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void onServerChatEvent(String message, String user, UUID uuid) {
+    public void onServerChatEvent(ITextComponent message, ITextComponent user, String uuid) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.playerMessages) {
+                String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(user.copy()) : TextFormatting.stripFormatting(user.getString());
+                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : TextFormatting.stripFormatting(message.getString());
+
+                msg = msg.replaceAll("<" + username + ">", "");
+                msg = msg.replace(username, "");
+
                 botEngine.sendToDiscord(
-                        modConfig.messageConfig.chat.replace("%player%", user).replace("%message%", message.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
-                        user,
+                        modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
+                        username,
                         uuid.toString(),
                         true
                 );
@@ -134,8 +144,10 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void commandEvent(String cmd, String name, UUID uuid) {
+    public void commandEvent(String cmd, ITextComponent name, String uuid) {
         String command = cmd;
+        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : TextFormatting.stripFormatting(name.getString());
+
         if (command.startsWith("/")) {
             command = command.replaceFirst("/", "");
         }
@@ -144,13 +156,13 @@ public class ServerEvents implements IMinecraftHelper {
             command = command.split(" ")[0];
 
             if (modConfig.chatConfig.broadcastCommands && !modConfig.chatConfig.ignoredCommands.contains(command)) {
-                botEngine.sendToDiscord(name + " **executed command: " + command + "**", name, "", false);
+                botEngine.sendToDiscord(username + " **executed command: " + command + "**", username, "", false);
             }
         }
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
             String msg = command.startsWith("say") ? command.replace("say ", "").replace("say", "") : command.replace("me ", "").replace("me", "");
-            botEngine.sendToDiscord(msg, name, uuid == null ? "" : uuid.toString(), true);
+            botEngine.sendToDiscord(msg, username, uuid == null ? "" : uuid.toString(), true);
         }
     }
 
@@ -180,18 +192,29 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void onPlayerDeath(PlayerEntity player, String message) {
+    public void onPlayerDeath(PlayerEntity player, ITextComponent message) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.deathMessages) {
-                botEngine.sendToDiscord(message, "server", "", modConfig.messageDestinations.deathInChat);
+                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : TextFormatting.stripFormatting(message.getString());
+
+                botEngine.sendToDiscord(
+                        msg,
+                        "server",
+                        "",
+                        modConfig.messageDestinations.deathInChat
+                );
             }
         }
     }
 
-    public void onPlayerAdvancement(String name, String advancement, String advancement_description) {
+    public void onPlayerAdvancement(ITextComponent name, ITextComponent advancement, ITextComponent advancement_description) {
         if (botEngine != null && modConfig.chatConfig.advancementMessages) {
+            String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : TextFormatting.stripFormatting(name.getString());
+            String advancemnt = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement.copy()) : TextFormatting.stripFormatting(advancement.getString());
+            String advancementBody = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement_description.copy()) : TextFormatting.stripFormatting(advancement_description.getString());
+
             botEngine.sendToDiscord(
-                    modConfig.messageConfig.achievements.replace("%player%", name).replace("%title%", advancement).replace("%description%", advancement_description),
+                    modConfig.messageConfig.achievements.replace("%player%", username).replace("%title%", advancemnt).replace("%description%", advancementBody),
                     "server",
                     "",
                     modConfig.messageDestinations.advancementsInChat
@@ -203,11 +226,21 @@ public class ServerEvents implements IMinecraftHelper {
 
     @Override
     public void discordMessageEvent(String s, String s1) {
-        server.getPlayerList().broadcastMessage(
-                new StringTextComponent(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1),
-                ChatType.SYSTEM,
-                Util.NIL_UUID
-        );
+        if (modConfig.generalConfig.debugging) {
+            SDLinkConstants.LOG.info("Got message {} from {}", s1, s);
+        }
+        try {
+            IFormattableTextComponent component = modConfig.messageConfig.formatting ? MinecraftSerializer.INSTANCE.serialize(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1) : new StringTextComponent(modConfig.chatConfig.mcPrefix.replace("%user%", s) + s1);
+            server.getPlayerList().broadcastMessage(
+                    component,
+                    ChatType.SYSTEM,
+                    Util.NIL_UUID
+            );
+        } catch (Exception e) {
+            if (modConfig.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to send message: {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -296,6 +329,17 @@ public class ServerEvents implements IMinecraftHelper {
     @Override
     public String getServerVersion() {
         return server.getServerModName() + " - " + server.getServerVersion();
+    }
+
+    @Override
+    public void executeMcCommand(String s, String s1) {
+        String command;
+        if (!s1.isEmpty()) {
+            command = s.replace("%args%", s1);
+        } else {
+            command = s.replace(" %args%", "").replace("%args%", "");
+        }
+        ForgePlatformHelper.executeCommand(server, command);
     }
 
     // Other

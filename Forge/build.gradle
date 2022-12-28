@@ -81,7 +81,9 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
+
     implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}h")
+    implementation("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.16.5:${formatter_ver}")
 }
 
 tasks.withType(JavaCompile) {
@@ -97,6 +99,7 @@ processResources {
 shadowJar {
     dependencies {
         include(dependency("me.hypherionmc.sdlink:sdlink-lib:${library_ver}h"))
+        include(dependency("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.16.5:${formatter_ver}"))
     }
     classifier ''
 }
