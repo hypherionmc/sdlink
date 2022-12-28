@@ -129,6 +129,10 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.playerMessages) {
                 String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(user.copy()) : ChatFormatting.stripFormatting(user.getString());
                 String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
+
+                msg = msg.replace("<" + username + ">", "");
+                msg = msg.replace(username, "");
+
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
                         username,
