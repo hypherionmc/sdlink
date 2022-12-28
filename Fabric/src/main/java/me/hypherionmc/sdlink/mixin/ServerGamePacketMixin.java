@@ -28,7 +28,7 @@ public class ServerGamePacketMixin {
                     value = "HEAD")
     )
     public void onGameMessage(PlayerChatMessage playerChatMessage, CallbackInfo ci) {
-        Component filteredText = playerChatMessage.serverContent();
+        Component filteredText = playerChatMessage.decoratedContent();
         if (!filteredText.getString().startsWith("/")) {
             if (FabricLoader.getInstance().isModLoaded("fabrictailor")) {
                 SafeCalls.tailerPlayerMessage(player, filteredText);

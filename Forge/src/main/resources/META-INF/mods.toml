@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[44,)"
 license="MIT"
 issueTrackerURL="https://github.com/hypherionmc/sdlink/issues"
 
@@ -14,13 +14,13 @@ description='''A simple Minecraft to Discord Chat bot with Whitelisting'''
 [[dependencies.sdlink]]
     modId="forge"
     mandatory=true
-    versionRange="[41,)"
+    versionRange="[44,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.sdlink]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.1,1.20)"
+    versionRange="[1.19.3,1.20)"
     ordering="NONE"
     side="BOTH"
