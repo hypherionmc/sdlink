@@ -25,9 +25,9 @@ public class PlayerAdvancementsMixin {
     public void grantCriterion(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         if (advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceChat()) {
             ServerEvents.getInstance().onPlayerAdvancement(
-                    player.getDisplayName().getString(),
-                    ChatFormatting.stripFormatting(advancement.getDisplay().getTitle().getString()),
-                    ChatFormatting.stripFormatting(advancement.getDisplay().getDescription().getString())
+                    player.getDisplayName(),
+                    advancement.getDisplay().getTitle(),
+                    advancement.getDisplay().getDescription()
             );
         }
     }

@@ -2,20 +2,39 @@ plugins {
     id 'fabric-loom' version '0.10-SNAPSHOT'
     id 'idea'
     id "com.modrinth.minotaur" version "2.+"
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id "me.hypherionmc.cursegradle" version "2.0.1"
 }
 
 archivesBaseName = "${mod_name}-fabric-${minecraft_version}"
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modImplementation "maven.modrinth:fabrictailor:1.9.0+1.18.2"
-    implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
-    include("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
+    modCompileOnly "maven.modrinth:fabrictailor:1.9.0+1.18.2"
+
     implementation project(":Common")
+
+    shade("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
+    shade "me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.18.1:${formatter_ver}"
+}
+
+shadowJar {
+    from sourceSets.main.output
+
+    configurations = [project.configurations.shade]
+}
+
+remapJar {
+    dependsOn(shadowJar)
+    input.set shadowJar.archiveFile.get()
 }
 
 loom {
@@ -63,6 +82,7 @@ task delDevJar {
     doLast {
         def tree = fileTree('build/libs')
         tree.include '**/*-dev.jar'
+        tree.include '**/*-all.jar'
         tree.each { it.delete() }
     }
 }

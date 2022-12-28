@@ -24,7 +24,7 @@ public class ServerPlayerMixin {
     public void onDeath(DamageSource damageSource, CallbackInfo ci) {
         ServerEvents.getInstance().onPlayerDeath(
                 connection.getPlayer(),
-                damageSource.getLocalizedDeathMessage(connection.player).getString()
+                damageSource.getLocalizedDeathMessage(connection.player)
         );
     }
 

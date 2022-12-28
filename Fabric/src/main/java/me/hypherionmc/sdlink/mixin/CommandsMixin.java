@@ -46,14 +46,14 @@ public class CommandsMixin {
                 } else {
                     ServerEvents.getInstance().commandEvent(
                             string,
-                            parse.getContext().getLastChild().getSource().getDisplayName().getString(),
+                            parse.getContext().getLastChild().getSource().getDisplayName(),
                             parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString()
                     );
                 }
             } catch (CommandSyntaxException e) {
                 ServerEvents.getInstance().commandEvent(
                         stringReader.getString(),
-                        parse.getContext().getLastChild().getSource().getDisplayName().getString(),
+                        parse.getContext().getLastChild().getSource().getDisplayName(),
                         ""
                 );
             }

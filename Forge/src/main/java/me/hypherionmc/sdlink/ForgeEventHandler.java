@@ -53,7 +53,7 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void serverChatEvent(ServerChatEvent event) {
-        ServerEvents.getInstance().onServerChatEvent(event.getMessage(), event.getUsername(), event.getPlayer().getUUID().toString());
+        ServerEvents.getInstance().onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), event.getPlayer().getUUID().toString());
     }
 
     @SubscribeEvent
@@ -65,7 +65,7 @@ public class ForgeEventHandler {
         } catch (CommandSyntaxException ignored) {}
             ServerEvents.getInstance().commandEvent(
                     command,
-                    event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString(),
+                    event.getParseResults().getContext().getLastChild().getSource().getDisplayName(),
                     uuid != null ? uuid.toString() : ""
             );
     }
@@ -85,7 +85,7 @@ public class ForgeEventHandler {
         if (event.getEntityLiving() instanceof Player player) {
             ServerEvents.getInstance().onPlayerDeath(
                     player,
-                    event.getSource().getLocalizedDeathMessage(event.getEntityLiving()).getString()
+                    event.getSource().getLocalizedDeathMessage(event.getEntityLiving())
             );
         }
     }
@@ -94,9 +94,9 @@ public class ForgeEventHandler {
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
             ServerEvents.getInstance().onPlayerAdvancement(
-                    event.getPlayer().getDisplayName().getString(),
-                    ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString()),
-                    ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString())
+                    event.getPlayer().getDisplayName(),
+                    event.getAdvancement().getDisplay().getTitle(),
+                    event.getAdvancement().getDisplay().getDescription()
             );
         }
     }
