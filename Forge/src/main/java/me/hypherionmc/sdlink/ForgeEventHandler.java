@@ -2,7 +2,7 @@ package me.hypherionmc.sdlink;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.sdlink.server.ServerEvents;
-import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -53,7 +53,7 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void serverChatEvent(ServerChatEvent event) {
-        ServerEvents.getInstance().onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), event.getPlayer().getUUID().toString());
+        ServerEvents.getInstance().onServerChatEvent(event.getComponent(), event.getPlayer().getName(), event.getPlayer().getUUID().toString());
     }
 
     @SubscribeEvent
@@ -65,7 +65,7 @@ public class ForgeEventHandler {
         } catch (CommandSyntaxException ignored) {}
             ServerEvents.getInstance().commandEvent(
                     command,
-                    event.getParseResults().getContext().getLastChild().getSource().getDisplayName(),
+                    new TextComponent(event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString()),
                     uuid != null ? uuid.toString() : ""
             );
     }
@@ -94,7 +94,7 @@ public class ForgeEventHandler {
     public void onPlayerAdvancement(AdvancementEvent event) {
         if (event.getAdvancement() != null && event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().shouldAnnounceChat()) {
             ServerEvents.getInstance().onPlayerAdvancement(
-                    event.getPlayer().getDisplayName(),
+                    event.getPlayer().getName(),
                     event.getAdvancement().getDisplay().getTitle(),
                     event.getAdvancement().getDisplay().getDescription()
             );
