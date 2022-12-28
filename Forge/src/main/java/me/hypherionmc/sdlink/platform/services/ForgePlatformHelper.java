@@ -4,6 +4,7 @@ import me.hypherionmc.sdlink.SDLinkFakePlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 public class ForgePlatformHelper implements ModHelper {
 
@@ -19,5 +20,10 @@ public class ForgePlatformHelper implements ModHelper {
         } else {
             fakePlayer.sendFailure(new TextComponent("SDLinkFakePlayer does not have permission to execute this command. Please make sure the user is OPPED"));
         }
+    }
+
+    @Override
+    public boolean isDevEnv() {
+        return !FMLLoader.isProduction();
     }
 }

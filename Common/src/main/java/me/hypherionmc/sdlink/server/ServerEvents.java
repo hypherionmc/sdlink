@@ -94,7 +94,7 @@ public class ServerEvents implements IMinecraftHelper {
                 );
             }
         }
-        LogReader.init(botEngine);
+        LogReader.init(botEngine, PlatformHelper.MOD_HELPER.isDevEnv());
     }
 
     public void onServerStopping() {
