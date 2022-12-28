@@ -84,7 +84,6 @@ public class ServerEvents implements IMinecraftHelper {
                 );
             }
         }
-        LogReader.init(botEngine);
     }
 
     public void onServerStarted() {
@@ -99,6 +98,7 @@ public class ServerEvents implements IMinecraftHelper {
                 );
             }
         }
+        LogReader.init(botEngine, PlatformHelper.MOD_HELPER.isDevEnv());
     }
 
     public void onServerStopping() {
@@ -133,6 +133,10 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.playerMessages) {
                 String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(user.copy()) : ChatFormatting.stripFormatting(user.getString());
                 String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
+
+                msg = msg.replaceAll("<" + username + ">", "");
+                msg = msg.replace(username, "");
+
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
                         username,

@@ -23,6 +23,7 @@ minecraft {
 dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
+    implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
 }
 
 processResources {

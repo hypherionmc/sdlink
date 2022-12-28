@@ -1,6 +1,7 @@
 package me.hypherionmc.sdlink.platform.services;
 
 import me.hypherionmc.sdlink.SDLinkFakePlayer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 
@@ -18,5 +19,10 @@ public class FabricPlatformHelper implements ModHelper {
         } else {
             fakePlayer.sendFailure(Component.literal("SDLinkFakePlayer does not have permission to execute this command. Please make sure the user is OPPED"));
         }
+    }
+
+    @Override
+    public boolean isDevEnv() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 }
