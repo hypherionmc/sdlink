@@ -127,8 +127,8 @@ modrinth {
     versionType = "release"
     changelog = rootProject.file("changelog-forge.md").text.trim()
     uploadFile = jar
-    versionName = "[FORGE 1.19.1/2] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.19.1", "1.19.2"]
+    versionName = "[FORGE 1.19.3] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.19.3"]
     loaders = [ "forge" ]
 }
 
@@ -141,14 +141,13 @@ curseforge {
     project {
         id = "541320"
         releaseType = "release"
-        addGameVersion "1.19.1"
-        addGameVersion "1.19.2"
+        addGameVersion "1.19.3"
         addGameVersion "Forge"
         addGameVersion "Java 17"
         changelogType = "markdown"
         changelog = rootProject.file("changelog-forge.md")
         mainArtifact(jar) {
-            displayName = "[FORGE 1.19.1/2] Simple Discord Link - ${project.version}"
+            displayName = "[FORGE 1.19.3] Simple Discord Link - ${project.version}"
         }
     }
     options {
