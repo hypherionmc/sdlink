@@ -136,6 +136,7 @@ public class ServerEvents implements IMinecraftHelper {
 
                 msg = msg.replaceAll("<" + username + ">", "");
                 msg = msg.replace(username, "");
+                username = username.replaceAll("§[\\w]", "");
 
                 botEngine.sendToDiscord(
                         modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
@@ -173,7 +174,7 @@ public class ServerEvents implements IMinecraftHelper {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
                 botEngine.sendToDiscord(
-                        modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()),
+                        modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString().replaceAll("§[\\w]", "")),
                         "server",
                         "",
                         modConfig.messageDestinations.joinLeaveInChat
@@ -186,7 +187,7 @@ public class ServerEvents implements IMinecraftHelper {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
                 botEngine.sendToDiscord(
-                        modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()),
+                        modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString().replaceAll("§[\\w]", "")),
                         "server",
                         "",
                         modConfig.messageDestinations.joinLeaveInChat
@@ -199,7 +200,7 @@ public class ServerEvents implements IMinecraftHelper {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.deathMessages) {
                 String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
-
+                msg = msg.replaceAll("§[\\w]", "");
                 botEngine.sendToDiscord(
                         msg,
                         "server",
@@ -213,6 +214,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void onPlayerAdvancement(Component name, Component advancement, Component advancement_description) {
         if (botEngine != null && modConfig.chatConfig.advancementMessages) {
             String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : ChatFormatting.stripFormatting(name.getString());
+            username = username.replaceAll("§[\\w]", "");
             String advancemnt = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement.copy()) : ChatFormatting.stripFormatting(advancement.getString());
             String advancementBody = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement_description.copy()) : ChatFormatting.stripFormatting(advancement_description.getString());
 
