@@ -10,6 +10,7 @@ import me.hypherionmc.sdlink.platform.PlatformHelper;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
 import me.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
+import me.hypherionmc.sdlink.util.ModUtils;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
@@ -129,27 +130,35 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onServerChatEvent(Component message, Component user, String uuid) {
-        if (botEngine != null && modConfig.generalConfig.enabled) {
-            if (modConfig.chatConfig.playerMessages) {
-                String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(user.copy()) : ChatFormatting.stripFormatting(user.getString());
-                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
+        try {
+            if (botEngine != null && modConfig.generalConfig.enabled) {
+                if (modConfig.chatConfig.playerMessages) {
+                    String username = ChatFormatting.stripFormatting(user.getString());
+                    String msg = ChatFormatting.stripFormatting(message.getString());
 
-                msg = msg.replaceAll("<" + username + ">", "");
-                msg = msg.replace(username, "");
+                    if (modConfig.messageConfig.formatting) {
+                        username = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(user).copy());
+                        msg = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy());
+                    }
 
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
-                        username,
-                        uuid,
-                        true
-                );
+                    botEngine.sendToDiscord(
+                            modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
+                            username,
+                            uuid,
+                            true
+                    );
+                }
+            }
+        } catch (Exception e) {
+            if (modConfig.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to send message to Discord", e);
             }
         }
     }
 
     public void commandEvent(String cmd, Component name, String uuid) {
         String command = cmd;
-        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : ChatFormatting.stripFormatting(name.getString());
+        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : ChatFormatting.stripFormatting(name.getString());
 
         if (command.startsWith("/")) {
             command = command.replaceFirst("/", "");
@@ -164,7 +173,7 @@ public class ServerEvents implements IMinecraftHelper {
         }
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
-            String msg = command.startsWith("say") ? command.replace("say ", "").replace("say", "") : command.replace("me ", "").replace("me", "");
+            String msg = ModUtils.strip(command, "say", "me");
             botEngine.sendToDiscord(msg, username, uuid == null ? "" : uuid.toString(), true);
         }
     }
@@ -198,7 +207,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void onPlayerDeath(Player player, Component message) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.deathMessages) {
-                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
+                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy()) : ChatFormatting.stripFormatting(message.getString());
 
                 botEngine.sendToDiscord(
                         msg,
@@ -211,17 +220,29 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void onPlayerAdvancement(Component name, Component advancement, Component advancement_description) {
-        if (botEngine != null && modConfig.chatConfig.advancementMessages) {
-            String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : ChatFormatting.stripFormatting(name.getString());
-            String advancemnt = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement.copy()) : ChatFormatting.stripFormatting(advancement.getString());
-            String advancementBody = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement_description.copy()) : ChatFormatting.stripFormatting(advancement_description.getString());
+        try {
+            if (botEngine != null && modConfig.chatConfig.advancementMessages) {
+                String username = ChatFormatting.stripFormatting(name.getString());
+                String finalAdvancement = ChatFormatting.stripFormatting(advancement.getString());
+                String advancementBody = ChatFormatting.stripFormatting(advancement_description.getString());
 
-            botEngine.sendToDiscord(
-                    modConfig.messageConfig.achievements.replace("%player%", username).replace("%title%", advancemnt).replace("%description%", advancementBody),
-                    "server",
-                    "",
-                    modConfig.messageDestinations.advancementsInChat
-            );
+                if (modConfig.messageConfig.formatting) {
+                    username = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy());
+                    finalAdvancement = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(advancement).copy());
+                    advancementBody = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(advancement_description).copy());
+                }
+
+                botEngine.sendToDiscord(
+                        modConfig.messageConfig.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody),
+                        "server",
+                        "",
+                        modConfig.messageDestinations.advancementsInChat
+                );
+            }
+        } catch (Exception e) {
+            if (modConfig.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to send advancement to Discord", e);
+            }
         }
     }
 
@@ -345,7 +366,6 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     // Other
-
     public BotController getBotEngine() {
         return botEngine;
     }
