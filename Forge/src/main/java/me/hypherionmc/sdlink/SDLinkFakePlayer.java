@@ -2,6 +2,9 @@ package me.hypherionmc.sdlink;
 
 import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
 import me.hypherionmc.sdlink.server.ServerEvents;
+import me.hypherionmc.sdlinklib.discord.DiscordMessage;
+import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
+import me.hypherionmc.sdlinklib.discord.messages.MessageDestination;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -11,6 +14,8 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
+
+import static me.hypherionmc.sdlinklib.config.ConfigController.modConfig;
 
 public class SDLinkFakePlayer extends CommandSourceStack {
 
@@ -22,11 +27,17 @@ public class SDLinkFakePlayer extends CommandSourceStack {
 
     @Override
     public void sendSuccess(Component component, boolean bl) {
-        String msg = ChatFormatting.stripFormatting(component.getString());
-        try {
-            msg = DiscordSerializer.INSTANCE.serialize(component.copy());
-        } catch (Exception e) {}
-        ServerEvents.getInstance().getBotEngine().sendConsoleMessage("server", msg);
+        if (modConfig.messageConfig.sendConsoleMessages) {
+            String msg = ChatFormatting.stripFormatting(component.getString());
+            try {
+                msg = DiscordSerializer.INSTANCE.serialize(component.copy());
+            } catch (Exception e) {}
+            DiscordMessage discordMessage = new DiscordMessage.Builder(ServerEvents.getInstance().getBotEngine(), MessageDestination.CONSOLE)
+                    .withAuthor(MessageAuthor.SERVER)
+                    .withMessage(msg)
+                    .build();
+            discordMessage.sendMessage();
+        }
     }
 
     @Override
