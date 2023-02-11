@@ -5,6 +5,7 @@ import me.hypherionmc.sdlink.server.ServerEvents;
 import me.hypherionmc.sdlinklib.discord.DiscordMessage;
 import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
 import me.hypherionmc.sdlinklib.discord.messages.MessageDestination;
+import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -32,7 +33,7 @@ public class SDLinkFakePlayer extends CommandSourceStack {
             try {
                 msg = DiscordSerializer.INSTANCE.serialize(component.copy());
             } catch (Exception e) {}
-            DiscordMessage discordMessage = new DiscordMessage.Builder(ServerEvents.getInstance().getBotEngine(), MessageDestination.CONSOLE)
+            DiscordMessage discordMessage = new DiscordMessage.Builder(ServerEvents.getInstance().getBotEngine(), MessageType.CONSOLE)
                     .withAuthor(MessageAuthor.SERVER)
                     .withMessage(msg)
                     .build();

@@ -8,12 +8,12 @@
     "PlayerAdvancementsMixin",
     "PlayerListMixin",
     "ServerGamePacketMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "TellRawCommandMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "mixins": [
-
   ]
 }

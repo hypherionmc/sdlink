@@ -16,6 +16,7 @@ import me.hypherionmc.sdlinklib.discord.BotController;
 import me.hypherionmc.sdlinklib.discord.DiscordMessage;
 import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
 import me.hypherionmc.sdlinklib.discord.messages.MessageDestination;
+import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
 import me.hypherionmc.sdlinklib.utils.LogReader;
 import me.hypherionmc.sdlinklib.utils.MinecraftPlayer;
@@ -79,7 +80,7 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.serverStarting) {
                 DiscordMessage message = new DiscordMessage.Builder(
                         botEngine,
-                        modConfig.messageDestinations.stopStartInChat ? MessageDestination.CHAT : MessageDestination.SERVER
+                        MessageType.START_STOP
                 )
                 .withMessage(modConfig.messageConfig.serverStarting)
                 .withAuthor(MessageAuthor.SERVER)
@@ -96,7 +97,7 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.serverStarted) {
                 DiscordMessage message = new DiscordMessage.Builder(
                         botEngine,
-                        modConfig.messageDestinations.stopStartInChat ? MessageDestination.CHAT : MessageDestination.SERVER
+                        MessageType.START_STOP
                 )
                 .withMessage(modConfig.messageConfig.serverStarted)
                 .withAuthor(MessageAuthor.SERVER)
@@ -116,7 +117,7 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.serverStopping) {
                 DiscordMessage message = new DiscordMessage.Builder(
                         botEngine,
-                        modConfig.messageDestinations.stopStartInChat ? MessageDestination.CHAT : MessageDestination.SERVER
+                        MessageType.START_STOP
                 )
                 .withMessage(modConfig.messageConfig.serverStopping)
                 .withAuthor(MessageAuthor.SERVER)
@@ -132,7 +133,7 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.serverStopped) {
                 DiscordMessage message = new DiscordMessage.Builder(
                         botEngine,
-                        modConfig.messageDestinations.stopStartInChat ? MessageDestination.CHAT : MessageDestination.SERVER
+                        MessageType.START_STOP
                 )
                 .withMessage(modConfig.messageConfig.serverStopped)
                 .withAuthor(MessageAuthor.SERVER)
@@ -144,7 +145,11 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void onServerChatEvent(Component message, Component user, String uuid) {
+    public void onServerChatEvent(Component component, Component user, String uuid) {
+        onServerChatEvent(component, user, uuid, false);
+    }
+
+    public void onServerChatEvent(Component message, Component user, String uuid, boolean fromServer) {
         try {
             if (botEngine != null && modConfig.generalConfig.enabled) {
                 if (modConfig.chatConfig.playerMessages) {
@@ -156,12 +161,12 @@ public class ServerEvents implements IMinecraftHelper {
                         msg = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy());
                     }
 
-                    MessageAuthor author = MessageAuthor.of(username, uuid);
+                    MessageAuthor author = MessageAuthor.of(username, uuid, botEngine.getMinecraftHelper());
                     DiscordMessage discordMessage = new DiscordMessage.Builder(
-                            botEngine, MessageDestination.CHAT
+                            botEngine, MessageType.CHAT
                     )
                     .withMessage(msg)
-                    .withAuthor(author)
+                    .withAuthor(!fromServer ? author : MessageAuthor.SERVER)
                     .build();
 
                     discordMessage.sendMessage();
@@ -188,7 +193,7 @@ public class ServerEvents implements IMinecraftHelper {
             }
 
             if (modConfig.chatConfig.broadcastCommands && !modConfig.chatConfig.ignoredCommands.contains(command)) {
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageDestination.SERVER)
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.COMMAND)
                         .withAuthor(MessageAuthor.SERVER)
                         .withMessage(modConfig.messageConfig.commands.replace("%player%", username).replace("%command%", command))
                         .build();
@@ -199,8 +204,8 @@ public class ServerEvents implements IMinecraftHelper {
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
-            DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageDestination.CHAT)
-                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid))
+            DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
+                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, botEngine.getMinecraftHelper()))
                     .withMessage(msg)
                     .build();
 
@@ -211,7 +216,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void playerJoinEvent(Player player) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, modConfig.messageDestinations.joinLeaveInChat ? MessageDestination.CHAT : MessageDestination.SERVER)
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.JOIN_LEAVE)
                         .withMessage(modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()))
                         .withAuthor(MessageAuthor.SERVER)
                         .build();
@@ -224,7 +229,7 @@ public class ServerEvents implements IMinecraftHelper {
     public void playerLeaveEvent(Player player) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, modConfig.messageDestinations.joinLeaveInChat ? MessageDestination.CHAT : MessageDestination.SERVER)
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.JOIN_LEAVE)
                         .withMessage(modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()))
                         .withAuthor(MessageAuthor.SERVER)
                         .build();
@@ -239,7 +244,7 @@ public class ServerEvents implements IMinecraftHelper {
             if (modConfig.chatConfig.deathMessages) {
                 String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy()) : ChatFormatting.stripFormatting(message.getString());
 
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, modConfig.messageDestinations.deathInChat ? MessageDestination.CHAT : MessageDestination.SERVER)
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.DEATH)
                         .withMessage(msg)
                         .withAuthor(MessageAuthor.SERVER)
                         .build();
@@ -262,7 +267,7 @@ public class ServerEvents implements IMinecraftHelper {
                     advancementBody = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(advancement_description).copy());
                 }
 
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, modConfig.messageDestinations.advancementsInChat ? MessageDestination.CHAT : MessageDestination.SERVER)
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.ADVANCEMENT)
                         .withMessage(modConfig.messageConfig.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))
                         .withAuthor(MessageAuthor.SERVER)
                         .build();
@@ -393,6 +398,11 @@ public class ServerEvents implements IMinecraftHelper {
             command = s.replace(" %args%", "").replace("%args%", "");
         }
         PlatformHelper.MOD_HELPER.executeCommand(server, command);
+    }
+
+    @Override
+    public boolean isOnlineMode() {
+        return server.usesAuthentication();
     }
 
     // Other
