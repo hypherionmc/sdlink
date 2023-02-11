@@ -4,8 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.ServerChatEvent;

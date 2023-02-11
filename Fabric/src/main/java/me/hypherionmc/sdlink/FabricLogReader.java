@@ -1,6 +1,9 @@
 package me.hypherionmc.sdlink;
 
 import me.hypherionmc.sdlinklib.discord.BotController;
+import me.hypherionmc.sdlinklib.discord.DiscordMessage;
+import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
+import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -8,7 +11,6 @@ import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
@@ -90,7 +92,12 @@ public class FabricLogReader extends AbstractAppender {
                             logs = logs.substring(0, 1999);
                         }
 
-                        botEngine.sendConsoleMessage("", logs);
+                        DiscordMessage message = new DiscordMessage.Builder(botEngine, MessageType.CONSOLE).withMessage(logs).withAuthor(MessageAuthor.SERVER).build();
+
+                        if (modConfig.messageConfig.sendConsoleMessages) {
+                            message.sendMessage();
+                        }
+
                         logs = "";
                         break;
                     }

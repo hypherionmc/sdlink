@@ -11,10 +11,14 @@ import me.hypherionmc.sdlink.platform.services.FabricPlatformHelper;
 import me.hypherionmc.sdlink.server.commands.DiscordCommand;
 import me.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import me.hypherionmc.sdlink.server.commands.WhoisCommand;
+import me.hypherionmc.sdlink.util.ModUtils;
 import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
+import me.hypherionmc.sdlinklib.discord.DiscordMessage;
+import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
+import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
-import me.hypherionmc.sdlinklib.utils.LogReader;
+import me.hypherionmc.sdlinklib.utils.MinecraftPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -30,7 +34,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -75,12 +78,15 @@ public class ServerEvents implements IMinecraftHelper {
         this.server = server;
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.serverStarting) {
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.serverStarting,
-                        "server",
-                        "",
-                        modConfig.messageDestinations.stopStartInChat
-                );
+                DiscordMessage message = new DiscordMessage.Builder(
+                        botEngine,
+                        MessageType.START_STOP
+                )
+                .withMessage(modConfig.messageConfig.serverStarting)
+                .withAuthor(MessageAuthor.SERVER)
+                .build();
+
+                message.sendMessage();
             }
         }
     }
@@ -89,26 +95,35 @@ public class ServerEvents implements IMinecraftHelper {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             botEngine.checkWhitelisting();
             if (modConfig.chatConfig.serverStarted) {
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.serverStarted,
-                        "server",
-                        "",
-                        modConfig.messageDestinations.stopStartInChat
-                );
+                DiscordMessage message = new DiscordMessage.Builder(
+                        botEngine,
+                        MessageType.START_STOP
+                )
+                .withMessage(modConfig.messageConfig.serverStarted)
+                .withAuthor(MessageAuthor.SERVER)
+                .build();
+
+                message.sendMessage();
             }
         }
-        FabricLogReader.init(botEngine, FabricLoader.getInstance().isDevelopmentEnvironment());
+
+        if (modConfig.messageConfig.sendConsoleMessages) {
+            FabricLogReader.init(botEngine, FabricLoader.getInstance().isDevelopmentEnvironment());
+        }
     }
 
     public void onServerStopping() {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.serverStopping) {
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.serverStopping,
-                        "server",
-                        "",
-                        modConfig.messageDestinations.stopStartInChat
-                );
+                DiscordMessage message = new DiscordMessage.Builder(
+                        botEngine,
+                        MessageType.START_STOP
+                )
+                .withMessage(modConfig.messageConfig.serverStopping)
+                .withAuthor(MessageAuthor.SERVER)
+                .build();
+
+                message.sendMessage();
             }
         }
     }
@@ -116,67 +131,97 @@ public class ServerEvents implements IMinecraftHelper {
     public void onServerStoppedEvent() {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.serverStopped) {
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.serverStopped,
-                        "server",
-                        "",
-                        modConfig.messageDestinations.stopStartInChat
-                );
+                DiscordMessage message = new DiscordMessage.Builder(
+                        botEngine,
+                        MessageType.START_STOP
+                )
+                .withMessage(modConfig.messageConfig.serverStopped)
+                .withAuthor(MessageAuthor.SERVER)
+                .build();
+
+                message.sendMessage();
             }
             botEngine.shutdownBot();
         }
     }
 
-    public void onServerChatEvent(Component message, Component user, String uuid) {
-        if (botEngine != null && modConfig.generalConfig.enabled) {
-            if (modConfig.chatConfig.playerMessages) {
-                String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(user.copy()) : ChatFormatting.stripFormatting(user.getString());
-                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
+    public void onServerChatEvent(Component component, Component user, String uuid) {
+        onServerChatEvent(component, user, uuid, false);
+    }
 
-                msg = msg.replaceAll("<" + username + ">", "");
-                msg = msg.replace(username, "");
+    public void onServerChatEvent(Component message, Component user, String uuid, boolean fromServer) {
+        try {
+            if (botEngine != null && modConfig.generalConfig.enabled) {
+                if (modConfig.chatConfig.playerMessages) {
+                    String username = ChatFormatting.stripFormatting(user.getString());
+                    String msg = ChatFormatting.stripFormatting(message.getString());
 
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.chat.replace("%player%", username).replace("%message%", msg.replace("@everyone", "").replace("@Everyone", "").replace("@here", "").replace("@Here", "")),
-                        username,
-                        uuid,
-                        true
-                );
+                    if (modConfig.messageConfig.formatting) {
+                        username = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(user).copy());
+                        msg = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy());
+                    }
+
+                    MessageAuthor author = MessageAuthor.of(username, uuid, botEngine.getMinecraftHelper());
+                    DiscordMessage discordMessage = new DiscordMessage.Builder(
+                            botEngine, MessageType.CHAT
+                    )
+                    .withMessage(msg)
+                    .withAuthor(!fromServer ? author : MessageAuthor.SERVER)
+                    .build();
+
+                    discordMessage.sendMessage();
+                }
+            }
+        } catch (Exception e) {
+            if (modConfig.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to send message to Discord", e);
             }
         }
     }
 
     public void commandEvent(String cmd, Component name, String uuid) {
         String command = cmd;
-        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : ChatFormatting.stripFormatting(name.getString());
+        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : ChatFormatting.stripFormatting(name.getString());
 
         if (command.startsWith("/")) {
             command = command.replaceFirst("/", "");
         }
 
         if (!command.startsWith("say") && !command.startsWith("me")) {
-            command = command.split(" ")[0];
+            if (!modConfig.messageConfig.relayFullCommands) {
+                command = command.split(" ")[0];
+            }
 
             if (modConfig.chatConfig.broadcastCommands && !modConfig.chatConfig.ignoredCommands.contains(command)) {
-                botEngine.sendToDiscord(username + " **executed command: " + command + "**", username, "", false);
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.COMMAND)
+                        .withAuthor(MessageAuthor.SERVER)
+                        .withMessage(modConfig.messageConfig.commands.replace("%player%", username).replace("%command%", command))
+                        .build();
+
+                discordMessage.sendMessage();
             }
         }
 
         if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
-            String msg = command.startsWith("say") ? command.replace("say ", "").replace("say", "") : command.replace("me ", "").replace("me", "");
-            botEngine.sendToDiscord(msg, username, uuid == null ? "" : uuid.toString(), true);
+            String msg = ModUtils.strip(command, "say", "me");
+            DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
+                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, botEngine.getMinecraftHelper()))
+                    .withMessage(msg)
+                    .build();
+
+            discordMessage.sendMessage();
         }
     }
 
     public void playerJoinEvent(Player player) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()),
-                        "server",
-                        "",
-                        modConfig.messageDestinations.joinLeaveInChat
-                );
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.JOIN_LEAVE)
+                        .withMessage(modConfig.messageConfig.playerJoined.replace("%player%", player.getDisplayName().getString()))
+                        .withAuthor(MessageAuthor.SERVER)
+                        .build();
+
+                discordMessage.sendMessage();
             }
         }
     }
@@ -184,12 +229,12 @@ public class ServerEvents implements IMinecraftHelper {
     public void playerLeaveEvent(Player player) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.joinAndLeaveMessages) {
-                botEngine.sendToDiscord(
-                        modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()),
-                        "server",
-                        "",
-                        modConfig.messageDestinations.joinLeaveInChat
-                );
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.JOIN_LEAVE)
+                        .withMessage(modConfig.messageConfig.playerLeft.replace("%player%", player.getDisplayName().getString()))
+                        .withAuthor(MessageAuthor.SERVER)
+                        .build();
+
+                discordMessage.sendMessage();
             }
         }
     }
@@ -197,30 +242,42 @@ public class ServerEvents implements IMinecraftHelper {
     public void onPlayerDeath(Player player, Component message) {
         if (botEngine != null && modConfig.generalConfig.enabled) {
             if (modConfig.chatConfig.deathMessages) {
-                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(message.copy()) : ChatFormatting.stripFormatting(message.getString());
+                String msg = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy()) : ChatFormatting.stripFormatting(message.getString());
 
-                botEngine.sendToDiscord(
-                        msg,
-                        "server",
-                        "",
-                        modConfig.messageDestinations.deathInChat
-                );
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.DEATH)
+                        .withMessage(msg)
+                        .withAuthor(MessageAuthor.SERVER)
+                        .build();
+
+                discordMessage.sendMessage();
             }
         }
     }
 
     public void onPlayerAdvancement(Component name, Component advancement, Component advancement_description) {
-        if (botEngine != null && modConfig.chatConfig.advancementMessages) {
-            String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(name.copy()) : ChatFormatting.stripFormatting(name.getString());
-            String advancemnt = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement.copy()) : ChatFormatting.stripFormatting(advancement.getString());
-            String advancementBody = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(advancement_description.copy()) : ChatFormatting.stripFormatting(advancement_description.getString());
+        try {
+            if (botEngine != null && modConfig.chatConfig.advancementMessages) {
+                String username = ChatFormatting.stripFormatting(name.getString());
+                String finalAdvancement = ChatFormatting.stripFormatting(advancement.getString());
+                String advancementBody = ChatFormatting.stripFormatting(advancement_description.getString());
 
-            botEngine.sendToDiscord(
-                    modConfig.messageConfig.achievements.replace("%player%", username).replace("%title%", advancemnt).replace("%description%", advancementBody),
-                    "server",
-                    "",
-                    modConfig.messageDestinations.advancementsInChat
-            );
+                if (modConfig.messageConfig.formatting) {
+                    username = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy());
+                    finalAdvancement = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(advancement).copy());
+                    advancementBody = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(advancement_description).copy());
+                }
+
+                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.ADVANCEMENT)
+                        .withMessage(modConfig.messageConfig.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))
+                        .withAuthor(MessageAuthor.SERVER)
+                        .build();
+
+                discordMessage.sendMessage();
+            }
+        } catch (Exception e) {
+            if (modConfig.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to send advancement to Discord", e);
+            }
         }
     }
 
@@ -251,8 +308,8 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     @Override
-    public boolean whitelistPlayer(String s, UUID uuid) {
-        GameProfile profile = new GameProfile(uuid, s);
+    public boolean whitelistPlayer(MinecraftPlayer player) {
+        GameProfile profile = new GameProfile(player.getUuid(), player.getUsername());
         UserWhiteList whiteList = server.getPlayerList().getWhiteList();
 
         if (!whiteList.isWhiteListed(profile)) {
@@ -265,8 +322,8 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     @Override
-    public boolean unWhitelistPlayer(String s, UUID uuid) {
-        GameProfile profile = new GameProfile(uuid, s);
+    public boolean unWhitelistPlayer(MinecraftPlayer player) {
+        GameProfile profile = new GameProfile(player.getUuid(), player.getUsername());
         UserWhiteList whiteList = server.getPlayerList().getWhiteList();
 
         if (whiteList.isWhiteListed(profile)) {
@@ -298,8 +355,8 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     @Override
-    public boolean isPlayerWhitelisted(String s, UUID uuid) {
-        GameProfile profile = new GameProfile(uuid, s);
+    public boolean isPlayerWhitelisted(MinecraftPlayer player) {
+        GameProfile profile = new GameProfile(player.getUuid(), player.getUsername());
         UserWhiteList whiteList = server.getPlayerList().getWhiteList();
 
         return whiteList.isWhiteListed(profile);
@@ -344,8 +401,12 @@ public class ServerEvents implements IMinecraftHelper {
         FabricPlatformHelper.executeCommand(server, command);
     }
 
-    // Other
+    @Override
+    public boolean isOnlineMode() {
+        return server.usesAuthentication();
+    }
 
+    // Other
     public BotController getBotEngine() {
         return botEngine;
     }

@@ -4,14 +4,14 @@ subprojects {
     java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
     def version_base = "${version}"
-    version = version_base + (version_patch > 0 ? ".${version_patch}" : "")
+    version = version_base + (version_patch > 0 ? ".${version_patch}" : "") + ".final"
 
     // Jenkins
     ext {
         release=project.properties['release'] ?: false
     }
     if (System.getenv('BUILD_NUMBER') != null && project.release == false) {
-        version = version_base + "." + System.getenv('BUILD_NUMBER') + "d"
+        version = version_base + "." + System.getenv('BUILD_NUMBER') + "d" + ".final"
     }
 
     jar {

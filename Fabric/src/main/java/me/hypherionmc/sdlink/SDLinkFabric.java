@@ -9,7 +9,6 @@ public class SDLinkFabric implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, dedicated) -> ServerEvents.getInstance().onCommandRegister(dispatcher)
         );
