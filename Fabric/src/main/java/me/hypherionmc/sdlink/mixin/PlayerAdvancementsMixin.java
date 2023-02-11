@@ -1,8 +1,6 @@
 package me.hypherionmc.sdlink.mixin;
 
-import me.hypherionmc.sdlink.SDLinkFabric;
 import me.hypherionmc.sdlink.server.ServerEvents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;

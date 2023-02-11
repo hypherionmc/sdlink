@@ -1,7 +1,6 @@
 package me.hypherionmc.sdlink.platform.services;
 
 import me.hypherionmc.sdlink.SDLinkFakePlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.loading.FMLLoader;

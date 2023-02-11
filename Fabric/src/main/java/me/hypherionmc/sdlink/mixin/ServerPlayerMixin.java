@@ -1,6 +1,5 @@
 package me.hypherionmc.sdlink.mixin;
 
-import me.hypherionmc.sdlink.SDLinkFabric;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;

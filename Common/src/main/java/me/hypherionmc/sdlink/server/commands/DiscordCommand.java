@@ -6,6 +6,7 @@ import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 
@@ -17,15 +18,15 @@ public class DiscordCommand {
                         .requires((commandSource) -> commandSource.hasPermission(0))
                         .executes(context -> {
                             if (ServerEvents.getInstance().getModConfig().generalConfig.inviteCommandEnabled) {
-                                Style style = Style.EMPTY;
-                                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ServerEvents.getInstance().getModConfig().generalConfig.inviteLink));
-                                context.getSource().sendSuccess(
-                                        new TextComponent(
-                                                ServerEvents.getInstance()
-                                                        .getModConfig().messageConfig
-                                                        .inviteMessage.replace("%inviteurl%", ServerEvents.getInstance().getModConfig().generalConfig.inviteLink)
-                                        ).setStyle(style)
-                                        , true);
+
+                                MutableComponent message = new TextComponent(ServerEvents.getInstance()
+                                        .getModConfig().messageConfig
+                                        .inviteMessage.replace("%inviteurl%", ServerEvents.getInstance().getModConfig().generalConfig.inviteLink));
+
+                                Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ServerEvents.getInstance().getModConfig().generalConfig.inviteLink));
+                                message.withStyle(clickstyle);
+
+                                context.getSource().sendSuccess(message, false);
                             }
                             return 0;
                         });

@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.hypherionmc.sdlink.SDLinkFabric;
 import me.hypherionmc.sdlink.SafeCalls;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.fabricmc.loader.api.FabricLoader;
