@@ -2,6 +2,7 @@ package me.hypherionmc.sdlink;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.sdlink.server.ServerEvents;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.CommandEvent;
@@ -53,7 +54,9 @@ public class ForgeEventHandler {
 
     @SubscribeEvent
     public void serverChatEvent(ServerChatEvent event) {
-        ServerEvents.getInstance().onServerChatEvent(event.getComponent(), event.getPlayer().getName(), event.getPlayer().getUUID().toString());
+        MutableComponent chatComponent = new TextComponent(event.getMessage());
+        chatComponent.withStyle(event.getComponent().getStyle());
+        ServerEvents.getInstance().onServerChatEvent(chatComponent, event.getPlayer().getName(), event.getPlayer().getUUID().toString());
     }
 
     @SubscribeEvent
