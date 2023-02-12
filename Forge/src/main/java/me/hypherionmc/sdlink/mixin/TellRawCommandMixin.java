@@ -18,10 +18,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @Mixin(TellRawCommand.class)
 public class TellRawCommandMixin {
+
+    private static AtomicReference<Boolean> hasSent = new AtomicReference<>(false);
 
     @SuppressWarnings("unchecked")
     @Inject(method = "register", at = @At(value = "HEAD"), cancellable = true)
@@ -35,26 +38,30 @@ public class TellRawCommandMixin {
                 for(Iterator<ServerPlayerEntity> var2 = EntityArgument.getPlayers(commandContext, "targets").iterator(); var2.hasNext(); ++i) {
                     ServerPlayerEntity serverPlayer = var2.next();
 
-                    if (commandContext.getSource().getEntity() instanceof ServerPlayerEntity) {
-                        ServerPlayerEntity player = (ServerPlayerEntity) commandContext.getSource().getEntity();
+                    if (!hasSent.get()) {
+                        if (commandContext.getSource().getEntity() instanceof ServerPlayerEntity) {
+                            ServerPlayerEntity player = (ServerPlayerEntity) commandContext.getSource().getEntity();
 
-                        ServerEvents.getInstance().onServerChatEvent(
-                                ComponentArgument.getComponent(commandContext, "message"),
-                                player.getDisplayName(),
-                                player.getUUID().toString()
-                        );
-                    } else {
-                        ServerEvents.getInstance().onServerChatEvent(
-                                ComponentArgument.getComponent(commandContext, "message"),
-                                new StringTextComponent("Server"),
-                                "",
-                                true
-                        );
+                            ServerEvents.getInstance().onServerChatEvent(
+                                    ComponentArgument.getComponent(commandContext, "message"),
+                                    player.getDisplayName(),
+                                    player.getUUID().toString()
+                            );
+                        } else {
+                            ServerEvents.getInstance().onServerChatEvent(
+                                    ComponentArgument.getComponent(commandContext, "message"),
+                                    new StringTextComponent("Server"),
+                                    "",
+                                    true
+                            );
+                        }
+                        hasSent.set(true);
                     }
 
                     serverPlayer.sendMessage(TextComponentUtils.updateForEntity(commandContext.getSource(), ComponentArgument.getComponent(commandContext, "message"), serverPlayer, 0), Util.NIL_UUID);
                 }
 
+                hasSent.set(false);
                 return i;
             }))));
         }
