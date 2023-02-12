@@ -15,7 +15,6 @@ import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.BotController;
 import me.hypherionmc.sdlinklib.discord.DiscordMessage;
 import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
-import me.hypherionmc.sdlinklib.discord.messages.MessageDestination;
 import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
 import me.hypherionmc.sdlinklib.utils.LogReader;
@@ -34,7 +33,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static me.hypherionmc.sdlinklib.config.ConfigController.modConfig;

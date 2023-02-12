@@ -4,7 +4,6 @@ import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import me.hypherionmc.sdlinklib.discord.DiscordMessage;
 import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
-import me.hypherionmc.sdlinklib.discord.messages.MessageDestination;
 import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;

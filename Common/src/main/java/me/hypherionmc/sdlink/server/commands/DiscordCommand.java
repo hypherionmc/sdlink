@@ -5,8 +5,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.*;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 public class DiscordCommand {
 
