@@ -11,7 +11,7 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
  */
 public class SafeCalls {
 
-    public static void tailorPlayerJoin(ServerPlayer player, String command) {
+    public static void tailorPlayerCommand(ServerPlayer player, String command) {
         if (player instanceof TailoredPlayer tp) {
             ServerEvents.getInstance().commandEvent(
                     command,

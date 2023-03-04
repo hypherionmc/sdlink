@@ -178,29 +178,18 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void commandEvent(String cmd, Component name, String uuid) {
-        String command = cmd;
+        if (botEngine == null)
+            return;
+
+        String command = cmd.startsWith("/") ? cmd.replaceFirst("/", "") : cmd;
+        String cmdName = cmd.split(" ")[0];
         String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : ChatFormatting.stripFormatting(name.getString());
 
-        if (command.startsWith("/")) {
-            command = command.replaceFirst("/", "");
+        if (username == null) {
+            username = "Server";
         }
 
-        if (!command.startsWith("say") && !command.startsWith("me")) {
-            if (!modConfig.messageConfig.relayFullCommands) {
-                command = command.split(" ")[0];
-            }
-
-            if (modConfig.chatConfig.broadcastCommands && !modConfig.chatConfig.ignoredCommands.contains(command)) {
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.COMMAND)
-                        .withAuthor(MessageAuthor.SERVER)
-                        .withMessage(modConfig.messageConfig.commands.replace("%player%", username).replace("%command%", command))
-                        .build();
-
-                discordMessage.sendMessage();
-            }
-        }
-
-        if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
+        if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && modConfig.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
             DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
                     .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, botEngine.getMinecraftHelper()))
@@ -208,7 +197,29 @@ public class ServerEvents implements IMinecraftHelper {
                     .build();
 
             discordMessage.sendMessage();
+            return;
         }
+
+        if (modConfig.chatConfig.ignoredCommands.contains(cmdName))
+            return;
+
+        if (!modConfig.chatConfig.broadcastCommands)
+            return;
+
+        if (!modConfig.messageConfig.relayFullCommands) {
+            command = command.split(" ")[0];
+        }
+
+        DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.COMMAND)
+                .withAuthor(MessageAuthor.SERVER)
+                .withMessage(
+                        modConfig.messageConfig.commands
+                                .replace("%player%", username)
+                                .replace("%command%", command)
+                )
+                .build();
+
+        discordMessage.sendMessage();
     }
 
     public void playerJoinEvent(Player player) {

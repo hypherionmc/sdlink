@@ -33,7 +33,7 @@ public class CommandsMixin {
     private void injectPerformCommand(ParseResults<CommandSourceStack> parse, String string, CallbackInfoReturnable<Integer> cir, CommandSourceStack commandSourceStack) {
         try {
             if (FabricLoader.getInstance().isModLoaded("fabrictailor")) {
-                SafeCalls.tailorPlayerJoin(parse.getContext().getLastChild().getSource().getPlayerOrException(), string);
+                SafeCalls.tailorPlayerCommand(parse.getContext().getLastChild().getSource().getPlayerOrException(), string);
             } else {
                 ServerEvents.getInstance().commandEvent(
                         string,
