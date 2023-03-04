@@ -19,6 +19,7 @@ import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
 import me.hypherionmc.sdlinklib.utils.LogReader;
 import me.hypherionmc.sdlinklib.utils.MinecraftPlayer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -179,29 +180,18 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     public void commandEvent(String cmd, ITextComponent name, String uuid) {
-        String command = cmd;
-        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : TextFormatting.stripFormatting(name.getString());
+        if (botEngine == null)
+            return;
 
-        if (command.startsWith("/")) {
-            command = command.replaceFirst("/", "");
+        String command = cmd.startsWith("/") ? cmd.replaceFirst("/", "") : cmd;
+        String cmdName = cmd.split(" ")[0];
+        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : ChatFormatting.stripFormatting(name.getString());
+
+        if (username == null) {
+            username = "Server";
         }
 
-        if (!command.startsWith("say") && !command.startsWith("me")) {
-            if (!modConfig.messageConfig.relayFullCommands) {
-                command = command.split(" ")[0];
-            }
-
-            if (modConfig.chatConfig.broadcastCommands && !modConfig.chatConfig.ignoredCommands.contains(command)) {
-                DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.COMMAND)
-                        .withAuthor(MessageAuthor.SERVER)
-                        .withMessage(modConfig.messageConfig.commands.replace("%player%", username).replace("%command%", command))
-                        .build();
-
-                discordMessage.sendMessage();
-            }
-        }
-
-        if ((command.startsWith("say") || command.startsWith("me")) && botEngine != null && modConfig.chatConfig.sendSayCommand) {
+        if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && modConfig.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
             DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
                     .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, botEngine.getMinecraftHelper()))
@@ -209,7 +199,29 @@ public class ServerEvents implements IMinecraftHelper {
                     .build();
 
             discordMessage.sendMessage();
+            return;
         }
+
+        if (modConfig.chatConfig.ignoredCommands.contains(cmdName))
+            return;
+
+        if (!modConfig.chatConfig.broadcastCommands)
+            return;
+
+        if (!modConfig.messageConfig.relayFullCommands) {
+            command = command.split(" ")[0];
+        }
+
+        DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.COMMAND)
+                .withAuthor(MessageAuthor.SERVER)
+                .withMessage(
+                        modConfig.messageConfig.commands
+                                .replace("%player%", username)
+                                .replace("%command%", command)
+                )
+                .build();
+
+        discordMessage.sendMessage();
     }
 
     public void playerJoinEvent(PlayerEntity player) {
