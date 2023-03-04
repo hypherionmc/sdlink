@@ -19,7 +19,6 @@ import me.hypherionmc.sdlinklib.discord.messages.MessageType;
 import me.hypherionmc.sdlinklib.services.helpers.IMinecraftHelper;
 import me.hypherionmc.sdlinklib.utils.LogReader;
 import me.hypherionmc.sdlinklib.utils.MinecraftPlayer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -185,7 +184,7 @@ public class ServerEvents implements IMinecraftHelper {
 
         String command = cmd.startsWith("/") ? cmd.replaceFirst("/", "") : cmd;
         String cmdName = cmd.split(" ")[0];
-        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : ChatFormatting.stripFormatting(name.getString());
+        String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : TextFormatting.stripFormatting(name.getString());
 
         if (username == null) {
             username = "Server";
