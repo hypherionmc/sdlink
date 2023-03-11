@@ -182,7 +182,7 @@ public class ServerEvents implements IMinecraftHelper {
             return;
 
         String command = cmd.startsWith("/") ? cmd.replaceFirst("/", "") : cmd;
-        String cmdName = cmd.split(" ")[0];
+        String cmdName = command.split(" ")[0];
         String username = modConfig.messageConfig.formatting ? DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(name).copy()) : ChatFormatting.stripFormatting(name.getString());
 
         if (username == null) {
