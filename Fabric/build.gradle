@@ -88,7 +88,7 @@ publisher {
     modrinthID = modrinth_id
     versionType = "release"
     changelog = rootProject.file("changelog-fabric.md")
-    version = "${minecraft_version}-${version}"
+    version = "${minecraft_version}-${project.version}"
     displayName = "[FABRIC/QUILT 1.16.5] Simple Discord Link - ${project.version}"
     gameVersions = ["1.16.5"]
     loaders = ["fabric", "quilt"]
