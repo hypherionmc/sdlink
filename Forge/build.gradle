@@ -11,8 +11,7 @@ buildscript {
 }
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id "com.modrinth.minotaur" version "2.+"
-    id "me.hypherionmc.cursegradle" version "2.0.1"
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.5"
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
@@ -32,8 +31,6 @@ minecraft {
     mappings channel: 'official', version: minecraft_version
 
     if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
-        // This location is hardcoded in Forge and can not be changed.
-        // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
         accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
         project.logger.debug('Forge Access Transformers are enabled for this project.')
     }
@@ -119,44 +116,21 @@ reobf {
 build.dependsOn reobfShadowJar
 jar.finalizedBy('reobfJar')
 
-modrinth {
-    debugMode = false
-    token = System.getenv("MODRINTH_TOKEN")
-    projectId = "Sh0YauEf"
-    versionNumber = "${minecraft_version}-${version}"
+publisher {
+    apiKeys {
+        modrinth = System.getenv("MODRINTH_TOKEN")
+        curseforge = System.getenv("CURSE_TOKEN")
+    }
+
+    curseID = 541320
+    modrinthID = modrinth_id
     versionType = "release"
-    changelog = rootProject.file("changelog-forge.md").text.trim()
-    uploadFile = jar
-    versionName = "[FORGE 1.19.3] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.19.3"]
-    loaders = [ "forge" ]
+    changelog = rootProject.file("changelog-forge.md")
+    version = "${minecraft_version}-${version}"
+    displayName = "[FORGE 1.19.3/4] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.19.3", "1.19.4"]
+    loaders = ["forge"]
+    artifact = jar
 }
 
-curseforge {
-    if (System.getenv("CURSE_TOKEN") !== null) {
-        apiKey = System.getenv("CURSE_TOKEN")
-    } else {
-        apiKey = ""
-    }
-    project {
-        id = "541320"
-        releaseType = "release"
-        addGameVersion "1.19.3"
-        addGameVersion "Forge"
-        addGameVersion "Java 17"
-        changelogType = "markdown"
-        changelog = rootProject.file("changelog-forge.md")
-        mainArtifact(jar) {
-            displayName = "[FORGE 1.19.3] Simple Discord Link - ${project.version}"
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-        debug = false
-        fabricIntegration = false
-    }
-}
-
-afterEvaluate {
-    tasks.curseforge541320.dependsOn reobfShadowJar
-}
+publishMod.dependsOn(build)
