@@ -11,8 +11,7 @@ buildscript {
 }
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id "com.modrinth.minotaur" version "2.+"
-    id "me.hypherionmc.cursegradle" version "2.0.1"
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.7"
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
@@ -111,44 +110,21 @@ reobf {
 build.dependsOn reobfShadowJar
 jar.finalizedBy('reobfJar')
 
-modrinth {
-    debugMode = false
-    token = System.getenv("MODRINTH_TOKEN")
-    projectId = "Sh0YauEf"
-    versionNumber = "${minecraft_version}-${version}"
+publisher {
+    apiKeys {
+        modrinth = System.getenv("MODRINTH_TOKEN")
+        curseforge = System.getenv("CURSE_TOKEN")
+    }
+
+    curseID = 541320
+    modrinthID = modrinth_id
     versionType = "release"
-    changelog = rootProject.file("changelog-forge.md").text.trim()
-    uploadFile = jar
-    versionName = "[FORGE 1.16.5] Simple Discord Link - ${project.version}"
+    changelog = rootProject.file("changelog-forge.md")
+    version = "${minecraft_version}-${version}"
+    displayName = "[FORGE 1.16.5] Simple Discord Link - ${project.version}"
     gameVersions = ["1.16.5"]
-    loaders = [ "forge" ]
+    loaders = ["forge"]
+    artifact = jar
 }
 
-curseforge {
-    if (System.getenv("CURSE_TOKEN") !== null) {
-        apiKey = System.getenv("CURSE_TOKEN")
-    } else {
-        apiKey = ""
-    }
-    project {
-        id = "541320"
-        releaseType = "release"
-        addGameVersion "1.16.5"
-        addGameVersion "Forge"
-        addGameVersion "Java 8"
-        changelogType = "markdown"
-        changelog = rootProject.file("changelog-forge.md")
-        mainArtifact(jar) {
-            displayName = "[FORGE 1.16.5] Simple Discord Link - ${project.version}"
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-        debug = false
-        fabricIntegration = false
-    }
-}
-
-afterEvaluate {
-    tasks.curseforge541320.dependsOn reobfShadowJar
-}
+publishMod.dependsOn(build)
