@@ -9,7 +9,7 @@ pipeline {
         stage("Notify Discord") {
             steps {
                 discordSend webhookURL: env.FDD_WH_ADMIN,
-                        title: "Deploy Started: Simple Discord Link Deploy #${BUILD_NUMBER}",
+                        title: "Deploy Started: SDLink 1.19.1/2 Deploy #${BUILD_NUMBER}",
                         link: env.BUILD_URL,
                         result: 'SUCCESS',
                         description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})"
@@ -25,7 +25,7 @@ pipeline {
         }
         stage("Publish") {
             steps {
-                sh "./gradlew modrinth curseforge -Prelease=true"
+                sh "./gradlew publishMod -Prelease=true"
             }
         }
     }
@@ -35,7 +35,7 @@ pipeline {
             deleteDir()
 
             discordSend webhookURL: env.FDD_WH_ADMIN,
-                    title: "Simple Discord Link Deploy #${BUILD_NUMBER}",
+                    title: "SDLink 1.19.1/2 Deploy #${BUILD_NUMBER}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
                     description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})\nStatus: ${currentBuild.currentResult}"
