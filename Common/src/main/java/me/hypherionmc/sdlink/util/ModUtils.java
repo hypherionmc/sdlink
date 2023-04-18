@@ -17,8 +17,8 @@ public class ModUtils {
         String finalString = inString;
 
         for (String strip : toStrip) {
-            finalString = finalString.replace(strip + " ", "");
-            finalString = finalString.replace(strip, "");
+            finalString = finalString.replaceFirst(strip + " ", "");
+            finalString = finalString.replaceFirst(strip, "");
         }
 
         return finalString;
