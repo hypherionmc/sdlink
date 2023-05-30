@@ -17,8 +17,8 @@ pipeline {
         }
         stage("Prepare") {
             steps {
-                sh "wget -O changelog-forge.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-forge.md"
-                sh "wget -O changelog-fabric.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-fabric.md"
+                sh "curl https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-forge.md --output changelog-forge.md"
+                sh "curl https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-fabric.md --output changelog-fabric.md"
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean"
             }
