@@ -34,7 +34,7 @@ shadowJar {
 
 remapJar {
     dependsOn(shadowJar)
-    shouldRunAfter(shadowJar)
+    mustRunAfter(shadowJar)
     input.set shadowJar.archiveFile.get()
 }
 
