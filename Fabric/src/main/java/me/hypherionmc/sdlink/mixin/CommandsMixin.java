@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(Commands.class)
 public class CommandsMixin {
 
-    @Inject(
+    /*@Inject(
             method = "performCommand",
             at = @At(
                     value = "INVOKE",
@@ -34,20 +34,10 @@ public class CommandsMixin {
         try {
             if (FabricLoader.getInstance().isModLoaded("fabrictailor")) {
                 SafeCalls.tailorPlayerCommand(parse.getContext().getLastChild().getSource().getPlayerOrException(), string);
-            } else {
-                ServerEvents.getInstance().commandEvent(
-                        string,
-                        parse.getContext().getLastChild().getSource().getDisplayName(),
-                        parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString()
-                );
             }
-        } catch (CommandSyntaxException e) {
-            ServerEvents.getInstance().commandEvent(
-                    string,
-                    parse.getContext().getLastChild().getSource().getDisplayName(),
-                    null
-            );
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
+    }*/
 
 }

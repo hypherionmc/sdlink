@@ -17,7 +17,8 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modCompileOnly "maven.modrinth:fabrictailor:2.0.1"
+    modCompileOnly "maven.modrinth:fabrictailor:2.1.2"
+    modImplementation "me.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}"
 
     implementation project(":Common")
 
@@ -99,17 +100,17 @@ publisher {
     versionType = "release"
     changelog = rootProject.file("changelog-fabric.md")
     version = "${minecraft_version}-${project.version}"
-    displayName = "[FABRIC/QUILT 1.19.3/4] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.19.3", "1.19.4"]
+    displayName = "[FABRIC/QUILT 1.20] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.20"]
     loaders = ["fabric", "quilt"]
     artifact = remapJar
 
     modrinthDepends {
-        required = ["P7dR8mSH"]
+        required = ["P7dR8mSH", "Nn8Wasaq"]
     }
 
     curseDepends {
-        required = ["fabric-api"]
+        required = ["fabric-api", "craterlib"]
     }
 }
 

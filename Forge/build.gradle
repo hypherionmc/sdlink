@@ -87,6 +87,7 @@ dependencies {
 
     implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     implementation("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
+    implementation "me.hypherionmc.craterlib:CraterLib-forge-1.20:${craterlib}"
 }
 
 tasks.withType(JavaCompile) {
@@ -127,10 +128,18 @@ publisher {
     versionType = "release"
     changelog = rootProject.file("changelog-forge.md")
     version = "${minecraft_version}-${project.version}"
-    displayName = "[FORGE 1.19.3/4] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.19.3", "1.19.4"]
+    displayName = "[FORGE 1.20] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.20"]
     loaders = ["forge"]
     artifact = jar
+
+    modrinthDepends {
+        required = ["Nn8Wasaq"]
+    }
+
+    curseDepends {
+        required = ["craterlib"]
+    }
 }
 
 publishMod.dependsOn(build)

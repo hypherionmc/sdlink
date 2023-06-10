@@ -10,6 +10,7 @@ displayName="Simple Discord Link"
 logoFile="sdlink_logo.png"
 authors="HypherionSA"
 description='''A simple Minecraft to Discord Chat bot with Whitelisting'''
+displayTest="IGNORE_SERVER_VERSION"
 
 [[dependencies.sdlink]]
     modId="forge"
@@ -21,6 +22,13 @@ description='''A simple Minecraft to Discord Chat bot with Whitelisting'''
 [[dependencies.sdlink]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.3,1.20)"
+    versionRange="[1.20,)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.sdlink]]
+    modId="craterlib"
+    mandatory=true
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="SERVER"

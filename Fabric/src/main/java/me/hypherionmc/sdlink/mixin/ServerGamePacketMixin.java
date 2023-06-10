@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketMixin {
 
-    @Shadow public ServerPlayer player;
+    /*@Shadow public ServerPlayer player;
 
     @Inject(
             method = "broadcastChatMessage",
@@ -40,5 +40,5 @@ public class ServerGamePacketMixin {
                 );
             }
         }
-    }
+    }*/
 }

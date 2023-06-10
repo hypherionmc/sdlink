@@ -1,9 +1,12 @@
 package me.hypherionmc.sdlink.platform.services;
 
+import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import me.hypherionmc.sdlink.SDLinkFakePlayer;
+import me.hypherionmc.sdlink.SafeCalls;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
 public class FabricPlatformHelper implements ModHelper {
 
@@ -24,5 +27,14 @@ public class FabricPlatformHelper implements ModHelper {
     @Override
     public boolean isDevEnv() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
+    }
+
+    @Override
+    public String getPlayerSkinUUID(ServerPlayer player) {
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("fabrictailor")) {
+            return SafeCalls.getTailorSkin(player);
+        }
+
+        return player.getStringUUID();
     }
 }

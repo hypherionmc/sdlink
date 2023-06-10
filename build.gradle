@@ -33,7 +33,7 @@ subprojects {
 
     repositories {
         mavenCentral()
-        mavenLocal()
+        //mavenLocal()
         maven {
             name = 'Sponge / Mixin'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
@@ -41,6 +41,10 @@ subprojects {
         maven {
             name = 'Hypherion Maven'
             url = 'https://maven.firstdarkdev.xyz/releases/'
+        }
+        maven {
+            name = 'Hypherion Maven Snapshots'
+            url = 'https://maven.firstdarkdev.xyz/snapshots/'
         }
         maven {
             name = "Modrinth"

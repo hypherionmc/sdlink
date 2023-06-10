@@ -18,7 +18,7 @@ public class WhoisCommand {
                             if (ServerEvents.getInstance().getBotEngine() != null) {
                                 String username = StringArgumentType.getString(context, "username");
                                 String value = ServerEvents.getInstance().getBotEngine().getDiscordName(username);
-                                context.getSource().sendSuccess(Component.literal(value), true);
+                                context.getSource().sendSuccess(() -> Component.literal(value), true);
                             }
                             return 1;
                         }));

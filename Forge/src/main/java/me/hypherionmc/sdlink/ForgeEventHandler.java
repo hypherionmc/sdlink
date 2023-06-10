@@ -27,7 +27,7 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ForgeEventHandler {
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public void onCommandRegister(RegisterCommandsEvent event) {
         ServerEvents.getInstance().onCommandRegister(event.getDispatcher());
     }
@@ -102,5 +102,5 @@ public class ForgeEventHandler {
                     event.getAdvancement().getDisplay().getDescription()
             );
         }
-    }
+    }*/
 }

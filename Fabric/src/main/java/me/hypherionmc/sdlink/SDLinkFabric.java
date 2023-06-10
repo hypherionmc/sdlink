@@ -1,5 +1,6 @@
 package me.hypherionmc.sdlink;
 
+import com.hypherionmc.craterlib.core.event.CraterEventBus;
 import me.hypherionmc.sdlink.server.ServerEvents;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -9,13 +10,7 @@ public class SDLinkFabric implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        CommandRegistrationCallback.EVENT.register(
-                (dispatcher, registryAccess, environment) -> ServerEvents.getInstance().onCommandRegister(dispatcher)
-        );
-
-        ServerLifecycleEvents.SERVER_STARTING.register(ServerEvents.getInstance()::onServerStarting);
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> ServerEvents.getInstance().onServerStarted());
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerEvents.getInstance().onServerStopping());
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ServerEvents.getInstance().onServerStoppedEvent());
+        ServerEvents events = ServerEvents.getInstance();
+        CraterEventBus.INSTANCE.registerEventListener(events);
     }
 }

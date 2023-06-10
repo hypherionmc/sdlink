@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {
 
-    @Shadow public ServerGamePacketListenerImpl connection;
+    /*@Shadow public ServerGamePacketListenerImpl connection;
 
     @Inject(at = @At("HEAD"), method = "die")
     public void onDeath(DamageSource damageSource, CallbackInfo ci) {
@@ -25,6 +25,6 @@ public class ServerPlayerMixin {
                 connection.getPlayer(),
                 damageSource.getLocalizedDeathMessage(connection.player)
         );
-    }
+    }*/
 
 }

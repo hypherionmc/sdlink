@@ -3,6 +3,7 @@ package me.hypherionmc.sdlink.mixin;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.hypherionmc.sdlink.server.ServerEvents;
+import me.hypherionmc.sdlinklib.config.ModConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ComponentArgument;
@@ -27,7 +28,7 @@ public class TellRawCommandMixin {
     @SuppressWarnings("unchecked")
     @Inject(method = "register", at = @At(value = "HEAD"), cancellable = true)
     private static void injectTellRaw(CommandDispatcher<CommandSourceStack> commandDispatcher, CallbackInfo ci) {
-        if (ServerEvents.getInstance().getModConfig() != null && ServerEvents.getInstance().getModConfig().messageConfig.relayTellRaw) {
+        if (ModConfig.INSTANCE != null && ModConfig.INSTANCE.messageConfig.relayTellRaw) {
             ci.cancel();
 
             commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder) Commands.literal("tellraw").requires((commandSourceStack) -> commandSourceStack.hasPermission(2))).then(Commands.argument("targets", EntityArgument.players()).then(Commands.argument("message", ComponentArgument.textComponent()).executes((commandContext) -> {
@@ -41,8 +42,7 @@ public class TellRawCommandMixin {
                             ServerEvents.getInstance().onServerChatEvent(
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     player.getDisplayName(),
-                                    player.getUUID().toString()
-                            );
+                                    player.getUUID().toString(), false);
                         } else {
                             ServerEvents.getInstance().onServerChatEvent(
                                     ComponentArgument.getComponent(commandContext, "message"),

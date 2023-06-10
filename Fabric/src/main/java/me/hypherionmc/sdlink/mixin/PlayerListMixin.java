@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
 
-    @Inject(method = "placeNewPlayer", at = @At("HEAD"))
+    /*@Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void onPlayerJoin(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci) {
         ServerEvents.getInstance().playerJoinEvent(serverPlayer);
     }
@@ -24,6 +24,6 @@ public class PlayerListMixin {
     @Inject(method = "remove", at = @At("HEAD"))
     private void onPlayerLeave(ServerPlayer serverPlayer, CallbackInfo ci) {
         ServerEvents.getInstance().playerLeaveEvent(serverPlayer);
-    }
+    }*/
 
 }

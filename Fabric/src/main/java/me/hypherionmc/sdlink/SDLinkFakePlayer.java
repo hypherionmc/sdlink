@@ -2,6 +2,7 @@ package me.hypherionmc.sdlink;
 
 import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
 import me.hypherionmc.sdlink.server.ServerEvents;
+import me.hypherionmc.sdlinklib.config.ModConfig;
 import me.hypherionmc.sdlinklib.discord.DiscordMessage;
 import me.hypherionmc.sdlinklib.discord.messages.MessageAuthor;
 import me.hypherionmc.sdlinklib.discord.messages.MessageType;
@@ -14,9 +15,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
-
-import static me.hypherionmc.sdlinklib.config.ConfigController.modConfig;
-
+import java.util.function.Supplier;
 public class SDLinkFakePlayer extends CommandSourceStack {
 
     private static final UUID uuid = UUID.fromString(SDLinkConstants.FAKE_UUID);
@@ -26,11 +25,11 @@ public class SDLinkFakePlayer extends CommandSourceStack {
     }
 
     @Override
-    public void sendSuccess(Component component, boolean bl) {
-        if (modConfig.messageConfig.sendConsoleMessages) {
-            String msg = ChatFormatting.stripFormatting(component.getString());
+    public void sendSuccess(Supplier<Component> component, boolean bl) {
+        if (ModConfig.INSTANCE.messageConfig.sendConsoleMessages) {
+            String msg = ChatFormatting.stripFormatting(component.get().getString());
             try {
-                msg = DiscordSerializer.INSTANCE.serialize(component.copy());
+                msg = DiscordSerializer.INSTANCE.serialize(component.get().copy());
             } catch (Exception e) {}
             DiscordMessage discordMessage = new DiscordMessage.Builder(ServerEvents.getInstance().getBotEngine(), MessageType.CONSOLE)
                     .withAuthor(MessageAuthor.SERVER)
@@ -42,6 +41,6 @@ public class SDLinkFakePlayer extends CommandSourceStack {
 
     @Override
     public void sendFailure(Component component) {
-        sendSuccess(component, false);
+        sendSuccess(() -> component, false);
     }
 }
