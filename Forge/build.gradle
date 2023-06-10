@@ -11,7 +11,7 @@ buildscript {
 }
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id "me.hypherionmc.modutils.modpublisher" version "1.0.5"
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.16"
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
