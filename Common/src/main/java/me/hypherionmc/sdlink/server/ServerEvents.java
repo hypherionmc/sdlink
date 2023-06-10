@@ -63,7 +63,6 @@ public class ServerEvents implements IMinecraftHelper {
     }
 
     private ServerEvents() {
-        CraterEventBus.INSTANCE.registerEventListener(this);
         botEngine = new BotController(this, SDLinkConstants.LOG);
         botEngine.initializeBot();
     }
