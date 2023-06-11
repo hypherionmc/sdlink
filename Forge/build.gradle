@@ -1,0 +1,134 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+apply plugin: 'org.spongepowered.mixin'
+
+archivesBaseName = "${mod_id}-forge-${minecraft_version}"
+
+mixin {
+    add project(":Common").sourceSets.main, "${mod_id}.refmap.json"
+
+    add sourceSets.main, "${mod_id}-forge.refmap.json"
+
+    config "${mod_id}.mixins.json"
+    config "${mod_id}-forge.mixins.json"
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    if (project.hasProperty('forge_accesstransformers') && project.findProperty('forge_accesstransformers').toBoolean()) {
+        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+        project.logger.debug('Forge Access Transformers are enabled for this project.')
+    }
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}-forge.mixins.json"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(':Common').sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}-forge.mixins.json"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(':Common').sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'Data'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}-forge.mixins.json"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(':Common').sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    // Core Dependencies
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
+    compileOnly project(path: ':Common', configuration: 'namedElements')
+
+    // Add your deps here
+    implementation "me.hypherionmc.craterlib:CraterLib-forge-1.20:${craterlib}"
+    shade("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
+    shade("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
+}
+
+shadowJar {
+    from sourceSets.main.output
+    configurations = [project.configurations.shade]
+    setArchiveClassifier('')
+}
+
+tasks.withType(JavaCompile) {
+    source(project(':Common').sourceSets.main.allSource)
+}
+
+processResources {
+    from project(':Common').sourceSets.main.resources
+
+    filesMatching("${mod_id}.mixins.json") {
+        expand "refmap_target": "${mod_id}."
+    }
+
+    filesMatching("${mod_id}-forge.mixins.json") {
+        expand "refmap_target": "${mod_id}-"
+    }
+}
+
+reobf {
+    shadowJar {}
+}
+
+build.dependsOn reobfShadowJar
+jar.finalizedBy('reobfJar')

@@ -1,0 +1,89 @@
+plugins {
+    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'idea'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+archivesBaseName = "${mod_id}-fabric-${minecraft_version}"
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    // Core
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    implementation project(path: ':Common', configuration: 'namedElements')
+
+    // Add your deps here
+    modImplementation "me.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}"
+    implementation("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
+    implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
+
+    shade("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
+    shade "me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}"
+
+    modCompileOnly "maven.modrinth:fabrictailor:2.1.2"
+}
+
+shadowJar {
+    from sourceSets.main.output
+
+    configurations = [project.configurations.shade]
+}
+
+remapJar {
+    dependsOn shadowJar
+    inputFile = shadowJar.archiveFile.get()
+}
+
+prepareRemapJar.dependsOn(shadowJar)
+
+loom {
+    shareCaches()
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+}
+
+processResources {
+    from project(':Common').sourceSets.main.resources
+    inputs.property 'version', project.version
+
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+
+    filesMatching("${mod_id}.mixins.json") {
+        expand "refmap_target": "${archivesBaseName}-"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    source(project(':Common').sourceSets.main.allSource)
+}
+
+task delDevJar {
+    doLast {
+        def tree = fileTree('build/libs')
+        tree.include '**/*-dev.jar'
+        tree.include '**/*-all.jar'
+        tree.each { it.delete() }
+    }
+}
+build.finalizedBy delDevJar
