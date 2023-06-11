@@ -27,7 +27,7 @@ public class DiscordCommand {
                                 Style clickstyle = message.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, SDLinkConfig.INSTANCE.botConfig.invite.inviteLink));
                                 message.withStyle(clickstyle);
 
-                                context.getSource().sendSuccess(() -> message, false);
+                                context.getSource().sendSuccess(message, false);
                             }
                             return 0;
                         });

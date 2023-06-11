@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[46,)"
+loaderVersion="[43,)"
 license="MIT"
 issueTrackerURL="https://github.com/firstdarkdev/sdlink/issues"
 
@@ -22,7 +22,7 @@ side="BOTH"
 [[dependencies.sdlink]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.20,)"
+versionRange="[1.19.2,1.19.4)"
 ordering="NONE"
 side="BOTH"
 

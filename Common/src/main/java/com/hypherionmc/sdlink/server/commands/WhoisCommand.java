@@ -26,7 +26,7 @@ public class WhoisCommand {
                                 } else {
                                     value = "Unlinked";
                                 }
-                                context.getSource().sendSuccess(() -> Component.literal(value), true);
+                                context.getSource().sendSuccess(Component.literal(value), true);
                             }
                             return 1;
                         }));

@@ -26,11 +26,11 @@ public class SDLinkFakePlayer extends CommandSourceStack {
     }
 
     @Override
-    public void sendSuccess(Supplier<Component> component, boolean bl) {
+    public void sendSuccess(Component component, boolean bl) {
         if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages) {
-            String msg = ChatFormatting.stripFormatting(component.get().getString());
+            String msg = ChatFormatting.stripFormatting(component.getString());
             try {
-                msg = DiscordSerializer.INSTANCE.serialize(component.get().copy());
+                msg = DiscordSerializer.INSTANCE.serialize(component.copy());
             } catch (Exception e) {}
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CONSOLE)
                     .author(DiscordAuthor.SERVER)
@@ -42,6 +42,6 @@ public class SDLinkFakePlayer extends CommandSourceStack {
 
     @Override
     public void sendFailure(Component component) {
-        sendSuccess(() -> component, false);
+        sendSuccess(component, false);
     }
 }
