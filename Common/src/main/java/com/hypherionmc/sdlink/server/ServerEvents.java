@@ -22,6 +22,7 @@ import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -151,7 +152,7 @@ public class ServerEvents {
 
         String cmd = event.getParseResults().getReader().getString();
         String uuid = null;
-        Component user = Component.literal("Unknown");
+        Component user = new TextComponent("Unknown");
         try {
             ServerPlayer player = event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException();
             uuid = SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(player);
@@ -169,7 +170,7 @@ public class ServerEvents {
 
         if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && SDLinkConfig.INSTANCE.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
-            msg = ModUtils.resolve(Component.literal(msg));
+            msg = ModUtils.resolve(new TextComponent(msg));
 
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(DiscordAuthor.of(username, uuid == null ? "" : uuid))
@@ -280,12 +281,12 @@ public class ServerEvents {
             SDLinkAccount savedAccount = account.getStoredAccount();
 
             if (savedAccount == null) {
-                event.setMessage(Component.literal("This server requires you to link your Discord and Minecraft account. Please contact the owner for more info"));
+                event.setMessage(new TextComponent("This server requires you to link your Discord and Minecraft account. Please contact the owner for more info"));
                 return;
             }
 
             if (!account.isAccountLinked() && savedAccount.getAccountLinkCode() != null && !savedAccount.getAccountLinkCode().isEmpty()) {
-                event.setMessage(Component.literal("Account Link Code: " + savedAccount.getAccountLinkCode()));
+                event.setMessage(new TextComponent("Account Link Code: " + savedAccount.getAccountLinkCode()));
             }
         }
 
@@ -297,7 +298,7 @@ public class ServerEvents {
                 return;
 
             if (!account.isAccountWhitelisted() && savedAccount.getWhitelistCode() != null && !savedAccount.getWhitelistCode().isEmpty()) {
-                event.setMessage(Component.literal("Account Whitelist Code: " + savedAccount.getWhitelistCode()));
+                event.setMessage(new TextComponent("Account Whitelist Code: " + savedAccount.getWhitelistCode()));
             }
         }
     }

@@ -10,8 +10,10 @@ import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.chat.Component;
+import net.minecraft.Util;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -31,9 +33,10 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
 
         try {
             MutableComponent component = ModUtils.resolve(SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", s) + s1).copy();
-            ServerEvents.getInstance().getMinecraftServer().getPlayerList().broadcastSystemMessage(
+            ServerEvents.getInstance().getMinecraftServer().getPlayerList().broadcastMessage(
                     component,
-                    false
+                    ChatType.SYSTEM,
+                    Util.NIL_UUID
             );
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
@@ -152,7 +155,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         for(ServerPlayer serverplayerentity : Lists.newArrayList(playerlist.getPlayers())) {
             if (!whitelist.isWhiteListed(serverplayerentity.getGameProfile())) {
                 serverplayerentity.connection.disconnect(
-                        Component.translatable("multiplayer.disconnect.not_whitelisted")
+                        new TranslatableComponent("multiplayer.disconnect.not_whitelisted")
                 );
             }
         }

@@ -7,7 +7,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class WhoisCommand {
 
@@ -26,7 +26,7 @@ public class WhoisCommand {
                                 } else {
                                     value = "Unlinked";
                                 }
-                                context.getSource().sendSuccess(Component.literal(value), true);
+                                context.getSource().sendSuccess(new TextComponent(value), true);
                             }
                             return 1;
                         }));

@@ -6,6 +6,7 @@ import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 
 public class ModUtils {
 
@@ -14,7 +15,7 @@ public class ModUtils {
     public static Component safeCopy(Component inComponent) {
         String value = inComponent.getString();
         Style style = inComponent.getStyle();
-        return Component.literal(value).withStyle(style);
+        return new TextComponent(value).withStyle(style);
     }
 
     public static String strip(String inString, String... toStrip) {
@@ -38,7 +39,7 @@ public class ModUtils {
     }
 
     public static Component resolve(String component) {
-        Component returnVal = Component.literal(component);
+        Component returnVal = new TextComponent(component);
         if (SDLinkConfig.INSTANCE.chatConfig.formatting) {
             returnVal = MinecraftSerializer.INSTANCE.serialize(component);
         }

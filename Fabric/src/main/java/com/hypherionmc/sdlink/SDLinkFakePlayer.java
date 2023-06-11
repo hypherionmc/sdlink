@@ -9,19 +9,19 @@ import com.hypherionmc.sdlink.util.ModUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public class SDLinkFakePlayer extends CommandSourceStack {
 
     private static final UUID uuid = UUID.fromString(SDLinkConstants.FAKE_UUID);
 
     public SDLinkFakePlayer(MinecraftServer server) {
-        super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, server.overworld(), 4, "SDLinkFakePlayer", Component.literal("SDLinkFakePlayer"), server, null);
+        super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, server.overworld(), 4, "SDLinkFakePlayer", new TextComponent("SDLinkFakePlayer"), server, null);
     }
 
     @Override

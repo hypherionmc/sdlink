@@ -6,9 +6,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 
 public class DiscordCommand {
 
@@ -19,7 +19,7 @@ public class DiscordCommand {
                         .executes(context -> {
                             if (SDLinkConfig.INSTANCE.botConfig.invite.inviteLink != null && !SDLinkConfig.INSTANCE.botConfig.invite.inviteLink.isEmpty()) {
 
-                                MutableComponent message = Component.literal(
+                                MutableComponent message = new TextComponent(
                                         SDLinkConfig.INSTANCE.botConfig.invite.inviteMessage
                                                 .replace("%inviteurl%", SDLinkConfig.INSTANCE.botConfig.invite.inviteLink)
                                 );
