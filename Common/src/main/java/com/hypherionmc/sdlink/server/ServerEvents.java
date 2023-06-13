@@ -20,6 +20,7 @@ import com.hypherionmc.sdlink.server.commands.DiscordCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.ModUtils;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -115,10 +116,10 @@ public class ServerEvents {
 
     @CraterEventListener
     public void onServerChatEvent(CraterServerChatEvent event) {
-        onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), false);
+        onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
     }
 
-    public void onServerChatEvent(Component message, Component user, String uuid, boolean fromServer) {
+    public void onServerChatEvent(Component message, Component user, String uuid, GameProfile gameProfile, boolean fromServer) {
         if (user == null || message == null)
             return;
 
@@ -130,7 +131,7 @@ public class ServerEvents {
                 String username = ModUtils.resolve(user);
                 String msg = ModUtils.resolve(message);
 
-                DiscordAuthor author = DiscordAuthor.of(username, uuid);
+                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName());
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                         .message(msg)
                         .author(!fromServer ? author : DiscordAuthor.SERVER)
@@ -151,12 +152,16 @@ public class ServerEvents {
             return;
 
         String cmd = event.getParseResults().getReader().getString();
+
+        ServerPlayer player = null;
         String uuid = null;
         Component user = new TextComponent("Unknown");
+        GameProfile profile = null;
         try {
-            ServerPlayer player = event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException();
+            player = event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException();
             uuid = SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(player);
             user = player.getDisplayName();
+            profile = player.getGameProfile();
         } catch (CommandSyntaxException ignored) {}
 
 
@@ -172,8 +177,11 @@ public class ServerEvents {
             String msg = ModUtils.strip(command, "say", "me");
             msg = ModUtils.resolve(new TextComponent(msg));
 
+            if (player == null)
+                return;
+
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid))
+                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile.isComplete() ? profile.getName() : player.getName().getString()))
                     .message(msg)
                     .build();
 
@@ -277,7 +285,7 @@ public class ServerEvents {
             return;
 
         if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.accountLinking) {
-            MinecraftAccount account = MinecraftAccount.standard(event.getGameProfile().getName());
+            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
             SDLinkAccount savedAccount = account.getStoredAccount();
 
             if (savedAccount == null) {
@@ -291,7 +299,7 @@ public class ServerEvents {
         }
 
         if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.whitelisting) {
-            MinecraftAccount account = MinecraftAccount.standard(event.getGameProfile().getName());
+            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
             SDLinkAccount savedAccount = account.getStoredAccount();
 
             if (savedAccount == null)

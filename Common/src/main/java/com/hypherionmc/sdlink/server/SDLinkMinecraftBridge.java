@@ -2,6 +2,7 @@ package com.hypherionmc.sdlink.server;
 
 import com.google.common.collect.Lists;
 import com.hypherionmc.craterlib.core.platform.CommonPlatform;
+import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -115,7 +116,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
 
         if (server != null && server.getPlayerList() != null) {
             server.getPlayerList().getPlayers().forEach(p -> {
-                MinecraftAccount account = MinecraftAccount.standard(p.getGameProfile().getName());
+                MinecraftAccount account = MinecraftAccount.fromGameProfile(p.getGameProfile());
                 accounts.add(account);
             });
         }
@@ -166,6 +167,10 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         MinecraftServer server = CommonPlatform.INSTANCE.getMCServer();
         if (server == null)
             return false;
+
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("fabrictailor"))
+            return true;
+
         return server.usesAuthentication();
     }
 }

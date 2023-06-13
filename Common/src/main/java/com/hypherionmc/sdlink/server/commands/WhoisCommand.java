@@ -2,12 +2,15 @@ package com.hypherionmc.sdlink.server.commands;
 
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.TextComponent;
+
+import java.util.Collection;
 
 public class WhoisCommand {
 
@@ -15,10 +18,16 @@ public class WhoisCommand {
         LiteralArgumentBuilder<CommandSourceStack> discordCommand =
                 Commands.literal("whois")
                         .requires((commandSource) -> commandSource.hasPermission(2))
-                        .then(Commands.argument("username", StringArgumentType.string()).executes(context -> {
+                        .then(Commands.argument("username", GameProfileArgument.gameProfile()).executes(context -> {
                             if (BotController.INSTANCE != null) {
-                                String username = StringArgumentType.getString(context, "username");
-                                MinecraftAccount account = MinecraftAccount.standard(username);
+                                Collection<GameProfile> profiles = GameProfileArgument.getGameProfiles(context, "username");
+
+                                if (profiles.isEmpty()) {
+                                    context.getSource().sendSuccess(new TextComponent("Unlinked"), true);
+                                    return 1;
+                                }
+
+                                MinecraftAccount account = MinecraftAccount.fromGameProfile(profiles.stream().findFirst().get());
                                 String value;
 
                                 if (account.isAccountLinked()) {
