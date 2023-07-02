@@ -9,6 +9,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
+import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Member;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;
@@ -27,11 +28,15 @@ import java.util.concurrent.TimeUnit;
 public class SDLinkMinecraftBridge implements IMinecraftHelper {
 
     @Override
-    public void discordMessageReceived(String s, String s1) {
-        if (SDLinkConfig.INSTANCE.generalConfig.debugging) SDLinkConstants.LOGGER.info("Got message {} from {}", s1, s);
+    public void discordMessageReceived(Member member, String s1) {
+        if (SDLinkConfig.INSTANCE.generalConfig.debugging) SDLinkConstants.LOGGER.info("Got message {} from {}", s1, member.getEffectiveName());
 
         try {
-            MutableComponent component = ModUtils.resolve(SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", s) + s1).copy();
+            MutableComponent component = ModUtils.resolve(
+                    SDLinkConfig.INSTANCE.messageFormatting
+                            .mcPrefix.replace("%user%", member.getEffectiveName()))
+                    .copy();
+
             ServerEvents.getInstance().getMinecraftServer().getPlayerList().broadcastSystemMessage(
                     component,
                     false
