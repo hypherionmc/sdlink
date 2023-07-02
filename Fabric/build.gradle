@@ -27,7 +27,9 @@ dependencies {
     shade("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
     shade "me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}"
 
+    // Compat
     modCompileOnly "maven.modrinth:fabrictailor:2.1.2"
+    modCompileOnly "maven.modrinth:simplechatfork:1.9.0"
 }
 
 shadowJar {
