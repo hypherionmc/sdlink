@@ -25,7 +25,11 @@ import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
@@ -191,6 +195,23 @@ public class ServerEvents {
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile.isComplete() ? profile.getName() : player.getName().getString()))
                     .message(msg)
+                    .build();
+
+            discordMessage.sendMessage();
+            return;
+        }
+
+        if (cmdName.startsWith("tellraw") && SDLinkConfig.INSTANCE.chatConfig.relayTellRaw) {
+            CommandContext<CommandSourceStack> context = event.getParseResults().getContext().build(event.getParseResults().getReader().getString());
+            StringRange selector_range = event.getParseResults().getContext().getArguments().get("targets").getRange();
+            String target = context.getInput().substring(selector_range.getStart(), selector_range.getEnd());
+
+            if (!target.equals("@a"))
+                return;
+
+            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
+                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile.isComplete() ? profile.getName() : player.getName().getString()))
+                    .message(ModUtils.resolve(ComponentArgument.getComponent(context, "message")))
                     .build();
 
             discordMessage.sendMessage();
