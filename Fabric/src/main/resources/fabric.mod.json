@@ -13,10 +13,13 @@
     "discord": "https://discord.firstdark.dev"
   },
   "license": "MIT",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "server": [
       "com.hypherionmc.sdlink.SDLinkFabric"
+    ],
+    "client": [
+      "com.hypherionmc.sdlink.client.SDLinkFabricClient"
     ]
   },
   "mixins": [

@@ -8,8 +8,10 @@
   "client": [
   ],
   "server": [
+    "SimpleChatMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "plugin": "com.hypherionmc.sdlink.mixin.MixinPlugin"
 }

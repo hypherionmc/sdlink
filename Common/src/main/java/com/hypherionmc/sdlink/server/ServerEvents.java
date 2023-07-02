@@ -11,14 +11,18 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
+import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.core.util.LogReader;
+import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
+import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadModCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
+import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -131,6 +135,10 @@ public class ServerEvents {
                 String username = ModUtils.resolve(user);
                 String msg = ModUtils.resolve(message);
 
+                if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+                    msg = MentionUtil.parse(msg);
+                }
+
                 DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName());
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                         .message(msg)
@@ -213,6 +221,18 @@ public class ServerEvents {
 
     @CraterEventListener
     public void playerJoinEvent(CraterPlayerEvent.PlayerLoggedIn event) {
+        // Allow Mentions
+        try {
+            if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+                MentionsSyncPacket packet = new MentionsSyncPacket(CacheManager.getServerRoles(), CacheManager.getServerChannels(), CacheManager.getUserCache());
+                SDLinkNetworking.networkHandler.sendTo(packet, event.getPlayer());
+            }
+        } catch (Exception e) {
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                SDLinkConstants.LOGGER.error("Failed to sync Mentions to Client", e);
+            }
+        }
+
         if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin)
             return;
 
