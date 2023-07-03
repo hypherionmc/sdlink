@@ -34,7 +34,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         try {
             MutableComponent component = ModUtils.resolve(
                     SDLinkConfig.INSTANCE.messageFormatting
-                            .mcPrefix.replace("%user%", member.getEffectiveName()))
+                            .mcPrefix.replace("%user%", member.getEffectiveName()) + s1)
                     .copy();
 
             ServerEvents.getInstance().getMinecraftServer().getPlayerList().broadcastSystemMessage(
