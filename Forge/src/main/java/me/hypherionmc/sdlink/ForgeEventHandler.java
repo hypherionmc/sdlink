@@ -56,7 +56,7 @@ public class ForgeEventHandler {
     public void serverChatEvent(ServerChatEvent event) {
         MutableComponent chatComponent = new TextComponent(event.getMessage());
         chatComponent.withStyle(event.getComponent().getStyle());
-        ServerEvents.getInstance().onServerChatEvent(chatComponent, event.getPlayer().getName(), event.getPlayer().getUUID().toString());
+        ServerEvents.getInstance().onServerChatEvent(chatComponent, event.getPlayer().getName(), event.getPlayer().getGameProfile(), event.getPlayer().getUUID().toString());
     }
 
     @SubscribeEvent
@@ -69,7 +69,8 @@ public class ForgeEventHandler {
             ServerEvents.getInstance().commandEvent(
                     command,
                     new TextComponent(event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString()),
-                    uuid != null ? uuid.toString() : ""
+                    uuid != null ? uuid.toString() : "",
+                    null
             );
     }
 

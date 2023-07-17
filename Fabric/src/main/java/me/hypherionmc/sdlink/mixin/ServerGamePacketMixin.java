@@ -34,6 +34,7 @@ public class ServerGamePacketMixin {
                 ServerEvents.getInstance().onServerChatEvent(
                         message,
                         player.getDisplayName(),
+                        player.getGameProfile(),
                         player.getUUID().toString()
                 );
             }

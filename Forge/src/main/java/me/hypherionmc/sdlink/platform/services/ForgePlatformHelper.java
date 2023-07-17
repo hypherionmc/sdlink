@@ -3,6 +3,7 @@ package me.hypherionmc.sdlink.platform.services;
 import me.hypherionmc.sdlink.SDLinkFakePlayer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 public class ForgePlatformHelper implements ModHelper {
@@ -24,5 +25,10 @@ public class ForgePlatformHelper implements ModHelper {
     @Override
     public boolean isDevEnv() {
         return !FMLLoader.isProduction();
+    }
+
+    @Override
+    public boolean isModLoaded(String mod) {
+        return ModList.get().isLoaded(mod);
     }
 }

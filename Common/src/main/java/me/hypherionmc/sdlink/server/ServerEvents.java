@@ -143,11 +143,11 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void onServerChatEvent(Component component, Component user, String uuid) {
-        onServerChatEvent(component, user, uuid, false);
+    public void onServerChatEvent(Component component, Component user, GameProfile profile, String uuid) {
+        onServerChatEvent(component, user, uuid, profile, false);
     }
 
-    public void onServerChatEvent(Component message, Component user, String uuid, boolean fromServer) {
+    public void onServerChatEvent(Component message, Component user, String uuid, GameProfile profile, boolean fromServer) {
         try {
             if (botEngine != null && modConfig.generalConfig.enabled) {
                 if (modConfig.chatConfig.playerMessages) {
@@ -159,7 +159,7 @@ public class ServerEvents implements IMinecraftHelper {
                         msg = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy());
                     }
 
-                    MessageAuthor author = MessageAuthor.of(username, uuid, botEngine.getMinecraftHelper());
+                    MessageAuthor author = MessageAuthor.of(username, uuid, profile != null ? profile.getName() : username, botEngine.getMinecraftHelper());
                     DiscordMessage discordMessage = new DiscordMessage.Builder(
                             botEngine, MessageType.CHAT
                     )
@@ -177,7 +177,7 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    public void commandEvent(String cmd, Component name, String uuid) {
+    public void commandEvent(String cmd, Component name, String uuid, GameProfile profile) {
         if (botEngine == null)
             return;
 
@@ -192,7 +192,7 @@ public class ServerEvents implements IMinecraftHelper {
         if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && modConfig.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
             DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
-                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, botEngine.getMinecraftHelper()))
+                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : username, botEngine.getMinecraftHelper()))
                     .withMessage(msg)
                     .build();
 
@@ -412,6 +412,9 @@ public class ServerEvents implements IMinecraftHelper {
 
     @Override
     public boolean isOnlineMode() {
+        if (PlatformHelper.MOD_HELPER.isModLoaded("fabrictailor"))
+            return true;
+
         return server.usesAuthentication();
     }
 
