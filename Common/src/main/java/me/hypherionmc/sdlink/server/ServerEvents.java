@@ -143,6 +143,10 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
+    public void onServerChatEvent(Component component, Component user, String uuid) {
+        onServerChatEvent(component, user, uuid, null, false);
+    }
+
     public void onServerChatEvent(Component component, Component user, GameProfile profile, String uuid) {
         onServerChatEvent(component, user, uuid, profile, false);
     }
