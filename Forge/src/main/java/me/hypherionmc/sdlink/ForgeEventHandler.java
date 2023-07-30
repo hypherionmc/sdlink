@@ -69,7 +69,8 @@ public class ForgeEventHandler {
         ServerEvents.getInstance().commandEvent(
                 command,
                 Component.literal(event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString()),
-                uuid != null ? uuid.toString() : ""
+                uuid != null ? uuid.toString() : "",
+                null
         );
     }
 

@@ -25,4 +25,9 @@ public class FabricPlatformHelper implements ModHelper {
     public boolean isDevEnv() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
+
+    @Override
+    public boolean isModLoaded(String mod) {
+        return FabricLoader.getInstance().isModLoaded(mod);
+    }
 }

@@ -41,6 +41,7 @@ public class TellRawCommandMixin {
                             ServerEvents.getInstance().onServerChatEvent(
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     player.getDisplayName(),
+                                    player.getGameProfile(),
                                     player.getUUID().toString()
                             );
                         } else {
@@ -48,6 +49,7 @@ public class TellRawCommandMixin {
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     Component.literal("Server"),
                                     "",
+                                    null,
                                     true
                             );
                         }

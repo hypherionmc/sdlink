@@ -6,4 +6,6 @@ public interface ModHelper {
     public void executeCommand(MinecraftServer server, String command);
 
     public boolean isDevEnv();
+
+    boolean isModLoaded(String mod);
 }

@@ -11,12 +11,13 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
  */
 public class SafeCalls {
 
-    public static void tailorPlayerCommand(ServerPlayer player, String command) {
+    public static void tailorPlayerJoin(ServerPlayer player, String command) {
         if (player instanceof TailoredPlayer tp) {
             ServerEvents.getInstance().commandEvent(
                     command,
                     player.getDisplayName(),
-                    tp.getSkinId()
+                    tp.getSkinId(),
+                    player.getGameProfile()
             );
         }
     }
@@ -26,6 +27,7 @@ public class SafeCalls {
             ServerEvents.getInstance().onServerChatEvent(
                     message,
                     player.getDisplayName(),
+                    player.getGameProfile(),
                     tp.getSkinId()
             );
         }
