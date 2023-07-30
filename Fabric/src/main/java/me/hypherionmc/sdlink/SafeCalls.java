@@ -16,7 +16,8 @@ public class SafeCalls {
             ServerEvents.getInstance().commandEvent(
                     command,
                     player.getDisplayName(),
-                    tp.getSkinId()
+                    tp.getSkinId(),
+                    player.getGameProfile()
             );
         }
     }
@@ -26,6 +27,7 @@ public class SafeCalls {
             ServerEvents.getInstance().onServerChatEvent(
                     message,
                     player.getDisplayName(),
+                    player.getGameProfile(),
                     tp.getSkinId()
             );
         }

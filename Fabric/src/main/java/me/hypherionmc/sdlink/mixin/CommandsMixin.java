@@ -38,13 +38,15 @@ public class CommandsMixin {
                 ServerEvents.getInstance().commandEvent(
                         string,
                         parse.getContext().getLastChild().getSource().getDisplayName(),
-                        parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString()
+                        parse.getContext().getLastChild().getSource().getPlayerOrException().getUUID().toString(),
+                        parse.getContext().getLastChild().getSource().getPlayerOrException().getGameProfile()
                 );
             }
         } catch (CommandSyntaxException e) {
             ServerEvents.getInstance().commandEvent(
                     string,
                     parse.getContext().getLastChild().getSource().getDisplayName(),
+                    "",
                     null
             );
         }
