@@ -21,7 +21,6 @@ pipeline {
                 sh "curl https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-fabric.md --output changelog-fabric.md"
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean"
-                sh "./gradlew build"
             }
         }
         stage("Publish") {

@@ -12,4 +12,5 @@ public interface ModHelper {
     public boolean isDevEnv();
     public String getPlayerSkinUUID(ServerPlayer player);
 
+    boolean isModLoaded(String mod);
 }

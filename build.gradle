@@ -43,10 +43,6 @@ subprojects {
             url = 'https://maven.firstdarkdev.xyz/releases/'
         }
         maven {
-            name = 'Hypherion Maven Snapshots'
-            url = 'https://maven.firstdarkdev.xyz/snapshots/'
-        }
-        maven {
             name = "Modrinth"
             url = "https://api.modrinth.com/maven"
             content {

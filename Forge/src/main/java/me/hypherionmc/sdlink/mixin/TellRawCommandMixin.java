@@ -43,6 +43,7 @@ public class TellRawCommandMixin {
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     player.getDisplayName(),
                                     player.getUUID().toString(),
+                                    player.getGameProfile(),
                                     false
                             );
                         } else {
@@ -50,6 +51,7 @@ public class TellRawCommandMixin {
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     Component.literal("Server"),
                                     "",
+                                    null,
                                     true
                             );
                         }

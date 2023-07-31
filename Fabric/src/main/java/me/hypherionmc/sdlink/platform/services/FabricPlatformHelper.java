@@ -37,4 +37,9 @@ public class FabricPlatformHelper implements ModHelper {
 
         return player.getStringUUID();
     }
+
+    @Override
+    public boolean isModLoaded(String mod) {
+        return FabricLoader.getInstance().isModLoaded(mod);
+    }
 }

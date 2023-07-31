@@ -4,6 +4,7 @@ import me.hypherionmc.sdlink.SDLinkFakePlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 public class ForgePlatformHelper implements ModHelper {
@@ -30,5 +31,10 @@ public class ForgePlatformHelper implements ModHelper {
     @Override
     public String getPlayerSkinUUID(ServerPlayer player) {
         return player.getStringUUID();
+    }
+
+    @Override
+    public boolean isModLoaded(String mod) {
+        return ModList.get().isLoaded(mod);
     }
 }

@@ -42,12 +42,16 @@ public class TellRawCommandMixin {
                             ServerEvents.getInstance().onServerChatEvent(
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     player.getDisplayName(),
-                                    player.getUUID().toString(), false);
+                                    player.getUUID().toString(),
+                                    player.getGameProfile(),
+                                    false
+                            );
                         } else {
                             ServerEvents.getInstance().onServerChatEvent(
                                     ComponentArgument.getComponent(commandContext, "message"),
                                     Component.literal("Server"),
                                     "",
+                                    null,
                                     true
                             );
                         }

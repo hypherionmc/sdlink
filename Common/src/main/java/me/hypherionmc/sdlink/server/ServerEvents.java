@@ -146,12 +146,16 @@ public class ServerEvents implements IMinecraftHelper {
         }
     }
 
-    @CraterEventListener
-    public void onServerChatEvent(CraterServerChatEvent event) {
-        onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), ModHelper.INSTANCE.getPlayerSkinUUID(event.getPlayer()), false);
+    public void onServerChatEvent(Component message, Component user, String uuid, boolean fromServer) {
+        onServerChatEvent(message, user, uuid, null, false);
     }
 
-    public void onServerChatEvent(Component message, Component user, String uuid, boolean fromServer) {
+    @CraterEventListener
+    public void onServerChatEvent(CraterServerChatEvent event) {
+        onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), ModHelper.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
+    }
+
+    public void onServerChatEvent(Component message, Component user, String uuid, GameProfile profile, boolean fromServer) {
         try {
             if (botEngine != null && ModConfig.INSTANCE.generalConfig.enabled) {
                 if (ModConfig.INSTANCE.chatConfig.playerMessages) {
@@ -163,7 +167,7 @@ public class ServerEvents implements IMinecraftHelper {
                         msg = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(message).copy());
                     }
 
-                    MessageAuthor author = MessageAuthor.of(username, uuid, botEngine.getMinecraftHelper());
+                    MessageAuthor author = MessageAuthor.of(username, uuid, profile != null ? profile.getName() : username, botEngine.getMinecraftHelper());
                     DiscordMessage discordMessage = new DiscordMessage.Builder(
                             botEngine, MessageType.CHAT
                     )
@@ -188,8 +192,10 @@ public class ServerEvents implements IMinecraftHelper {
 
         String cmd = event.getParseResults().getReader().getString();
         String uuid = null;
+        ServerPlayer player = null;
         try {
-            uuid = ModHelper.INSTANCE.getPlayerSkinUUID(event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException());
+            player = event.getParseResults().getContext().getLastChild().getSource().getPlayerOrException();
+            uuid = ModHelper.INSTANCE.getPlayerSkinUUID(player);
         } catch (CommandSyntaxException ignored) {}
 
         Component name = Component.literal(event.getParseResults().getContext().getLastChild().getSource().getDisplayName().getString());
@@ -205,7 +211,7 @@ public class ServerEvents implements IMinecraftHelper {
         if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && ModConfig.INSTANCE.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
             DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
-                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, botEngine.getMinecraftHelper()))
+                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, player.getGameProfile().getName(), botEngine.getMinecraftHelper()))
                     .withMessage(msg)
                     .build();
 
@@ -436,6 +442,9 @@ public class ServerEvents implements IMinecraftHelper {
 
     @Override
     public boolean isOnlineMode() {
+        if (ModHelper.INSTANCE.isModLoaded("fabrictailor"))
+            return true;
+
         return server.usesAuthentication();
     }
 
