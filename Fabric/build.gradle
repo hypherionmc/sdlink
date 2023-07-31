@@ -1,7 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'idea'
-    id "me.hypherionmc.modutils.modpublisher" version "1.0.6"
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
