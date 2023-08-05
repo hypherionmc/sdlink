@@ -20,7 +20,7 @@ import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
-import com.hypherionmc.sdlink.server.commands.ReloadModCommand;
+import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
@@ -33,6 +33,7 @@ import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.world.entity.player.Player;
 
 public class ServerEvents {
@@ -65,7 +66,8 @@ public class ServerEvents {
     @CraterEventListener
     public void onCommandRegister(CraterRegisterCommandEvent event) {
         DiscordCommand.register(event.getDispatcher());
-        ReloadModCommand.register(event.getDispatcher());
+        ReloadEmbedsCommand.register(event.getDispatcher());
+        //ReloadModCommand.register(event.getDispatcher());
         WhoisCommand.register(event.getDispatcher());
     }
 
@@ -347,6 +349,14 @@ public class ServerEvents {
 
             if (!account.isAccountWhitelisted() && savedAccount.getWhitelistCode() != null && !savedAccount.getWhitelistCode().isEmpty()) {
                 event.setMessage(Component.literal("Account Whitelist Code: " + savedAccount.getWhitelistCode()));
+            }
+
+            if (this.minecraftServer != null) {
+                ServerOpListEntry op = this.minecraftServer.getPlayerList().getOps().get(event.getGameProfile());
+
+                if (op == null && !account.isAccountWhitelisted()) {
+                    event.setMessage(Component.translatable("multiplayer.disconnect.not_whitelisted"));
+                }
             }
         }
     }

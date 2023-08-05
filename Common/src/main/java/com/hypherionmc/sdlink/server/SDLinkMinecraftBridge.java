@@ -6,6 +6,7 @@ import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
@@ -24,6 +25,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.hypherionmc.sdlink.core.managers.DatabaseManager.sdlinkDatabase;
 
 public class SDLinkMinecraftBridge implements IMinecraftHelper {
 
@@ -31,10 +35,25 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
     public void discordMessageReceived(Member member, String s1) {
         if (SDLinkConfig.INSTANCE.generalConfig.debugging) SDLinkConstants.LOGGER.info("Got message {} from {}", s1, member.getEffectiveName());
 
+        AtomicReference<String> user = new AtomicReference<>(member.getEffectiveName());
+
+        try {
+            if (sdlinkDatabase != null) {
+                List<SDLinkAccount> accounts = sdlinkDatabase.getCollection(SDLinkAccount.class);
+                accounts.stream().filter(a -> a.getDiscordID().equals(member.getId())).findFirst().ifPresent(u -> {
+                    user.set(u.getUsername());
+                });
+            }
+        } catch (Exception e) {
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                SDLinkConstants.LOGGER.error("Failed to load account database: {}", e.getMessage());
+            }
+        }
+
         try {
             MutableComponent component = ModUtils.resolve(
                     SDLinkConfig.INSTANCE.messageFormatting
-                            .mcPrefix.replace("%user%", member.getEffectiveName()) + s1)
+                            .mcPrefix.replace("%user%", user.get()) + s1)
                     .copy();
 
             ServerEvents.getInstance().getMinecraftServer().getPlayerList().broadcastSystemMessage(
