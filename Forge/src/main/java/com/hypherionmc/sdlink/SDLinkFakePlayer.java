@@ -5,6 +5,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
+import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
@@ -20,9 +21,11 @@ import java.util.function.Supplier;
 public class SDLinkFakePlayer extends CommandSourceStack {
 
     private static final UUID uuid = UUID.fromString(SDLinkConstants.FAKE_UUID);
+    private final MessageReceivedEvent event;
 
-    public SDLinkFakePlayer(MinecraftServer server) {
-        super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, server.overworld(), 4, "SDLinkFakePlayer", Component.literal("SDLinkFakePlayer"), server, null);
+    public SDLinkFakePlayer(MinecraftServer server, int perm, String name, MessageReceivedEvent event) {
+        super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, server.overworld(), perm, "SDLinkFakePlayer", Component.literal(name), server, null);
+        this.event = event;
     }
 
     @Override
@@ -32,11 +35,8 @@ public class SDLinkFakePlayer extends CommandSourceStack {
             try {
                 msg = DiscordSerializer.INSTANCE.serialize(component.get().copy());
             } catch (Exception e) {}
-            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CONSOLE)
-                    .author(DiscordAuthor.SERVER)
-                    .message(msg)
-                    .build();
-            discordMessage.sendMessage();
+
+            event.getMessage().reply(msg).mentionRepliedUser(false).queue();
         }
     }
 

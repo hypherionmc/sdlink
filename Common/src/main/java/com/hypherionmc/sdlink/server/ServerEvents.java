@@ -13,8 +13,11 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
+import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
+import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.core.util.LogReader;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
@@ -289,6 +292,10 @@ public class ServerEvents {
                 String name = ModUtils.resolve(player.getDisplayName());
                 String msg = ModUtils.resolve(event.getDamageSource().getLocalizedDeathMessage(player));
 
+                event.getDamageSource().getLocalizedDeathMessage(player).getSiblings().forEach(s -> {
+                    System.out.println(s.getString());
+                });
+
                 DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                         .message(msg)
                         .author(DiscordAuthor.SERVER)
@@ -326,6 +333,28 @@ public class ServerEvents {
         if (BotController.INSTANCE == null || !BotController.INSTANCE.isBotReady())
             return;
 
+        try {
+            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                System.out.println("[Auto Whitelist Sync] Auto Whitelist: " + account.isAutoWhitelisted());
+                System.out.println("[Auto Whitelist Sync] Account Null: " + (account == null));
+            }
+
+            if (account != null && account.isAutoWhitelisted()) {
+                Result result = SDLinkPlatform.minecraftHelper.whitelistPlayer(account);
+                System.out.println("[Auto Whitelist Sync] Auto Whitelist Result: " + result.getMessage());
+            }
+
+            if (account != null && !account.isAutoWhitelisted()) {
+                Result result = SDLinkPlatform.minecraftHelper.unWhitelistPlayer(account);
+                System.out.println("[Auto Whitelist Sync] Auto Whitelist Remove Result: " + result.getMessage());
+            }
+        } catch (Exception e) {
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                SDLinkConstants.LOGGER.error("Failed to sync Whitelist", e);
+            }
+        }
+
         if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.accountLinking) {
             MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
             SDLinkAccount savedAccount = account.getStoredAccount();
@@ -335,8 +364,15 @@ public class ServerEvents {
                 return;
             }
 
+            if (SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.requireLinking && (savedAccount.getDiscordID() == null || savedAccount.getDiscordID().isEmpty()) && savedAccount.getAccountLinkCode().isEmpty()) {
+                event.setMessage(Component.literal("This server requires you to link your Discord and Minecraft account. Please contact the owner for more info"));
+                return;
+            }
+
+
             if (!account.isAccountLinked() && savedAccount.getAccountLinkCode() != null && !savedAccount.getAccountLinkCode().isEmpty()) {
                 event.setMessage(Component.literal("Account Link Code: " + savedAccount.getAccountLinkCode()));
+                return;
             }
         }
 
@@ -349,14 +385,6 @@ public class ServerEvents {
 
             if (!account.isAccountWhitelisted() && savedAccount.getWhitelistCode() != null && !savedAccount.getWhitelistCode().isEmpty()) {
                 event.setMessage(Component.literal("Account Whitelist Code: " + savedAccount.getWhitelistCode()));
-            }
-
-            if (this.minecraftServer != null) {
-                ServerOpListEntry op = this.minecraftServer.getPlayerList().getOps().get(event.getGameProfile());
-
-                if (op == null && !account.isAccountWhitelisted()) {
-                    event.setMessage(Component.translatable("multiplayer.disconnect.not_whitelisted"));
-                }
             }
         }
     }
