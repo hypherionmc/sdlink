@@ -41,7 +41,7 @@ public class PlayerListMixin {
         }
 
         try {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.CUSTOM).author(DiscordAuthor.SERVER).message(ModUtils.resolve(component)).build();
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT).author(DiscordAuthor.SERVER).message(ModUtils.resolve(component)).build();
             message.sendMessage();
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

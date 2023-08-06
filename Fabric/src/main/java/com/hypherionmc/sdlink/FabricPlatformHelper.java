@@ -1,9 +1,11 @@
 package com.hypherionmc.sdlink;
 
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
-import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
+import com.hypherionmc.sdlink.server.ServerEvents;
+import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,20 +13,15 @@ import net.minecraft.server.level.ServerPlayer;
 public class FabricPlatformHelper implements SDLinkMCPlatform {
 
     @Override
-    public Result executeCommand(MinecraftServer server, String command) {
-        SDLinkFakePlayer fakePlayer = new SDLinkFakePlayer(server);
-        if (fakePlayer.hasPermission(4)) {
-            try {
-                server.getCommands().getDispatcher().execute(command, fakePlayer);
-                return Result.success("Command Executed");
-            } catch (Exception e) {
-                fakePlayer.sendFailure(new TextComponent(e.getMessage()));
-            }
-        } else {
-            fakePlayer.sendFailure(new TextComponent("SDLinkFakePlayer does not have permission to execute this command. Please make sure the user is OPPED"));
-        }
+    public void executeCommand(String command, int permLevel, MessageReceivedEvent event, String member) {
+        MinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
+        SDLinkFakePlayer fakePlayer = new SDLinkFakePlayer(server, permLevel, member, event);
 
-        return Result.error("Failed to execute command. Check your server logs");
+        try {
+            server.getCommands().performCommand(fakePlayer, command);
+        } catch (Exception e) {
+            fakePlayer.sendFailure(new TextComponent(e.getMessage()));
+        }
     }
 
     @Override

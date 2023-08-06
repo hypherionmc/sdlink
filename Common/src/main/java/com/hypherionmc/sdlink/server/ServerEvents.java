@@ -13,14 +13,17 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
+import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
+import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.core.util.LogReader;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
-import com.hypherionmc.sdlink.server.commands.ReloadModCommand;
+import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
@@ -34,6 +37,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.world.entity.player.Player;
 
 public class ServerEvents {
@@ -66,7 +70,8 @@ public class ServerEvents {
     @CraterEventListener
     public void onCommandRegister(CraterRegisterCommandEvent event) {
         DiscordCommand.register(event.getDispatcher());
-        ReloadModCommand.register(event.getDispatcher());
+        ReloadEmbedsCommand.register(event.getDispatcher());
+        //ReloadModCommand.register(event.getDispatcher());
         WhoisCommand.register(event.getDispatcher());
     }
 
@@ -288,8 +293,12 @@ public class ServerEvents {
                 String name = ModUtils.resolve(player.getDisplayName());
                 String msg = ModUtils.resolve(event.getDamageSource().getLocalizedDeathMessage(player));
 
+                if (msg.startsWith(name + " ")) {
+                    msg = msg.substring((name + " ").length());
+                }
+
                 DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
-                        .message(msg)
+                        .message(SDLinkConfig.INSTANCE.messageFormatting.death.replace("%player%", name).replace("%message%", msg))
                         .author(DiscordAuthor.SERVER)
                         .build();
 
@@ -325,6 +334,28 @@ public class ServerEvents {
         if (BotController.INSTANCE == null || !BotController.INSTANCE.isBotReady())
             return;
 
+        try {
+            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                System.out.println("[Auto Whitelist Sync] Auto Whitelist: " + account.isAutoWhitelisted());
+                System.out.println("[Auto Whitelist Sync] Account Null: " + (account == null));
+            }
+
+            if (account != null && account.isAutoWhitelisted()) {
+                Result result = SDLinkPlatform.minecraftHelper.whitelistPlayer(account);
+                System.out.println("[Auto Whitelist Sync] Auto Whitelist Result: " + result.getMessage());
+            }
+
+            if (account != null && !account.isAutoWhitelisted()) {
+                Result result = SDLinkPlatform.minecraftHelper.unWhitelistPlayer(account);
+                System.out.println("[Auto Whitelist Sync] Auto Whitelist Remove Result: " + result.getMessage());
+            }
+        } catch (Exception e) {
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                SDLinkConstants.LOGGER.error("Failed to sync Whitelist", e);
+            }
+        }
+
         if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.accountLinking) {
             MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
             SDLinkAccount savedAccount = account.getStoredAccount();
@@ -334,8 +365,15 @@ public class ServerEvents {
                 return;
             }
 
+            if (SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.requireLinking && (savedAccount.getDiscordID() == null || savedAccount.getDiscordID().isEmpty()) && savedAccount.getAccountLinkCode().isEmpty()) {
+                event.setMessage(new TextComponent("This server requires you to link your Discord and Minecraft account. Please contact the owner for more info"));
+                return;
+            }
+
+
             if (!account.isAccountLinked() && savedAccount.getAccountLinkCode() != null && !savedAccount.getAccountLinkCode().isEmpty()) {
                 event.setMessage(new TextComponent("Account Link Code: " + savedAccount.getAccountLinkCode()));
+                return;
             }
         }
 

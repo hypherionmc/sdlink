@@ -22,8 +22,11 @@ public class ModUtils {
         String finalString = inString;
 
         for (String strip : toStrip) {
-            finalString = finalString.replaceFirst(strip + " ", "");
-            finalString = finalString.replaceFirst(strip, "");
+            if (finalString.startsWith(strip))
+                finalString = finalString.replaceFirst(strip, "");
+
+            if (finalString.startsWith(" "))
+                finalString = finalString.replaceFirst(" ", "");
         }
 
         return finalString;
