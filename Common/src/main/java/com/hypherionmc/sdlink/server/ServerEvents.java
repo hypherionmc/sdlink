@@ -292,12 +292,12 @@ public class ServerEvents {
                 String name = ModUtils.resolve(player.getDisplayName());
                 String msg = ModUtils.resolve(event.getDamageSource().getLocalizedDeathMessage(player));
 
-                event.getDamageSource().getLocalizedDeathMessage(player).getSiblings().forEach(s -> {
-                    System.out.println(s.getString());
-                });
+                if (msg.startsWith(name + " ")) {
+                    msg = msg.substring((name + " ").length());
+                }
 
                 DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
-                        .message(msg)
+                        .message(SDLinkConfig.INSTANCE.messageFormatting.death.replace("%player%", name).replace("%message%", msg))
                         .author(DiscordAuthor.SERVER)
                         .build();
 
