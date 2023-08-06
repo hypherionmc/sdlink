@@ -334,25 +334,27 @@ public class ServerEvents {
         if (BotController.INSTANCE == null || !BotController.INSTANCE.isBotReady())
             return;
 
-        try {
-            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                System.out.println("[Auto Whitelist Sync] Auto Whitelist: " + account.isAutoWhitelisted());
-                System.out.println("[Auto Whitelist Sync] Account Null: " + (account == null));
-            }
+        if (SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.whitelisting && SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.autoWhitelist && !SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.autoWhitelistRoles.isEmpty()) {
+            try {
+                MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
+                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                    System.out.println("[Auto Whitelist Sync] Auto Whitelist: " + account.isAutoWhitelisted());
+                    System.out.println("[Auto Whitelist Sync] Account Null: " + (account == null));
+                }
 
-            if (account != null && account.isAutoWhitelisted()) {
-                Result result = SDLinkPlatform.minecraftHelper.whitelistPlayer(account);
-                System.out.println("[Auto Whitelist Sync] Auto Whitelist Result: " + result.getMessage());
-            }
+                if (account != null && account.isAutoWhitelisted()) {
+                    Result result = SDLinkPlatform.minecraftHelper.whitelistPlayer(account);
+                    System.out.println("[Auto Whitelist Sync] Auto Whitelist Result: " + result.getMessage());
+                }
 
-            if (account != null && !account.isAutoWhitelisted()) {
-                Result result = SDLinkPlatform.minecraftHelper.unWhitelistPlayer(account);
-                System.out.println("[Auto Whitelist Sync] Auto Whitelist Remove Result: " + result.getMessage());
-            }
-        } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to sync Whitelist", e);
+                if (account != null && !account.isAutoWhitelisted()) {
+                    Result result = SDLinkPlatform.minecraftHelper.unWhitelistPlayer(account);
+                    System.out.println("[Auto Whitelist Sync] Auto Whitelist Remove Result: " + result.getMessage());
+                }
+            } catch (Exception e) {
+                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                    SDLinkConstants.LOGGER.error("Failed to sync Whitelist", e);
+                }
             }
         }
 
