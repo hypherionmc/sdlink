@@ -15,7 +15,7 @@ displayTest = "IGNORE_SERVER_VERSION"
 [[dependencies.sdlink]]
 modId="forge"
 mandatory=true
-versionRange="[46,)"
+versionRange="[43,)"
 ordering="NONE"
 side="BOTH"
 
