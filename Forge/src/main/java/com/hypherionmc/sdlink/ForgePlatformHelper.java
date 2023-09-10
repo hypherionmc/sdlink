@@ -1,13 +1,14 @@
 package com.hypherionmc.sdlink;
 
+import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.loading.FMLLoader;
+import redstonedubstep.mods.vanishmod.VanishUtil;
 
 public class ForgePlatformHelper implements SDLinkMCPlatform {
 
@@ -31,5 +32,14 @@ public class ForgePlatformHelper implements SDLinkMCPlatform {
     @Override
     public String getPlayerSkinUUID(ServerPlayer player) {
         return player.getStringUUID();
+    }
+
+    @Override
+    public boolean playerIsActive(ServerPlayer player) {
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("vmod")) {
+            return !VanishUtil.isVanished(player);
+        }
+
+        return true;
     }
 }

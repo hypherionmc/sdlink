@@ -2,6 +2,7 @@ package com.hypherionmc.sdlink.networking;
 
 import com.hypherionmc.craterlib.core.network.CraterPacket;
 import com.hypherionmc.sdlink.client.ClientEvents;
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +18,7 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
     private HashMap<String, String> roles;
     private HashMap<String, String> channelHashMap;
     private HashMap<String, String> users;
+    private boolean mentionsEnabled = false;
 
     public MentionsSyncPacket() {}
 
@@ -39,6 +41,7 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
         tag.put("roles", rolesTag);
         tag.put("channels", channelsTag);
         tag.put("users", usersTag);
+        tag.putBoolean("mentionsenabled", SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat);
         friendlyByteBuf.writeNbt(tag);
     }
 
@@ -60,6 +63,8 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
 
         users = new HashMap<>();
         usersTag.getAllKeys().forEach(k -> users.put(k, usersTag.getString(k)));
+
+        mentionsEnabled = tag.getBoolean("mentionsenabled");
     }
 
     @Override
@@ -78,6 +83,8 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
                 if (!(users == null || users.isEmpty())) {
                     ClientEvents.users = users;
                 }
+
+                ClientEvents.mentionsEnabled = mentionsEnabled;
             }
         };
     }

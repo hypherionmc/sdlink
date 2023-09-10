@@ -13,6 +13,7 @@ public class ClientEvents {
     public static HashMap<String, String> roles = new HashMap<>();
     public static HashMap<String, String> channels = new HashMap<>();
     public static HashMap<String, String> users = new HashMap<>();
+    public static boolean mentionsEnabled = false;
 
     public static void init() {
         SDLinkNetworking.registerPackets();

@@ -19,20 +19,18 @@ subprojects {
 
     repositories {
         mavenCentral()
-        mavenLocal()
         maven {
-            name = 'Sponge / Mixin'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
+            name = 'First Dark Maven'
+            url = 'https://maven.firstdark.dev/releases/'
+        }
+        maven {
+            name = 'First Dark Maven Snapshots'
+            url = 'https://maven.firstdark.dev/snapshots/'
         }
 
         maven {
-            name = 'First Dark Releases Maven'
-            url = 'https://maven.firstdarkdev.xyz/releases'
-        }
-
-        maven {
-            name = 'First Dark Snapshots Maven'
-            url = 'https://maven.firstdarkdev.xyz/snapshots'
+            name = 'First Dark Mirror'
+            url = 'https://mcentral.firstdark.dev/releases/'
         }
 
         maven {

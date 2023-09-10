@@ -18,17 +18,15 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteList;
 import net.minecraft.server.players.UserWhiteListEntry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -232,5 +230,15 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
             return true;
 
         return server.usesAuthentication();
+    }
+
+    @Override
+    public void banPlayer(MinecraftAccount minecraftAccount) {
+        MinecraftServer server = CommonPlatform.INSTANCE.getMCServer();
+        if (server == null)
+            return;
+
+        GameProfile profile = new GameProfile(minecraftAccount.getUuid(), minecraftAccount.getUsername());
+        server.getPlayerList().getBans().add(new UserBanListEntry(profile));
     }
 }
