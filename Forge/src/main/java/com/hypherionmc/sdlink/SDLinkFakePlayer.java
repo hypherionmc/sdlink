@@ -1,10 +1,6 @@
 package com.hypherionmc.sdlink;
 
-import com.hypherionmc.sdlink.core.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.messaging.MessageType;
-import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
-import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
 import net.minecraft.ChatFormatting;

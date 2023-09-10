@@ -17,7 +17,6 @@ import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.core.util.LogReader;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
@@ -36,7 +35,6 @@ import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.world.entity.player.Player;
 
 public class ServerEvents {
@@ -128,6 +126,10 @@ public class ServerEvents {
 
     @CraterEventListener
     public void onServerChatEvent(CraterServerChatEvent event) {
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer())) {
+            return;
+        }
+
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
     }
 
@@ -180,6 +182,8 @@ public class ServerEvents {
             profile = player.getGameProfile();
         } catch (CommandSyntaxException ignored) {}
 
+        if (player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player))
+            return;
 
         String command = cmd.startsWith("/") ? cmd.replaceFirst("/", "") : cmd;
         String cmdName = command.split(" ")[0];
@@ -197,7 +201,7 @@ public class ServerEvents {
                 return;
 
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile.isComplete() ? profile.getName() : player.getName().getString()))
+                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : player.getName().getString()))
                     .message(msg)
                     .build();
 
@@ -258,7 +262,7 @@ public class ServerEvents {
             }
         }
 
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin)
+        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
             return;
 
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN_LEAVE)
@@ -271,6 +275,9 @@ public class ServerEvents {
 
     @CraterEventListener
     public void playerLeaveEvent(CraterPlayerEvent.PlayerLoggedOut event) {
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
+            return;
+
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {
 
             String name = ModUtils.resolve(event.getPlayer().getDisplayName());
@@ -286,6 +293,9 @@ public class ServerEvents {
 
     @CraterEventListener
     public void onPlayerDeath(CraterLivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer p && !SDLinkMCPlatform.INSTANCE.playerIsActive(p))
+            return;
+
         if (event.getEntity() instanceof Player player) {
             if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.deathMessages) {
 
@@ -308,6 +318,9 @@ public class ServerEvents {
 
     @CraterEventListener
     public void onPlayerAdvancement(CraterAdvancementEvent event) {
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive((ServerPlayer) event.getPlayer()))
+            return;
+
         try {
             if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.advancementMessages) {
                 String username = ModUtils.resolve(event.getPlayer().getDisplayName());

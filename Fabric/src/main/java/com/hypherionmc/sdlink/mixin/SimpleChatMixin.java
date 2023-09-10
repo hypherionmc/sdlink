@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlink.mixin;
 
+import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import me.vetustus.server.simplechat.api.event.PlayerChatCallback;
 import net.minecraft.network.chat.Component;
@@ -18,7 +19,7 @@ public class SimpleChatMixin {
 
     @Inject(method = "<init>", at = @At(value = "TAIL"))
     private void injectEvent(ServerPlayer sender, String message, CallbackInfo ci) {
-        if (sender == null)
+        if (sender == null || !SDLinkMCPlatform.INSTANCE.playerIsActive(sender))
             return;
 
         ServerEvents.getInstance().onServerChatEvent(

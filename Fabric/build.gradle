@@ -20,7 +20,7 @@ dependencies {
     implementation project(path: ':Common', configuration: 'namedElements')
 
     // Add your deps here
-    modImplementation "me.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}"
+    implementation "com.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}:dev"
     implementation("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
     implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
 
@@ -30,6 +30,7 @@ dependencies {
     // Compat
     modCompileOnly "maven.modrinth:fabrictailor:2.1.2"
     modCompileOnly "maven.modrinth:simplechatfork:1.9.0"
+    modCompileOnly "maven.modrinth:vanish:1.4.2+1.20"
 }
 
 shadowJar {
