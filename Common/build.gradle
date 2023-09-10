@@ -1,5 +1,5 @@
 plugins {
-    id 'org.quiltmc.loom' version '0.12.+'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
 }
 
 archivesBaseName = "${mod_id}-shared-${minecraft_version}"
@@ -9,13 +9,13 @@ dependencies {
     mappings loom.officialMojangMappings()
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
 
-    implementation "me.hypherionmc.craterlib:CraterLib-common-1.19.2:${craterlib}"
+    implementation "com.hypherionmc.craterlib:CraterLib-common-1.19.2:${craterlib}:dev"
     implementation("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
     implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
 }
 
 loom {
-    //shareCaches()
+    shareCaches()
     remapArchives = false
     mixin {
         useLegacyMixinAp = false

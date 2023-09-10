@@ -50,29 +50,35 @@ public abstract class ChatInputSuggestorMixin {
             )
     )
     private void injectSuggestions(CallbackInfo ci) {
-        this.showSuggestions(true);
+        if (ClientEvents.mentionsEnabled) {
+            this.showSuggestions(true);
+        }
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyVariable(method = "updateCommandInfo", at = @At(value = "STORE"), ordinal = 0, name = "collection")
     private Collection<String> injectMentions(Collection<String> vanilla) {
-        ArrayList<String> newSuggest = new ArrayList<>(vanilla);
+        if (ClientEvents.mentionsEnabled) {
+            ArrayList<String> newSuggest = new ArrayList<>(vanilla);
 
-        if ((!ClientEvents.users.isEmpty() && ClientEvents.roles.isEmpty() && ClientEvents.channels.isEmpty())) {
-            String currentInput = this.input.getValue();
-            int currentCursorPosition = this.input.getCursorPosition();
+            if ((!ClientEvents.users.isEmpty() && ClientEvents.roles.isEmpty() && ClientEvents.channels.isEmpty())) {
+                String currentInput = this.input.getValue();
+                int currentCursorPosition = this.input.getCursorPosition();
 
-            String textBeforeCursor = currentInput.substring(0, currentCursorPosition);
-            int startOfCurrentWord = getLastWordIndex(textBeforeCursor);
+                String textBeforeCursor = currentInput.substring(0, currentCursorPosition);
+                int startOfCurrentWord = getLastWordIndex(textBeforeCursor);
 
-            String currentWord = textBeforeCursor.substring(startOfCurrentWord);
-            String finalWord = currentWord.replace("[", "").replace("]", "");
+                String currentWord = textBeforeCursor.substring(startOfCurrentWord);
+                String finalWord = currentWord.replace("[", "").replace("]", "");
 
-            ClientEvents.roles.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
-            ClientEvents.channels.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
-            ClientEvents.users.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
+                ClientEvents.roles.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
+                ClientEvents.channels.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
+                ClientEvents.users.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
+            }
+
+            return newSuggest;
         }
 
-        return newSuggest;
+        return vanilla;
     }
 }

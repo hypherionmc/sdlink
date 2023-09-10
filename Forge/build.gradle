@@ -1,7 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = 'https://mcentral.firstdark.dev/releases' }
         mavenCentral()
     }
     dependencies {
@@ -11,10 +10,11 @@ buildscript {
 }
 
 plugins {
-    id 'java'
-    id 'net.minecraftforge.gradle' version '5.1.+'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
 }
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = "${mod_id}-forge-${minecraft_version}"
@@ -99,9 +99,12 @@ dependencies {
     compileOnly project(path: ':Common', configuration: 'namedElements')
 
     // Add your deps here
-    implementation "me.hypherionmc.craterlib:CraterLib-forge-1.19.2:${craterlib}"
+    implementation "com.hypherionmc.craterlib:CraterLib-forge-1.19.2:${craterlib}"
     shade("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
     shade("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
+
+    // Compat
+    implementation fg.deobf("maven.modrinth:vanishmod:1.1.12");
 }
 
 shadowJar {
@@ -132,3 +135,30 @@ reobf {
 
 build.dependsOn reobfShadowJar
 jar.finalizedBy('reobfJar')
+
+publisher {
+    apiKeys {
+        modrinth = System.getenv("MODRINTH_TOKEN")
+        curseforge = System.getenv("CURSE_TOKEN")
+    }
+
+    curseID = 541320
+    modrinthID = modrinth_id
+    versionType = "release"
+    changelog = rootProject.file("changelog-forge.md")
+    version = "${minecraft_version}-${project.version}"
+    displayName = "[FORGE 1.19.x] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
+    loaders = ["forge"]
+    artifact = jar
+
+    modrinthDepends {
+        required = ["Nn8Wasaq"]
+    }
+
+    curseDepends {
+        required = ["craterlib"]
+    }
+}
+
+publishMod.dependsOn(build)

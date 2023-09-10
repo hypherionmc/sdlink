@@ -1,6 +1,8 @@
 package com.hypherionmc.sdlink;
 
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
+import com.hypherionmc.sdlink.compat.FabricTailor;
+import com.hypherionmc.sdlink.compat.Vanish;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -31,9 +33,18 @@ public class FabricPlatformHelper implements SDLinkMCPlatform {
     @Override
     public String getPlayerSkinUUID(ServerPlayer player) {
         if (ModloaderEnvironment.INSTANCE.isModLoaded("fabrictailor")) {
-            return SafeCalls.getTailorSkin(player);
+            return FabricTailor.getTailorSkin(player);
         }
 
         return player.getStringUUID();
+    }
+
+    @Override
+    public boolean playerIsActive(ServerPlayer player) {
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("melius-vanish")) {
+            return !Vanish.isPlayerVanished(player);
+        }
+
+        return true;
     }
 }
