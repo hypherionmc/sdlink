@@ -1,20 +1,36 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)' apply false
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT' apply false
+    id 'com.github.johnrengelman.shadow' version '7.0.0' apply false
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.+" apply false
+}
+
+ext {
+    release = project.properties['release'] ?: false
+}
+
+def version_base = "${project.version_major}.${project.version_minor}"
+def final_ver = "${version_base}.${project.version_patch}"
+
+// Jenkins
+if (System.getenv('BUILD_NUMBER') != null && project.release == false) {
+    final_ver = version_base + "." + System.getenv('BUILD_NUMBER') + "d"
+}
+
+version = "${final_ver}"
+
 subprojects {
+    version = "${final_ver}"
+    group = project.group
+
     apply plugin: 'java'
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-    def version_base = "${version}"
-    version = version_base + (version_patch > 0 ? ".${version_patch}" : "")
-
-    // Jenkins
-    ext {
-        release=project.properties['release'] ?: false
-    }
-    if (System.getenv('BUILD_NUMBER') != null && project.release == false) {
-        version = version_base + "." + System.getenv('BUILD_NUMBER') + "d"
-    }
-
     jar {
+        archiveClassifier = 'slim'
+
         manifest {
             attributes([
                 'Specification-Title'     : mod_name,
@@ -33,14 +49,14 @@ subprojects {
 
     repositories {
         mavenCentral()
-        //mavenLocal()
+
         maven {
-            name = 'Sponge / Mixin'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
+            name = 'First Dark Maven'
+            url = 'https://maven.firstdark.dev/releases/'
         }
         maven {
-            name = 'Hypherion Maven'
-            url = 'https://maven.firstdarkdev.xyz/releases/'
+            name = 'First Dark Mirror'
+            url = 'https://mcentral.firstdark.dev/releases/'
         }
         maven {
             name = "Modrinth"
@@ -64,15 +80,26 @@ subprojects {
         delete "$rootDir/artifacts"
     }
 
-    task copyAllArtifacts(type: Copy) {
-        if (project.name !== "Common") {
+    if (project.name !== 'Common') {
+        task delDevJar {
+            doLast {
+                def tree = fileTree('build/libs')
+                tree.include '**/*-dev.jar'
+                tree.include '**/*-dev-shadow.jar'
+                tree.include '**/*-all.jar'
+                tree.include '**/*-slim.jar'
+                tree.each { it.delete() }
+            }
+        }
+        build.finalizedBy delDevJar
+
+        task copyAllArtifacts(type: Copy) {
             from "$buildDir/libs"
             into "$rootDir/artifacts"
             include("*.jar")
-            delete("$rootDir/artifacts/*-common-*.jar")
         }
-    }
 
-    build.finalizedBy(copyAllArtifacts)
+        build.finalizedBy(copyAllArtifacts)
+    }
 }
 

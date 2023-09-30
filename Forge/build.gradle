@@ -1,22 +1,9 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-plugins {
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id "me.hypherionmc.modutils.modpublisher" version "1.0.16"
-}
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'me.hypherionmc.modutils.modpublisher'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = "${mod_name}-forge-${minecraft_version}"
 
@@ -80,13 +67,18 @@ minecraft {
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
+configurations {
+    shade
+    implementation.extendsFrom(shade)
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":Common")
     annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
 
-    implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
-    implementation("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
+    shade("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
+    shade("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
     implementation "me.hypherionmc.craterlib:CraterLib-forge-1.20:${craterlib}"
 }
 
@@ -102,21 +94,26 @@ processResources {
     }
 }
 
+/**
+ * Shadowjar Config
+ */
 shadowJar {
+    configurations = [project.configurations.shade]
     dependencies {
-        include(dependency("me.hypherionmc.sdlink:sdlink-lib:${library_ver}"))
-        include(dependency("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}"))
+        relocate 'me.hypherionmc.moonconfig', 'shadow.hypherionmc.moonconfig'
     }
-    classifier ''
+    setArchiveClassifier('')
 }
+
+assemble.dependsOn(shadowJar)
 
 reobf {
     shadowJar {}
 }
 
-build.dependsOn reobfShadowJar
-jar.finalizedBy('reobfJar')
-
+/**
+ * Publishing Config
+ */
 publisher {
     apiKeys {
         modrinth = System.getenv("MODRINTH_TOKEN")
@@ -143,3 +140,4 @@ publisher {
 }
 
 publishMod.dependsOn(build)
+jar.finalizedBy('reobfJar')
