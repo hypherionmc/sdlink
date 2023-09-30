@@ -79,7 +79,7 @@ dependencies {
 
     shade("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     shade("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
-    implementation "me.hypherionmc.craterlib:CraterLib-forge-1.20:${craterlib}"
+    implementation "com.hypherionmc.craterlib:CraterLib-forge-1.20.2:${craterlib}"
 }
 
 tasks.withType(JavaCompile) {

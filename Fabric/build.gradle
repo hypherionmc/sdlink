@@ -21,7 +21,7 @@ dependencies {
     implementation project(":Common")
 
     modCompileOnly "maven.modrinth:fabrictailor:2.1.2"
-    modImplementation "me.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}"
+    modImplementation "com.hypherionmc.craterlib:CraterLib-fabric-1.20.2:${craterlib}"
 
     shade("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     shade "me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}"

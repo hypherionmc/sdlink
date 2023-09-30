@@ -55,6 +55,10 @@ subprojects {
             url = 'https://maven.firstdark.dev/releases/'
         }
         maven {
+            name = 'First Dark Maven'
+            url = 'https://maven.firstdark.dev/snapshots/'
+        }
+        maven {
             name = 'First Dark Mirror'
             url = 'https://mcentral.firstdark.dev/releases/'
         }

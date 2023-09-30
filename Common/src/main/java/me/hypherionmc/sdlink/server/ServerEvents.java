@@ -292,13 +292,13 @@ public class ServerEvents implements IMinecraftHelper {
         try {
             if (botEngine != null && ModConfig.INSTANCE.chatConfig.advancementMessages) {
                 String username = ChatFormatting.stripFormatting(event.getPlayer().getDisplayName().getString());
-                String finalAdvancement = ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getTitle().getString());
-                String advancementBody = ChatFormatting.stripFormatting(event.getAdvancement().getDisplay().getDescription().getString());
+                String finalAdvancement = ChatFormatting.stripFormatting(event.getAdvancement().display().get().getTitle().getString());
+                String advancementBody = ChatFormatting.stripFormatting(event.getAdvancement().display().get().getDescription().getString());
 
                 if (ModConfig.INSTANCE.messageConfig.formatting) {
                     username = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(event.getPlayer().getDisplayName()).copy());
-                    finalAdvancement = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(event.getAdvancement().getDisplay().getTitle()).copy());
-                    advancementBody = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(event.getAdvancement().getDisplay().getDescription()).copy());
+                    finalAdvancement = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(event.getAdvancement().display().get().getTitle()).copy());
+                    advancementBody = DiscordSerializer.INSTANCE.serialize(ModUtils.safeCopy(event.getAdvancement().display().get().getDescription()).copy());
                 }
 
                 DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.ADVANCEMENT)
