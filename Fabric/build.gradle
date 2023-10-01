@@ -95,8 +95,8 @@ publisher {
     versionType = "release"
     changelog = rootProject.file("changelog-fabric.md")
     version = "${minecraft_version}-${project.version}"
-    displayName = "[FABRIC/QUILT 1.20] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.20"]
+    displayName = "[FABRIC/QUILT 1.20.2] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.20.2"]
     loaders = ["fabric", "quilt"]
     artifact = remapJar
 
