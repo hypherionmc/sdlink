@@ -2,23 +2,10 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven {
-            url "https://maven.firstdarkdev.xyz/releases"
+            url "https://maven.firstdark.dev/releases"
         }
         maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        maven {
-            name = 'Sponge Snapshots'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
-        }
-        maven {
-            name = 'Quilt (Release)'
-            url = 'https://maven.quiltmc.org/repository/release'
-        }
-        maven {
-            name = 'Quilt (Snapshot)'
-            url = 'https://maven.quiltmc.org/repository/snapshot'
+            url "https://mcentral.firstdark.dev/releases"
         }
     }
 }
