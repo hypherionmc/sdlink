@@ -1,9 +1,9 @@
 plugins {
     id 'fabric-loom' version '1.3-SNAPSHOT'
     id 'idea'
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
 }
 
-apply plugin: 'me.hypherionmc.modutils.modpublisher'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = "${mod_name}-fabric-${minecraft_version}"
@@ -109,4 +109,5 @@ publisher {
     }
 }
 
-publishMod.dependsOn(build)
+publishModrinth.dependsOn(remapJar)
+publishCurseforge.dependsOn(remapJar)
