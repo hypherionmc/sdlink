@@ -1,15 +1,16 @@
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.3-SNAPSHOT'
     id 'idea'
     id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
+
+apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = "${mod_name}-fabric-${minecraft_version}"
 
 configurations {
     shade
-    implementation.extendsFrom shade
+    implementation.extendsFrom(shade)
 }
 
 dependencies {
@@ -23,18 +24,6 @@ dependencies {
 
     shade("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
     shade "me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}"
-}
-
-shadowJar {
-    from sourceSets.main.output
-
-    configurations = [project.configurations.shade]
-}
-
-remapJar {
-    dependsOn(shadowJar)
-    shouldRunAfter(shadowJar)
-    input.set shadowJar.archiveFile.get()
 }
 
 loom {
@@ -53,7 +42,6 @@ loom {
         }
     }
 }
-
 
 processResources {
     from project(":Common").sourceSets.main.resources
@@ -78,16 +66,23 @@ jar {
     }
 }
 
-task delDevJar {
-    doLast {
-        def tree = fileTree('build/libs')
-        tree.include '**/*-dev.jar'
-        tree.include '**/*-all.jar'
-        tree.each { it.delete() }
-    }
+/**
+ * Shadowjar Config
+ */
+shadowJar {
+    configurations = [project.configurations.shade]
+    setArchiveClassifier("dev-shadow")
 }
-build.finalizedBy delDevJar
 
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    setArchiveClassifier(null)
+}
+
+/**
+ * Publishing Config
+ */
 publisher {
     apiKeys {
         modrinth = System.getenv("MODRINTH_TOKEN")
@@ -113,4 +108,5 @@ publisher {
     }
 }
 
-publishMod.dependsOn(build)
+publishModrinth.dependsOn(remapJar)
+publishCurseforge.dependsOn(remapJar)

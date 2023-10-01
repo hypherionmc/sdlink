@@ -1,22 +1,12 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
 }
+
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = "${mod_name}-forge-${minecraft_version}"
 
@@ -31,8 +21,6 @@ minecraft {
     mappings channel: 'official', version: minecraft_version
 
     if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
-        // This location is hardcoded in Forge and can not be changed.
-        // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
         accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
         project.logger.debug('Forge Access Transformers are enabled for this project.')
     }
@@ -82,13 +70,18 @@ minecraft {
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
+configurations {
+    shade
+    implementation.extendsFrom(shade)
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":Common")
     annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
 
-    implementation("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
-    implementation("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
+    shade("me.hypherionmc.sdlink:sdlink-lib:${library_ver}")
+    shade("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}")
 }
 
 tasks.withType(JavaCompile) {
@@ -103,21 +96,26 @@ processResources {
     }
 }
 
+/**
+ * Shadowjar Config
+ */
 shadowJar {
+    configurations = [project.configurations.shade]
     dependencies {
-        include(dependency("me.hypherionmc.sdlink:sdlink-lib:${library_ver}"))
-        include(dependency("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.19.1:${formatter_ver}"))
+        relocate 'me.hypherionmc.moonconfig', 'shadow.hypherionmc.moonconfig'
     }
-    classifier ''
+    setArchiveClassifier('')
 }
+
+assemble.dependsOn(shadowJar)
 
 reobf {
     shadowJar {}
 }
 
-build.dependsOn reobfShadowJar
-jar.finalizedBy('reobfJar')
-
+/**
+ * Publishing Config
+ */
 publisher {
     apiKeys {
         modrinth = System.getenv("MODRINTH_TOKEN")
@@ -132,7 +130,9 @@ publisher {
     displayName = "[FORGE 1.19.1/2] Simple Discord Link - ${project.version}"
     gameVersions = ["1.19.1", "1.19.2"]
     loaders = ["forge"]
-    artifact = jar
+    artifact = shadowJar
 }
 
-publishMod.dependsOn(build)
+publishCurseforge.dependsOn(reobfShadowJar)
+publishModrinth.dependsOn(reobfShadowJar)
+jar.finalizedBy('reobfJar')
