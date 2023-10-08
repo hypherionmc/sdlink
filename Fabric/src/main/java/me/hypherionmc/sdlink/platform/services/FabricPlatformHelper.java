@@ -3,6 +3,7 @@ package me.hypherionmc.sdlink.platform.services;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import me.hypherionmc.sdlink.SDLinkFakePlayer;
 import me.hypherionmc.sdlink.SafeCalls;
+import me.hypherionmc.sdlinklib.config.ModConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -31,6 +32,9 @@ public class FabricPlatformHelper implements ModHelper {
 
     @Override
     public String getPlayerSkinUUID(ServerPlayer player) {
+        if (player == null)
+            return "server";
+
         if (ModloaderEnvironment.INSTANCE.isModLoaded("fabrictailor")) {
             return SafeCalls.getTailorSkin(player);
         }
