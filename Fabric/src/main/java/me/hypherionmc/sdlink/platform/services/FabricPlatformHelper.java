@@ -31,6 +31,9 @@ public class FabricPlatformHelper implements ModHelper {
 
     @Override
     public String getPlayerSkinUUID(ServerPlayer player) {
+        if (player == null)
+            return "server";
+
         if (ModloaderEnvironment.INSTANCE.isModLoaded("fabrictailor")) {
             return SafeCalls.getTailorSkin(player);
         }

@@ -30,6 +30,9 @@ public class ForgePlatformHelper implements ModHelper {
 
     @Override
     public String getPlayerSkinUUID(ServerPlayer player) {
+        if (player == null)
+            return "server";
+
         return player.getStringUUID();
     }
 

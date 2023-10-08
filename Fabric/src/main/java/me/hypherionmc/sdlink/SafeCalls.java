@@ -1,7 +1,6 @@
 package me.hypherionmc.sdlink;
 
-import me.hypherionmc.sdlink.server.ServerEvents;
-import net.minecraft.network.chat.Component;
+import me.hypherionmc.sdlinklib.config.ModConfig;
 import net.minecraft.server.level.ServerPlayer;
 import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 
@@ -12,8 +11,14 @@ import org.samo_lego.fabrictailor.casts.TailoredPlayer;
 public class SafeCalls {
 
     public static String getTailorSkin(ServerPlayer player) {
-        if (player instanceof TailoredPlayer tp) {
-            return tp.getSkinId();
+        try {
+            if (player instanceof TailoredPlayer tp) {
+                return tp.getSkinId();
+            }
+        } catch (Exception e) {
+            if (ModConfig.INSTANCE.generalConfig.debugging) {
+                SDLinkConstants.LOG.error("Failed to retrieve player skin from Fabric Tailor", e);
+            }
         }
 
         return player.getStringUUID();
