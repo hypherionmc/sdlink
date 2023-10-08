@@ -211,7 +211,7 @@ public class ServerEvents implements IMinecraftHelper {
         if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && ModConfig.INSTANCE.chatConfig.sendSayCommand) {
             String msg = ModUtils.strip(command, "say", "me");
             DiscordMessage discordMessage = new DiscordMessage.Builder(botEngine, MessageType.CHAT)
-                    .withAuthor(MessageAuthor.of(username, uuid == null ? "" : uuid, player.getGameProfile().getName(), botEngine.getMinecraftHelper()))
+                    .withAuthor(MessageAuthor.of((player == null ? ModConfig.INSTANCE.webhookConfig.serverName : player.getGameProfile().getName()), uuid == null ? "" : uuid, username, botEngine.getMinecraftHelper()))
                     .withMessage(msg)
                     .build();
 
