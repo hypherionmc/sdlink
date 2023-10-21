@@ -12,18 +12,20 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
+import com.hypherionmc.sdlink.core.managers.RoleManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.core.util.LogReader;
+import com.hypherionmc.sdlink.core.util.SDLinkUtils;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
+import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Role;
 import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.authlib.GameProfile;
@@ -37,6 +39,11 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Random;
+
+import static com.hypherionmc.sdlink.core.managers.DatabaseManager.sdlinkDatabase;
 
 public class ServerEvents {
 
@@ -52,14 +59,6 @@ public class ServerEvents {
         return events;
     }
 
-    public static void reloadInstance(MinecraftServer server) {
-        if (events != null)
-            BotController.INSTANCE.shutdownBot();
-
-        events = new ServerEvents();
-        events.minecraftServer = server;
-    }
-
     private ServerEvents() {
         BotController.newInstance(SDLinkConstants.LOGGER);
         BotController.INSTANCE.initializeBot();
@@ -69,7 +68,6 @@ public class ServerEvents {
     public void onCommandRegister(CraterRegisterCommandEvent event) {
         DiscordCommand.register(event.getDispatcher());
         ReloadEmbedsCommand.register(event.getDispatcher());
-        //ReloadModCommand.register(event.getDispatcher());
         WhoisCommand.register(event.getDispatcher());
     }
 
@@ -280,7 +278,6 @@ public class ServerEvents {
             return;
 
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {
-
             String name = ModUtils.resolve(event.getPlayer().getDisplayName());
 
             DiscordMessage message = new DiscordMessageBuilder(MessageType.JOIN_LEAVE)
@@ -347,60 +344,52 @@ public class ServerEvents {
         if (BotController.INSTANCE == null || !BotController.INSTANCE.isBotReady())
             return;
 
-        if (SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.whitelisting && SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.autoWhitelist && !SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.autoWhitelistRoles.isEmpty()) {
-            try {
-                MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
-                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    System.out.println("[Auto Whitelist Sync] Auto Whitelist: " + account.isAutoWhitelisted());
-                    System.out.println("[Auto Whitelist Sync] Account Null: " + (account == null));
-                }
-
-                if (account != null && account.isAutoWhitelisted()) {
-                    Result result = SDLinkPlatform.minecraftHelper.whitelistPlayer(account);
-                    System.out.println("[Auto Whitelist Sync] Auto Whitelist Result: " + result.getMessage());
-                }
-
-                if (account != null && !account.isAutoWhitelisted()) {
-                    Result result = SDLinkPlatform.minecraftHelper.unWhitelistPlayer(account);
-                    System.out.println("[Auto Whitelist Sync] Auto Whitelist Remove Result: " + result.getMessage());
-                }
-            } catch (Exception e) {
-                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    SDLinkConstants.LOGGER.error("Failed to sync Whitelist", e);
-                }
-            }
-        }
-
-        if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.accountLinking) {
+        if (SDLinkConfig.INSTANCE.accessControl.enabled) {
             MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
-            SDLinkAccount savedAccount = account.getStoredAccount();
+            SDLinkAccount sdLinkAccount = account.getStoredAccount();
 
-            if (savedAccount == null) {
-                event.setMessage(new TextComponent("This server requires you to link your Discord and Minecraft account. Please contact the owner for more info"));
+            if (sdLinkAccount == null) {
+                event.setMessage(new TextComponent("Failed to load your account"));
                 return;
             }
 
-            if (SDLinkConfig.INSTANCE.whitelistingAndLinking.accountLinking.requireLinking && (savedAccount.getDiscordID() == null || savedAccount.getDiscordID().isEmpty()) && savedAccount.getAccountLinkCode().isEmpty()) {
-                event.setMessage(new TextComponent("This server requires you to link your Discord and Minecraft account. Please contact the owner for more info"));
+            if (!account.isAccountVerified()) {
+                if (SDLinkUtils.isNullOrEmpty(sdLinkAccount.getVerifyCode())) {
+                    int code = new Random().nextInt(1000, 9999);
+                    sdLinkAccount.setVerifyCode(String.valueOf(code));
+                    sdlinkDatabase.upsert(sdLinkAccount);
+                    sdlinkDatabase.reloadCollection("verifiedaccounts");
+                    event.setMessage(new TextComponent(SDLinkConfig.INSTANCE.accessControl.verificationMessages.accountVerify.replace("{code}", String.valueOf(code))));
+                } else {
+                    event.setMessage(new TextComponent(SDLinkConfig.INSTANCE.accessControl.verificationMessages.accountVerify.replace("{code}", sdLinkAccount.getVerifyCode())));
+                }
                 return;
             }
 
+            Result result = account.checkAccessControl();
 
-            if (!account.isAccountLinked() && savedAccount.getAccountLinkCode() != null && !savedAccount.getAccountLinkCode().isEmpty()) {
-                event.setMessage(new TextComponent("Account Link Code: " + savedAccount.getAccountLinkCode()));
-                return;
-            }
-        }
-
-        if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.whitelistingAndLinking.whitelisting.whitelisting) {
-            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
-            SDLinkAccount savedAccount = account.getStoredAccount();
-
-            if (savedAccount == null)
-                return;
-
-            if (!account.isAccountWhitelisted() && savedAccount.getWhitelistCode() != null && !savedAccount.getWhitelistCode().isEmpty()) {
-                event.setMessage(new TextComponent("Account Whitelist Code: " + savedAccount.getWhitelistCode()));
+            if (result.isError()) {
+                switch (result.getMessage()) {
+                    case "notFound" -> {
+                        event.setMessage(new TextComponent("Account not found in server database"));
+                    }
+                    case "noGuildFound" -> {
+                        event.setMessage(new TextComponent("No Discord Server Found"));
+                    }
+                    case "memberNotFound" -> {
+                        event.setMessage(new TextComponent(SDLinkConfig.INSTANCE.accessControl.verificationMessages.nonMember));
+                    }
+                    case "rolesNotFound" -> {
+                        event.setMessage(
+                                new TextComponent(
+                                        SDLinkConfig.INSTANCE
+                                                .accessControl
+                                                .verificationMessages
+                                                .requireRoles
+                                                .replace("{roles}", ArrayUtils.toString(RoleManager.getVerificationRoles().stream().map(Role::getName).toList())))
+                        );
+                    }
+                }
             }
         }
     }

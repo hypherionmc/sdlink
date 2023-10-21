@@ -1,6 +1,5 @@
 package com.hypherionmc.sdlink.server;
 
-import com.google.common.collect.Lists;
 import com.hypherionmc.craterlib.core.platform.CommonPlatform;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.SDLinkConstants;
@@ -19,11 +18,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.server.players.UserBanListEntry;
-import net.minecraft.server.players.UserWhiteList;
-import net.minecraft.server.players.UserWhiteListEntry;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,57 +105,6 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
     }
 
     @Override
-    public Result isPlayerWhitelisted(MinecraftAccount minecraftAccount) {
-        GameProfile profile = new GameProfile(minecraftAccount.getUuid(), minecraftAccount.getUsername());
-        UserWhiteList whiteList = ServerEvents.getInstance().getMinecraftServer().getPlayerList().getWhiteList();
-        return whiteList.isWhiteListed(profile) ? Result.success("Player is whitelisted") : Result.error("Player is not whitelisted");
-    }
-
-    @Override
-    public Result whitelistPlayer(MinecraftAccount minecraftAccount) {
-        GameProfile profile = new GameProfile(minecraftAccount.getUuid(), minecraftAccount.getUsername());
-        UserWhiteList whiteList = ServerEvents.getInstance().getMinecraftServer().getPlayerList().getWhiteList();
-
-        if (!whiteList.isWhiteListed(profile)) {
-            whiteList.add(new UserWhiteListEntry(profile));
-            ServerEvents.getInstance().getMinecraftServer().getPlayerList().reloadWhiteList();
-            return Result.success("Player has been whitelisted");
-        }
-
-        return Result.error("Player is already whitelisted");
-    }
-
-    @Override
-    public Result unWhitelistPlayer(MinecraftAccount minecraftAccount) {
-        GameProfile profile = new GameProfile(minecraftAccount.getUuid(), minecraftAccount.getUsername());
-        UserWhiteList whiteList = ServerEvents.getInstance().getMinecraftServer().getPlayerList().getWhiteList();
-
-        if (whiteList.isWhiteListed(profile)) {
-            whiteList.remove(new UserWhiteListEntry(profile));
-            ServerEvents.getInstance().getMinecraftServer().getPlayerList().reloadWhiteList();
-            kickNonWhitelisted();
-            return Result.success("Player has been removed from the whitelist");
-        }
-
-        return Result.error("Player is not whitelisted");
-    }
-
-    @Override
-    public List<MinecraftAccount> getWhitelistedPlayers() {
-        List<MinecraftAccount> accounts = new ArrayList<>();
-        MinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
-
-        if (server != null && server.getPlayerList() != null) {
-            for (String player : server.getPlayerList().getWhiteList().getUserList()) {
-                MinecraftAccount account = MinecraftAccount.standard(player);
-                accounts.add(account);
-            }
-        }
-
-        return accounts;
-    }
-
-    @Override
     public Pair<Integer, Integer> getPlayerCounts() {
         MinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
         return Pair.of(server.getPlayerCount(), server.getMaxPlayers());
@@ -205,19 +149,6 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         command = command.replace("%role%", event.getMember().getRoles().stream().map(Role::getName).collect(Collectors.joining()));
 
         SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, event, name);
-    }
-
-    private void kickNonWhitelisted() {
-        PlayerList playerlist = ServerEvents.getInstance().getMinecraftServer().getPlayerList();
-        UserWhiteList whitelist = playerlist.getWhiteList();
-
-        for(ServerPlayer serverplayerentity : Lists.newArrayList(playerlist.getPlayers())) {
-            if (!whitelist.isWhiteListed(serverplayerentity.getGameProfile())) {
-                serverplayerentity.connection.disconnect(
-                        new TranslatableComponent("multiplayer.disconnect.not_whitelisted")
-                );
-            }
-        }
     }
 
     @Override

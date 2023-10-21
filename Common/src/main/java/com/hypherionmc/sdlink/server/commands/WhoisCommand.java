@@ -30,7 +30,7 @@ public class WhoisCommand {
                                 MinecraftAccount account = MinecraftAccount.fromGameProfile(profiles.stream().findFirst().get());
                                 String value;
 
-                                if (account.isAccountLinked()) {
+                                if (account.isAccountVerified()) {
                                     value = account.getDiscordName();
                                 } else {
                                     value = "Unlinked";
