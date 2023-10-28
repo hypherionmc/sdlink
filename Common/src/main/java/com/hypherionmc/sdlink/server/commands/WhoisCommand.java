@@ -27,7 +27,7 @@ public class WhoisCommand {
                                     return 1;
                                 }
 
-                                MinecraftAccount account = MinecraftAccount.fromGameProfile(profiles.stream().findFirst().get());
+                                MinecraftAccount account = MinecraftAccount.of(profiles.stream().findFirst().get());
                                 String value;
 
                                 if (account.isAccountVerified()) {

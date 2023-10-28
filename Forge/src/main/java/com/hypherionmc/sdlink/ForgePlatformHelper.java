@@ -1,6 +1,7 @@
 package com.hypherionmc.sdlink;
 
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
+import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -13,14 +14,16 @@ import redstonedubstep.mods.vanishmod.VanishUtil;
 public class ForgePlatformHelper implements SDLinkMCPlatform {
 
     @Override
-    public void executeCommand(String command, int permLevel, MessageReceivedEvent event, String member) {
+    public Result executeCommand(String command, int permLevel, MessageReceivedEvent event, String member) {
         MinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
         SDLinkFakePlayer fakePlayer = new SDLinkFakePlayer(server, permLevel, member, event);
 
         try {
             server.getCommands().performCommand(fakePlayer, command);
+            return Result.success("Command sent to server");
         } catch (Exception e) {
             fakePlayer.sendFailure(new TextComponent(e.getMessage()));
+            return Result.error(e.getMessage());
         }
     }
 

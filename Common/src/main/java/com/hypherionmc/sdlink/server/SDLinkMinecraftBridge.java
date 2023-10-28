@@ -117,7 +117,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
 
         if (server != null && server.getPlayerList() != null) {
             server.getPlayerList().getPlayers().forEach(p -> {
-                MinecraftAccount account = MinecraftAccount.fromGameProfile(p.getGameProfile());
+                MinecraftAccount account = MinecraftAccount.of(p.getGameProfile());
                 accounts.add(account);
             });
         }
@@ -139,7 +139,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
     }
 
     @Override
-    public void executeMinecraftCommand(String command, int permLevel, MessageReceivedEvent event, @Nullable SDLinkAccount account) {
+    public Result executeMinecraftCommand(String command, int permLevel, MessageReceivedEvent event, @Nullable SDLinkAccount account) {
         String name = event.getMember().getEffectiveName();
         if (account != null) {
             name = account.getUsername();
@@ -148,7 +148,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         command = command.replace("%linked_user%", name);
         command = command.replace("%role%", event.getMember().getRoles().stream().map(Role::getName).collect(Collectors.joining()));
 
-        SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, event, name);
+        return SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, event, name);
     }
 
     @Override

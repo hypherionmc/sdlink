@@ -8,24 +8,19 @@ import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
-import com.hypherionmc.sdlink.core.managers.RoleManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
-import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.core.util.LogReader;
-import com.hypherionmc.sdlink.core.util.SDLinkUtils;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
-import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Role;
 import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
 import com.mojang.authlib.GameProfile;
@@ -39,11 +34,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.Random;
-
-import static com.hypherionmc.sdlink.core.managers.DatabaseManager.sdlinkDatabase;
 
 public class ServerEvents {
 
@@ -148,7 +138,7 @@ public class ServerEvents {
                     msg = MentionUtil.parse(msg);
                 }
 
-                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName());
+                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile);
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                         .message(msg)
                         .author(!fromServer ? author : DiscordAuthor.SERVER)
@@ -199,8 +189,13 @@ public class ServerEvents {
             if (player == null)
                 return;
 
+            DiscordAuthor author = DiscordAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : player.getName().getString());
+
+            if (profile != null)
+                author.setGameProfile(profile);
+
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : player.getName().getString()))
+                    .author(author)
                     .message(msg)
                     .build();
 
@@ -216,8 +211,13 @@ public class ServerEvents {
             if (!target.equals("@a"))
                 return;
 
+            DiscordAuthor author = DiscordAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : player.getName().getString());
+
+            if (profile != null)
+                author.setGameProfile(profile);
+
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(DiscordAuthor.of(username, uuid == null ? "" : uuid, profile.isComplete() ? profile.getName() : player.getName().getString()))
+                    .author(author)
                     .message(ModUtils.resolve(ComponentArgument.getComponent(context, "message")))
                     .build();
 
@@ -345,52 +345,11 @@ public class ServerEvents {
             return;
 
         if (SDLinkConfig.INSTANCE.accessControl.enabled) {
-            MinecraftAccount account = MinecraftAccount.fromGameProfile(event.getGameProfile());
-            SDLinkAccount sdLinkAccount = account.getStoredAccount();
+            MinecraftAccount account = MinecraftAccount.of(event.getGameProfile());
+            var result = account.canLogin();
 
-            if (sdLinkAccount == null) {
-                event.setMessage(new TextComponent("Failed to load your account"));
-                return;
-            }
-
-            if (!account.isAccountVerified()) {
-                if (SDLinkUtils.isNullOrEmpty(sdLinkAccount.getVerifyCode())) {
-                    int code = new Random().nextInt(1000, 9999);
-                    sdLinkAccount.setVerifyCode(String.valueOf(code));
-                    sdlinkDatabase.upsert(sdLinkAccount);
-                    sdlinkDatabase.reloadCollection("verifiedaccounts");
-                    event.setMessage(new TextComponent(SDLinkConfig.INSTANCE.accessControl.verificationMessages.accountVerify.replace("{code}", String.valueOf(code))));
-                } else {
-                    event.setMessage(new TextComponent(SDLinkConfig.INSTANCE.accessControl.verificationMessages.accountVerify.replace("{code}", sdLinkAccount.getVerifyCode())));
-                }
-                return;
-            }
-
-            Result result = account.checkAccessControl();
-
-            if (result.isError()) {
-                switch (result.getMessage()) {
-                    case "notFound" -> {
-                        event.setMessage(new TextComponent("Account not found in server database"));
-                    }
-                    case "noGuildFound" -> {
-                        event.setMessage(new TextComponent("No Discord Server Found"));
-                    }
-                    case "memberNotFound" -> {
-                        event.setMessage(new TextComponent(SDLinkConfig.INSTANCE.accessControl.verificationMessages.nonMember));
-                    }
-                    case "rolesNotFound" -> {
-                        event.setMessage(
-                                new TextComponent(
-                                        SDLinkConfig.INSTANCE
-                                                .accessControl
-                                                .verificationMessages
-                                                .requireRoles
-                                                .replace("{roles}", ArrayUtils.toString(RoleManager.getVerificationRoles().stream().map(Role::getName).toList())))
-                        );
-                    }
-                }
-            }
+            if (result.isError())
+                event.setMessage(new TextComponent(result.getMessage()));
         }
     }
 
