@@ -1,6 +1,7 @@
 package com.hypherionmc.sdlink.mixin;
 
 import com.hypherionmc.sdlink.client.ClientEvents;
+import com.hypherionmc.sdlink.client.MentionsController;
 import com.hypherionmc.sdlink.shaded.javassist.bytecode.Opcode;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
@@ -50,7 +51,7 @@ public abstract class ChatInputSuggestorMixin {
             )
     )
     private void injectSuggestions(CallbackInfo ci) {
-        if (ClientEvents.mentionsEnabled) {
+        if (ClientEvents.mentionsEnabled && MentionsController.isLastMentionConditional()) {
             this.showSuggestions(true);
         }
     }
@@ -58,27 +59,23 @@ public abstract class ChatInputSuggestorMixin {
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyVariable(method = "updateCommandInfo", at = @At(value = "STORE"), ordinal = 0, name = "collection")
     private Collection<String> injectMentions(Collection<String> vanilla) {
-        if (ClientEvents.mentionsEnabled) {
-            ArrayList<String> newSuggest = new ArrayList<>(vanilla);
+        ArrayList<String> newSuggest = new ArrayList<>(vanilla);
 
-            if ((!ClientEvents.users.isEmpty() && ClientEvents.roles.isEmpty() && ClientEvents.channels.isEmpty())) {
-                String currentInput = this.input.getValue();
-                int currentCursorPosition = this.input.getCursorPosition();
+        String currentInput = this.input.getValue();
+        int currentCursorPosition = this.input.getCursorPosition();
 
-                String textBeforeCursor = currentInput.substring(0, currentCursorPosition);
-                int startOfCurrentWord = getLastWordIndex(textBeforeCursor);
+        String textBeforeCursor = currentInput.substring(0, currentCursorPosition);
+        int startOfCurrentWord = getLastWordIndex(textBeforeCursor);
 
-                String currentWord = textBeforeCursor.substring(startOfCurrentWord);
-                String finalWord = currentWord.replace("[", "").replace("]", "");
+        String currentWord = textBeforeCursor.substring(startOfCurrentWord);
+        String finalWord = currentWord.replace("[", "").replace("]", "");
 
-                ClientEvents.roles.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
-                ClientEvents.channels.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
-                ClientEvents.users.keySet().stream().filter(p -> p.contains(finalWord)).forEach(k -> newSuggest.add("[" + k + "]"));
-            }
+        Collection<String> mentions = MentionsController.getMentions(finalWord);
 
-            return newSuggest;
+        if (!mentions.isEmpty()) {
+            mentions.forEach(m -> newSuggest.add("[" + m + "]"));
         }
 
-        return vanilla;
+        return newSuggest;
     }
 }

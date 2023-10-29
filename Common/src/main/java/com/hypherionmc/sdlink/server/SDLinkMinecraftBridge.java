@@ -12,7 +12,7 @@ import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Member;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Role;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import com.hypherionmc.sdlink.util.ModUtils;
+import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -85,7 +85,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         component.append(Component.literal(prefix.substring(lastAppendPosition)).withStyle(baseStyle));
 
         try {
-            MutableComponent finalComponent = component.append(ModUtils.resolve(s1).copy());
+            MutableComponent finalComponent = component.append(SDLinkChatUtils.parseChatLinks(s1));
 
             ServerEvents.getInstance().getMinecraftServer().getPlayerList().broadcastSystemMessage(
                     finalComponent,
