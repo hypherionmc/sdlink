@@ -21,8 +21,8 @@ import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
-import com.hypherionmc.sdlink.util.MentionUtil;
 import com.hypherionmc.sdlink.util.ModUtils;
+import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
@@ -134,7 +134,7 @@ public class ServerEvents {
                 String msg = ModUtils.resolve(message);
 
                 if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
-                    msg = MentionUtil.parse(msg);
+                    msg = SDLinkChatUtils.parse(msg);
                 }
 
                 DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile);
