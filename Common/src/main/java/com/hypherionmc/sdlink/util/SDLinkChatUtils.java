@@ -3,6 +3,7 @@ package com.hypherionmc.sdlink.util;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 
 import java.util.regex.Matcher;
@@ -66,9 +67,10 @@ public class SDLinkChatUtils {
 
             component.append(ModUtils.resolve(msg));
 
-            Style emptyStyle = Style.EMPTY;
-            emptyStyle.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-            emptyStyle.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to Open")));
+            Style emptyStyle = Style.EMPTY
+                    .withColor(ChatFormatting.BLUE)
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to Open")));
 
             MutableComponent urlComponent = new TextComponent(url).withStyle(emptyStyle);
             component.append(urlComponent);
