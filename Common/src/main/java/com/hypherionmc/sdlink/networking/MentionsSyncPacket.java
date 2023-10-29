@@ -2,9 +2,11 @@ package com.hypherionmc.sdlink.networking;
 
 import com.hypherionmc.craterlib.core.network.CraterPacket;
 import com.hypherionmc.sdlink.client.ClientEvents;
+import com.hypherionmc.sdlink.client.MentionsController;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
@@ -36,7 +38,7 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
         CompoundTag usersTag = new CompoundTag();
         roles.forEach(rolesTag::putString);
         channelHashMap.forEach(channelsTag::putString);
-        users.forEach(channelsTag::putString);
+        users.forEach(usersTag::putString);
 
         tag.put("roles", rolesTag);
         tag.put("channels", channelsTag);
@@ -73,15 +75,18 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
             @Override
             public void handle(MentionsSyncPacket mentionsSyncPacket, Player player, Object o) {
                 if (!(roles == null || roles.isEmpty())) {
-                    ClientEvents.roles = roles;
+                    ResourceLocation rrl = new ResourceLocation("sdlink:roles");
+                    MentionsController.registerMention(rrl, roles.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
                 }
 
                 if (!(channelHashMap == null || channelHashMap.isEmpty())) {
-                    ClientEvents.channels = channelHashMap;
+                    ResourceLocation crl = new ResourceLocation("sdlink:channels");
+                    MentionsController.registerMention(crl, channelHashMap.keySet(), currentWord -> currentWord.startsWith("[#") || currentWord.startsWith("#"));
                 }
 
                 if (!(users == null || users.isEmpty())) {
-                    ClientEvents.users = users;
+                    ResourceLocation url = new ResourceLocation("sdlink:users");
+                    MentionsController.registerMention(url, users.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
                 }
 
                 ClientEvents.mentionsEnabled = mentionsEnabled;

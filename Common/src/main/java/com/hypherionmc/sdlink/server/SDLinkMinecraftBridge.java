@@ -13,6 +13,7 @@ import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Member;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.entities.Role;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import com.hypherionmc.sdlink.util.ModUtils;
+import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
