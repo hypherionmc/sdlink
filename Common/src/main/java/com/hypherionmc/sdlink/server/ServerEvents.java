@@ -32,6 +32,7 @@ import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.UserBanList;
 import net.minecraft.world.entity.player.Player;
 
 public class ServerEvents {
@@ -276,6 +277,21 @@ public class ServerEvents {
         if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
             return;
 
+        if (SDLinkConfig.INSTANCE.accessControl.enabled) {
+            try {
+                if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
+                    MinecraftAccount account = MinecraftAccount.of(event.getPlayer().getGameProfile());
+                    UserBanList list = this.minecraftServer.getPlayerList().getBans();
+                    if (list.isBanned(event.getPlayer().getGameProfile())) {
+                        account.banDiscordMember();
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {
             String name = ModUtils.resolve(event.getPlayer().getDisplayName());
 
@@ -345,6 +361,19 @@ public class ServerEvents {
 
         if (SDLinkConfig.INSTANCE.accessControl.enabled) {
             MinecraftAccount account = MinecraftAccount.of(event.getGameProfile());
+
+            try {
+                if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
+                    UserBanList list = this.minecraftServer.getPlayerList().getBans();
+                    if (list.isBanned(event.getGameProfile())) {
+                        account.banDiscordMember();
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             var result = account.canLogin();
 
             if (result.isError())
