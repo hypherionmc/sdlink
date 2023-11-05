@@ -11,7 +11,6 @@ buildscript {
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
@@ -134,31 +133,4 @@ reobf {
 }
 
 build.dependsOn reobfShadowJar
-jar.finalizedBy('reobfJar')
-
-publisher {
-    apiKeys {
-        modrinth = System.getenv("MODRINTH_TOKEN")
-        curseforge = System.getenv("CURSE_TOKEN")
-    }
-
-    curseID = 541320
-    modrinthID = modrinth_id
-    versionType = "release"
-    changelog = rootProject.file("changelog-forge.md")
-    version = "${minecraft_version}-${project.version}"
-    displayName = "[FORGE 1.19.x] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
-    loaders = ["forge"]
-    artifact = jar
-
-    modrinthDepends {
-        required = ["Nn8Wasaq"]
-    }
-
-    curseDepends {
-        required = ["craterlib"]
-    }
-}
-
-publishMod.dependsOn(build)
+jar.finalizedBy('reobfShadowJar')

@@ -1,3 +1,8 @@
+plugins {
+    id "com.hypherionmc.modutils.modfusioner" version "1.0.+"
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
+}
+
 ext {
     release=project.properties['release'] ?: false
 }
@@ -8,6 +13,32 @@ var final_version = "${base_version}.${version_patch}"
 // CI Support
 if (!release && System.getenv('BUILD_NUMBER') != null) {
     final_version = "${base_version}.${System.getenv('BUILD_NUMBER')}d"
+}
+
+fusioner {
+    packageGroup = project.group
+    mergedJarName = "SimpleDiscordLink-combo-${minecraft_version}"
+    //outputDirectory = "artifacts/merged"
+    jarVersion = final_version
+
+    forge {
+        projectName = "Forge"
+        inputTaskName = "jar"
+
+        mixin "${mod_id}.mixins.json"
+        mixin "${mod_id}-forge.mixins.json"
+
+        addRelocate "me.hypherionmc.mcdiscordformatter", "forge.me.hypherionmc.mcdiscordformatter"
+    }
+
+    fabric {
+        projectName = "Fabric"
+        inputTaskName = "remapJar"
+
+        addRelocate "me.hypherionmc.mcdiscordformatter", "fabric.me.hypherionmc.mcdiscordformatter"
+    }
+
+    relocateDuplicate "com.hypherionmc.sdlink.shaded"
 }
 
 subprojects {
@@ -83,3 +114,31 @@ subprojects {
 
     build.finalizedBy(copyAllArtifacts)
 }
+
+publisher {
+    apiKeys {
+        modrinth = System.getenv("MODRINTH_TOKEN")
+        curseforge = System.getenv("CURSE_TOKEN")
+    }
+
+    curseID = 541320
+    modrinthID = modrinth_id
+    versionType = "release"
+    changelog = rootProject.file("changelog.md")
+    version = "${minecraft_version}-${project.version}"
+    displayName = "[1.19.x] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
+    loaders = ["forge", "fabric", "quilt"]
+    artifact = fusejars
+
+    modrinthDepends {
+        required = ["Nn8Wasaq"]
+    }
+
+    curseDepends {
+        required = ["craterlib"]
+    }
+}
+
+publishCurseforge.dependsOn(fusejars)
+publishModrinth.dependsOn(fusejars)
