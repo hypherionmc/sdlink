@@ -28,7 +28,7 @@ public class PlayerListMixin {
     private void injectBroadcast(Component component, ChatType chatType, UUID uUID, CallbackInfo ci) {
         String thread = Thread.currentThread().getStackTrace()[3].getClassName();
 
-        if (thread.startsWith("net.minecraft") || thread.startsWith("com.hypherionmc"))
+        if (thread.startsWith("net.minecraft") || thread.contains("com.hypherionmc"))
             return;
 
         if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
