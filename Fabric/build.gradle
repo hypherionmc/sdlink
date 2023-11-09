@@ -1,91 +1,62 @@
-plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
-    id 'idea'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
-}
-
-archivesBaseName = "${mod_id}-fabric-${minecraft_version}"
-
-configurations {
-    shade
-    implementation.extendsFrom shade
-}
+archivesBaseName = "${mod_name.replace(" ", "")}-Fabric-${minecraft_version}"
 
 dependencies {
     // Core
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-    implementation project(path: ':Common', configuration: 'namedElements')
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api}"
 
     // Add your deps here
     implementation "com.hypherionmc.craterlib:CraterLib-fabric-1.19.2:${craterlib}:dev"
-    implementation("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
     implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
 
-    shade("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
-    shade "me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}"
+    // Compat
+    modImplementation "maven.modrinth:fabrictailor:2.0.1"
+    modImplementation "maven.modrinth:simplechatfork:1.6.1"
+    modImplementation "maven.modrinth:vanish:1.4.0+1.19.3"
 
-    modCompileOnly "maven.modrinth:fabrictailor:2.0.1"
-    modCompileOnly "maven.modrinth:simplechatfork:1.6.1"
-    modCompileOnly "maven.modrinth:vanish:1.4.0+1.19.3"
+    // Do not edit or remove
+    implementation project(":Common")
 }
 
 shadowJar {
     from sourceSets.main.output
-
     configurations = [project.configurations.shade]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    setArchiveClassifier('dev-shadow')
+}
+
+/**
+ * ===============================================================================
+ * =       DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING        =
+ * ===============================================================================
+ */
+
+unimined.minecraft {
+    fabric {
+        loader fabric_loader
+    }
 }
 
 remapJar {
-    //dependsOn shadowJar
-    inputFile = shadowJar.archiveFile.get()
+    inputFile.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier.set null
 }
 
-prepareRemapJar.dependsOn(shadowJar)
-
-loom {
-    shareCaches()
-    runs {
-        client {
-            client()
-            setConfigName("Fabric Client")
-            ideConfigGenerated(true)
-            runDir("run")
-        }
-        server {
-            server()
-            setConfigName("Fabric Server")
-            ideConfigGenerated(true)
-            runDir("run")
-        }
-    }
+jar {
+    archiveClassifier.set "dev"
 }
 
 processResources {
-    from project(':Common').sourceSets.main.resources
-    inputs.property 'version', project.version
+    from project(":Common").sourceSets.main.resources
+    def buildProps = project.properties.clone()
 
-    filesMatching('fabric.mod.json') {
-        expand 'version': project.version
-    }
-
-    filesMatching("${mod_id}.mixins.json") {
-        expand "refmap_target": "${archivesBaseName}-"
+    filesMatching(['fabric.mod.json']) {
+        expand buildProps
     }
 }
 
-tasks.withType(JavaCompile) {
-    source(project(':Common').sourceSets.main.allSource)
-}
+compileTestJava.enabled = false
 
-task delDevJar {
-    doLast {
-        def tree = fileTree('build/libs')
-        tree.include '**/*-dev.jar'
-        tree.include '**/*-all.jar'
-        tree.each { it.delete() }
-    }
+tasks.withType(JavaCompile).configureEach {
+    source(project(":Common").sourceSets.main.allSource)
 }
-build.finalizedBy delDevJar
