@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "sdlink",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Simple Discord Link",
+  "name": "${mod_name}",
   "description": "A simple Minecraft to Discord Chat bot with Whitelisting",
   "authors": [
-    "HypherionSA"
+    "${mod_author}"
   ],
   "contact": {
     "homepage": "https://github.com/firstdarkdev/sdlink",
