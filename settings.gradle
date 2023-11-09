@@ -2,10 +2,10 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven {
-            url "https://maven.firstdark.dev/releases"
+            url "https://mcentral.firstdark.dev/releases"
         }
         maven {
-            url "https://mcentral.firstdark.dev/releases"
+            url "https://maven.firstdark.dev/releases"
         }
     }
 }

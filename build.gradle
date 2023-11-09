@@ -1,3 +1,11 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.0.0' apply false
+    id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT" apply false
+    id "com.hypherionmc.modutils.modfusioner" version "1.0.10"
+    id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
+}
+
 ext {
     release=project.properties['release'] ?: false
 }
@@ -10,12 +18,20 @@ if (!release && System.getenv('BUILD_NUMBER') != null) {
     final_version = "${base_version}.${System.getenv('BUILD_NUMBER')}d"
 }
 
+group = project_group
+version = "${final_version}"
+
 subprojects {
-    apply plugin: 'java'
+    apply plugin: "xyz.wagyourtail.unimined"
+    apply plugin: "java"
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    group = rootProject.group
+    version = rootProject.version
 
-    version = "${final_version}"
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     repositories {
         mavenCentral()
@@ -42,6 +58,17 @@ subprojects {
         }
     }
 
+    configurations {
+        shade
+        modCompileOnly
+        implementation.extendsFrom shade
+        compileOnly.extendsFrom modCompileOnly
+    }
+
+    dependencies {
+        shade("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
+    }
+
     jar {
         manifest {
             attributes([
@@ -59,6 +86,21 @@ subprojects {
         }
     }
 
+    /**
+     * ===============================================================================
+     * =       DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING        =
+     * ===============================================================================
+     */
+
+    unimined.minecraft(sourceSets.main, true) {
+        version minecraft_version
+
+        mappings {
+            mojmap()
+            devNamespace "mojmap"
+        }
+    }
+
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = 'UTF-8'
         it.options.release = 17
@@ -72,14 +114,80 @@ subprojects {
         delete "$rootDir/artifacts"
     }
 
-    task copyAllArtifacts(type: Copy) {
-        if (project.name !== "Common") {
+    if (project.name !== 'Common') {
+        tasks.register('delDevJar') {
+            doLast {
+                def tree = fileTree('build/libs')
+                tree.include '**/*-dev-shadow.jar'
+                tree.include '**/*-dev.jar'
+                tree.include '**/*-all.jar'
+                tree.include '**/*-slim.jar'
+                tree.each { it.delete() }
+            }
+        }
+        build.finalizedBy delDevJar
+
+        tasks.register('copyAllArtifacts', Copy) {
             from "$buildDir/libs"
             into "$rootDir/artifacts"
             include("*.jar")
-            delete("$rootDir/artifacts/*-common-*.jar")
         }
+
+        build.finalizedBy(copyAllArtifacts)
+    }
+}
+
+fusioner {
+    packageGroup = project.group
+    mergedJarName = "SimpleDiscordLink-Combo-${minecraft_version}"
+    //outputDirectory = "artifacts/merged"
+    jarVersion = final_version
+
+    forge {
+        projectName = "Forge"
+        inputTaskName = "remapJar"
+
+        mixin "${mod_id}.mixins.json"
+        mixin "${mod_id}-forge.mixins.json"
+
+        addRelocate "me.hypherionmc.mcdiscordformatter", "forge.me.hypherionmc.mcdiscordformatter"
     }
 
-    build.finalizedBy(copyAllArtifacts)
+    fabric {
+        projectName = "Fabric"
+        inputTaskName = "remapJar"
+
+        addRelocate "me.hypherionmc.mcdiscordformatter", "fabric.me.hypherionmc.mcdiscordformatter"
+    }
+
+    relocateDuplicate "com.hypherionmc.sdlink.shaded"
 }
+
+publisher {
+    apiKeys {
+        modrinth = System.getenv("MODRINTH_TOKEN")
+        curseforge = System.getenv("CURSE_TOKEN")
+    }
+
+    debug = true
+    curseID = curse_id
+    modrinthID = modrinth_id
+    versionType = "release"
+    changelog = rootProject.file("changelog.md")
+    version = "${minecraft_version}-${project.version}"
+    displayName = "[1.20.x] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.20", "1.20.1", "1.20.2"]
+    loaders = ["forge", "fabric", "quilt"]
+    artifact = fusejars
+
+    modrinthDepends {
+        required = ["Nn8Wasaq"]
+    }
+
+    curseDepends {
+        required = ["craterlib"]
+    }
+}
+
+publishCurseforge.dependsOn(fusejars)
+publishModrinth.dependsOn(fusejars)

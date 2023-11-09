@@ -1,25 +1,22 @@
-plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
-}
-
-archivesBaseName = "${mod_id}-shared-${minecraft_version}"
+archivesBaseName = "${mod_name.replace(" ", "")}-Common-${minecraft_version}"
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-    compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
-
     implementation "com.hypherionmc.craterlib:CraterLib-common-1.20:${craterlib}:dev"
-    implementation("com.hypherionmc.sdlink:sdlink-core:${library_ver}")
     implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
 }
 
-loom {
-    shareCaches()
-    remapArchives = false
-    mixin {
-        useLegacyMixinAp = false
+/**
+ * ===============================================================================
+ * =       DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING        =
+ * ===============================================================================
+ */
+
+unimined.minecraft {
+    fabric {
+        loader fabric_loader
     }
+
+    defaultRemapJar = false
 }
 
 processResources {
