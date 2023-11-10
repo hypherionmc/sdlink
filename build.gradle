@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.0.0' apply false
     id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT" apply false
-    id "com.hypherionmc.modutils.modfusioner" version "1.0.+"
+    id "com.hypherionmc.modutils.modfusioner" version "1.0.9"
     id "me.hypherionmc.modutils.modpublisher" version "1.0.+"
 }
 
