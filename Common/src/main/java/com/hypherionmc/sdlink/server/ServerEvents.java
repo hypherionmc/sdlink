@@ -186,10 +186,11 @@ public class ServerEvents {
             String msg = ModUtils.strip(command, "say", "me");
             msg = ModUtils.resolve(Component.literal(msg));
 
-            if (player == null)
-                return;
-
-            DiscordAuthor author = DiscordAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : player.getName().getString());
+            DiscordAuthor author = DiscordAuthor.of(
+                    username,
+                    uuid == null ? "" : uuid,
+                    profile != null ? profile.getName() : (player != null ? player.getName().getString() : "server")
+            );
 
             if (profile != null)
                 author.setGameProfile(profile);
