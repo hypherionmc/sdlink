@@ -6,7 +6,7 @@ dependencies {
 
     // Add your deps here
     implementation "com.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}:dev"
-    implementation("me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}")
+    shade("me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}")
 
     // Compat
     modImplementation "maven.modrinth:fabrictailor:2.1.2"
