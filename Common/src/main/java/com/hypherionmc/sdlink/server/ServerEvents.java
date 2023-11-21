@@ -65,7 +65,7 @@ public class ServerEvents {
     public void onServerStarting(CraterServerLifecycleEvent.Starting event) {
         this.minecraftServer = event.getServer();
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarting) {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.START_STOP)
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarting)
                     .author(DiscordAuthor.SERVER)
                     .build();
@@ -79,7 +79,7 @@ public class ServerEvents {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarted) {
             BotController.INSTANCE.checkWhiteListing();
 
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.START_STOP)
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarted)
                     .author(DiscordAuthor.SERVER)
                     .build();
@@ -91,7 +91,7 @@ public class ServerEvents {
     @CraterEventListener
     public void onServerStopping(CraterServerLifecycleEvent.Stopping event) {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopping) {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.START_STOP)
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopping)
                     .author(DiscordAuthor.SERVER)
                     .build();
@@ -103,7 +103,7 @@ public class ServerEvents {
     @CraterEventListener
     public void onServerStoppedEvent(CraterServerLifecycleEvent.Stopped event) {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopped) {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.START_STOP)
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)
                     .author(DiscordAuthor.SERVER)
                     .afterSend(() -> BotController.INSTANCE.shutdownBot(true))
@@ -265,7 +265,7 @@ public class ServerEvents {
         if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
             return;
 
-        DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN_LEAVE)
+        DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", ModUtils.resolve(event.getPlayer().getDisplayName())))
                 .author(DiscordAuthor.SERVER)
                 .build();
@@ -275,9 +275,6 @@ public class ServerEvents {
 
     @CraterEventListener
     public void playerLeaveEvent(CraterPlayerEvent.PlayerLoggedOut event) {
-        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
-            return;
-
         if (SDLinkConfig.INSTANCE.accessControl.enabled) {
             try {
                 if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
@@ -293,10 +290,13 @@ public class ServerEvents {
             }
         }
 
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
+            return;
+
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {
             String name = ModUtils.resolve(event.getPlayer().getDisplayName());
 
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.JOIN_LEAVE)
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", name))
                     .author(DiscordAuthor.SERVER)
                     .build();
