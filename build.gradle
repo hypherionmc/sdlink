@@ -188,6 +188,3 @@ publisher {
         required = ["craterlib"]
     }
 }
-
-publishCurseforge.dependsOn(fusejars)
-publishModrinth.dependsOn(fusejars)
