@@ -1,7 +1,7 @@
 archivesBaseName = "${mod_name.replace(" ", "")}-Common-${minecraft_version}"
 
 dependencies {
-    implementation "com.hypherionmc.craterlib:CraterLib-common-1.20:${craterlib}:dev"
+    implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20:${craterlib}:dev"
     implementation("me.hypherionmc.sdlink:mcdiscordformatter-common-1.19.1:${formatter_ver}")
 }
 

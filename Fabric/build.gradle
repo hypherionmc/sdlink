@@ -5,7 +5,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api}"
 
     // Add your deps here
-    implementation "com.hypherionmc.craterlib:CraterLib-fabric-1.20:${craterlib}:dev"
+    implementation "com.hypherionmc.craterlib:CraterLib-Fabric-1.20:${craterlib}:dev"
     shade("me.hypherionmc.sdlink:mcdiscordformatter-fabric-1.19.1:${formatter_ver}")
 
     // Compat
