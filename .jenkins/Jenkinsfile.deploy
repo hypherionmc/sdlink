@@ -9,7 +9,7 @@ pipeline {
         stage("Notify Discord") {
             steps {
                 discordSend webhookURL: env.FDD_WH_ADMIN,
-                        title: "Deploy Started: SDLink 1.19 Deploy #${BUILD_NUMBER}",
+                        title: "Deploy Started: SDLink 1.19.x Deploy #${BUILD_NUMBER}",
                         link: env.BUILD_URL,
                         result: 'SUCCESS',
                         description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})"
@@ -17,8 +17,6 @@ pipeline {
         }
         stage("Prepare") {
             steps {
-                sh "curl https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-forge.md --output changelog-forge.md"
-                sh "curl https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/changelog-fabric.md --output changelog-fabric.md"
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean"
             }
@@ -35,7 +33,7 @@ pipeline {
             deleteDir()
 
             discordSend webhookURL: env.FDD_WH_ADMIN,
-                    title: "SDLink 1.19 Deploy #${BUILD_NUMBER}",
+                    title: "SDLink 1.19.x Deploy #${BUILD_NUMBER}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
                     description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})\nStatus: ${currentBuild.currentResult}"
