@@ -1,0 +1,56 @@
+def projectName = "Simple Discord Link";
+def projectIcon = "https://cdn.modrinth.com/data/Sh0YauEf/icon.png";
+
+pipeline {
+    agent {
+        label "master"
+    }
+    tools {
+        jdk "JAVA17"
+    }
+
+    stages {
+        stage("Notify Discord") {
+            steps {
+                discordSend webhookURL: env.SSS_WEBHOOK,
+                        title: "Deploy Started: ${projectName} 1.18.2 Deploy #${BUILD_NUMBER}",
+                        link: env.BUILD_URL,
+                        result: 'SUCCESS',
+                        description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})"
+            }
+        }
+
+        stage("Prepare") {
+            steps {
+                sh "chmod +x ./gradlew"
+                sh "./gradlew clean"
+            }
+        }
+
+        stage("Build") {
+            steps {
+                sh "./gradlew fusejars"
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "./gradlew --stop"
+            archiveArtifacts artifacts: 'artifacts/fused/*.jar'
+
+            fddsnapshotter apiKey: env.PLATFORM_KEY,
+                projectSlug: "sdlink",
+                projectName: "${projectName}",
+                projectIcon: "${projectIcon}",
+                versionName: "Snapshot 3.0.${BUILD_NUMBER}",
+                version: "3.0.${BUILD_NUMBER}",
+                modLoaders: "forge|fabric|quilt",
+                minecraftVersions: "1.18.2",
+                failWebhook: env.SSS_WEBHOOK,
+                publishWebhooks: "${env.SSS_WEBHOOK}|${env.FDD_WH}"
+
+            deleteDir()
+        }
+    }
+}
