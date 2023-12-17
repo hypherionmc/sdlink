@@ -338,8 +338,8 @@ public class ServerEvents {
         try {
             if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.advancementMessages) {
                 String username = ModUtils.resolve(event.getPlayer().getDisplayName());
-                String finalAdvancement = ModUtils.resolve(event.getAdvancement().getDisplay().getTitle());
-                String advancementBody = ModUtils.resolve(event.getAdvancement().getDisplay().getDescription());
+                String finalAdvancement = ModUtils.resolve(event.getAdvancement().display().get().getTitle());
+                String advancementBody = ModUtils.resolve(event.getAdvancement().display().get().getDescription());
 
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENT)
                         .message(SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))

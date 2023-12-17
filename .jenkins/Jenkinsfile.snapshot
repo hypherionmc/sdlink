@@ -46,7 +46,7 @@ pipeline {
                 versionName: "Snapshot 3.0.${BUILD_NUMBER}",
                 version: "3.0.${BUILD_NUMBER}",
                 modLoaders: "forge|fabric|quilt",
-                minecraftVersions: "1.20|1.20.1|1.20.2",
+                minecraftVersions: "1.20.2|1.20.3|1.20.4",
                 failWebhook: env.SSS_WEBHOOK,
                 publishWebhooks: "${env.SSS_WEBHOOK}|${env.FDD_WH}"
 

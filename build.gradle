@@ -174,8 +174,8 @@ publisher {
     versionType = "beta"
     changelog = "https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md"
     version = "${minecraft_version}-${project.version}"
-    displayName = "[1.20.x] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.20", "1.20.1", "1.20.2"]
+    displayName = "[1.20.2/3/4] Simple Discord Link - ${project.version}"
+    gameVersions = ["1.20.2", "1.20.3", "1.20.4"]
     loaders = ["forge", "fabric", "quilt"]
     artifact = fusejars
 
