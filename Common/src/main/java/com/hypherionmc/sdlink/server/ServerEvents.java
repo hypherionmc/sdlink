@@ -406,9 +406,9 @@ public class ServerEvents {
 
     @CraterEventListener
     public void serverBroadcastEvent(MessageBroadcastEvent event) {
-        String thread = Thread.currentThread().getStackTrace()[3].getClassName();
+        String thread = event.getThreadName();
 
-        if (thread.startsWith("net.minecraft") || thread.startsWith("com.hypherionmc"))
+        if (thread.startsWith("net.minecraft") || thread.contains("com.hypherionmc"))
             return;
 
         if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
