@@ -15,6 +15,7 @@ import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageRecei
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -108,7 +109,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
     @Override
     public Pair<Integer, Integer> getPlayerCounts() {
         MinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
-        return Pair.of(server.getPlayerCount(), server.getMaxPlayers());
+        return Pair.of(server.getPlayerList().getPlayerCount(), server.getPlayerList().getMaxPlayers());
     }
 
     @Override
@@ -136,7 +137,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         MinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
         if (server == null)
             return "Unknown - Unknown";
-        return server.getServerModName() + " - " + server.getServerVersion();
+        return server.getServerModName() + " - " + SharedConstants.getCurrentVersion().getName();
     }
 
     @Override
