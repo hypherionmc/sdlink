@@ -2,7 +2,7 @@ package com.hypherionmc.sdlink;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.shaded.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
+import com.hypherionmc.sdlink.util.ModUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -26,12 +26,10 @@ public class SDLinkFakePlayer extends CommandSourceStack {
     @Override
     public void sendSuccess(Component component, boolean bl) {
         if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages) {
-            String msg = ChatFormatting.stripFormatting(component.getString());
             try {
-                msg = DiscordSerializer.INSTANCE.serialize(component.copy());
+                String msg = ModUtils.resolve(component);
+                event.getMessage().reply(msg).mentionRepliedUser(false).queue();
             } catch (Exception e) {}
-
-            event.getMessage().reply(msg).mentionRepliedUser(false).queue();
         }
     }
 

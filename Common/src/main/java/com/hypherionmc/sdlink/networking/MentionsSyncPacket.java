@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlink.networking;
 
+import com.hypherionmc.craterlib.core.abstraction.server.AbstractFriendlyByteBuff;
 import com.hypherionmc.craterlib.core.network.CraterPacket;
 import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.client.MentionsController;
@@ -44,7 +45,7 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
         tag.put("channels", channelsTag);
         tag.put("users", usersTag);
         tag.putBoolean("mentionsenabled", SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat);
-        friendlyByteBuf.writeNbt(tag);
+        AbstractFriendlyByteBuff.write(friendlyByteBuf, tag);
     }
 
     @Override
