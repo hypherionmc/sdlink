@@ -304,6 +304,9 @@ public class ServerEvents {
             }
         }
 
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
+            return;
+
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {
             String name = ModUtils.resolve(event.getPlayer().getDisplayName());
 
@@ -337,7 +340,7 @@ public class ServerEvents {
                         .message(SDLinkConfig.INSTANCE.messageFormatting.death.replace("%player%", name).replace("%message%", msg))
                         .author(DiscordAuthor.SERVER
                                 .setPlayerName(player.getDisplayName().getString())
-                                .setPlayerAvatar(player.getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(player)))
+                                .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                         .build();
 
                 message.sendMessage();
@@ -360,7 +363,7 @@ public class ServerEvents {
                         .message(SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))
                         .author(DiscordAuthor.SERVER
                                 .setPlayerName(event.getPlayer().getDisplayName().getString())
-                                .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
+                                .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                         .build();
 
                 discordMessage.sendMessage();
