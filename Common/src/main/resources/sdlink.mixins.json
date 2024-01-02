@@ -9,7 +9,7 @@
     "ChatInputSuggestorMixin"
   ],
   "server": [
-    "PlayerListMixin"
+
   ],
   "injectors": {
     "defaultRequire": 1
