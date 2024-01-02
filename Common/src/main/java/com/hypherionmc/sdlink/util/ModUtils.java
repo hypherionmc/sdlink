@@ -1,12 +1,12 @@
 package com.hypherionmc.sdlink.util;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import me.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
-import me.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
+import shadow.hypherionmc.mcdiscordformatter.discord.DiscordSerializer;
+import shadow.hypherionmc.mcdiscordformatter.minecraft.MinecraftSerializer;
 
 public class ModUtils {
 

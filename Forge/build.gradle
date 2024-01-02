@@ -8,7 +8,6 @@ configurations {
 
 dependencies {
     implementation "com.hypherionmc.craterlib:CraterLib-Forge-1.18.2:${craterlib}"
-    shade("me.hypherionmc.sdlink:mcdiscordformatter-forge-1.18.1:${formatter_ver}")
 
     // Compat
     modImplementation("maven.modrinth:vanishmod:1.1.11")

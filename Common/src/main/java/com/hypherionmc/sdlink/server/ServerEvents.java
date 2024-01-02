@@ -2,6 +2,7 @@ package com.hypherionmc.sdlink.server;
 
 import com.hypherionmc.craterlib.api.event.common.CraterLivingDeathEvent;
 import com.hypherionmc.craterlib.api.event.server.*;
+import com.hypherionmc.craterlib.core.abstraction.text.AbstractComponent;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.SDLinkConstants;
@@ -183,9 +184,18 @@ public class ServerEvents {
             username = "Server";
         }
 
-        if ((cmdName.startsWith("say") || cmdName.startsWith("me")) && SDLinkConfig.INSTANCE.chatConfig.sendSayCommand) {
-            String msg = ModUtils.strip(command, "say", "me");
-            msg = ModUtils.resolve(new TextComponent(msg));
+        if ((cmdName.equalsIgnoreCase("say") || cmdName.equalsIgnoreCase("me")) && SDLinkConfig.INSTANCE.chatConfig.sendSayCommand) {
+            String msg = command;
+
+            if (cmdName.equalsIgnoreCase("me")) {
+                msg = ModUtils.strip(command, "me");
+            }
+
+            if (cmdName.equalsIgnoreCase("say")) {
+                msg = ModUtils.strip(command, "say");
+            }
+
+            msg = ModUtils.resolve(AbstractComponent.literal(msg));
 
             DiscordAuthor author = DiscordAuthor.of(
                     username,
@@ -268,7 +278,9 @@ public class ServerEvents {
 
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", ModUtils.resolve(event.getPlayer().getDisplayName())))
-                .author(DiscordAuthor.SERVER)
+                .author(DiscordAuthor.SERVER
+                        .setPlayerName(event.getPlayer().getDisplayName().getString())
+                        .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                 .build();
 
         discordMessage.sendMessage();
@@ -276,6 +288,9 @@ public class ServerEvents {
 
     @CraterEventListener
     public void playerLeaveEvent(CraterPlayerEvent.PlayerLoggedOut event) {
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
+            return;
+
         if (SDLinkConfig.INSTANCE.accessControl.enabled) {
             try {
                 if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
@@ -299,7 +314,9 @@ public class ServerEvents {
 
             DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", name))
-                    .author(DiscordAuthor.SERVER)
+                    .author(DiscordAuthor.SERVER
+                            .setPlayerName(event.getPlayer().getDisplayName().getString())
+                            .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
                     .build();
 
             message.sendMessage();
@@ -323,7 +340,9 @@ public class ServerEvents {
 
                 DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                         .message(SDLinkConfig.INSTANCE.messageFormatting.death.replace("%player%", name).replace("%message%", msg))
-                        .author(DiscordAuthor.SERVER)
+                        .author(DiscordAuthor.SERVER
+                                .setPlayerName(player.getDisplayName().getString())
+                                .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                         .build();
 
                 message.sendMessage();
@@ -339,12 +358,14 @@ public class ServerEvents {
         try {
             if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.advancementMessages) {
                 String username = ModUtils.resolve(event.getPlayer().getDisplayName());
-                String finalAdvancement = ModUtils.resolve(event.getAdvancement().getDisplay().getTitle());
-                String advancementBody = ModUtils.resolve(event.getAdvancement().getDisplay().getDescription());
+                String finalAdvancement = ModUtils.resolve(event.getTitle());
+                String advancementBody = ModUtils.resolve(event.getDescription());
 
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENT)
                         .message(SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))
-                        .author(DiscordAuthor.SERVER)
+                        .author(DiscordAuthor.SERVER
+                                .setPlayerName(event.getPlayer().getDisplayName().getString())
+                                .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                         .build();
 
                 discordMessage.sendMessage();
@@ -380,6 +401,32 @@ public class ServerEvents {
 
             if (result.isError())
                 event.setMessage(new TextComponent(result.getMessage()));
+        }
+    }
+
+    @CraterEventListener
+    public void serverBroadcastEvent(MessageBroadcastEvent event) {
+        String thread = Thread.currentThread().getStackTrace()[3].getClassName();
+
+        if (thread.startsWith("net.minecraft") || thread.startsWith("com.hypherionmc"))
+            return;
+
+        if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
+            if (SDLinkConfig.INSTANCE.ignoreConfig.ignoredThread.stream().anyMatch(thread::startsWith))
+                return;
+        }
+
+        if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+            SDLinkConstants.LOGGER.info("Relaying message from {}", thread);
+        }
+
+        try {
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT).author(DiscordAuthor.SERVER).message(ModUtils.resolve(event.getComponent())).build();
+            message.sendMessage();
+        } catch (Exception e) {
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                SDLinkConstants.LOGGER.error("Failed to broadcast message", e);
+            }
         }
     }
 
