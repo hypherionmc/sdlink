@@ -58,7 +58,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
             }
         }
 
-        String prefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix;
+        String prefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", user.get());
         MutableComponent component = Component.empty();
         Style baseStyle = Style.EMPTY;
         Matcher matcher = patternStart.matcher(prefix);
@@ -75,10 +75,6 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
                 switch (var) {
                     case "color" -> baseStyle = baseStyle.withColor(TextColor.fromRgb(member.getColorRaw()));
                     case "end_color" -> baseStyle = baseStyle.withColor(ChatFormatting.WHITE);
-                }
-
-                if (var.equalsIgnoreCase("user")) {
-                    component.append(user.get()).withStyle(baseStyle);
                 }
             }
         }
