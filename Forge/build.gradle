@@ -7,7 +7,7 @@ configurations {
 }
 
 dependencies {
-    implementation "com.hypherionmc.craterlib:CraterLib-Forge-1.20.3:${craterlib}"
+    implementation "com.hypherionmc.craterlib:CraterLib-Forge-1.20.4:${craterlib}"
 
     // Compat
     modImplementation("maven.modrinth:vanishmod:1.1.12.1")

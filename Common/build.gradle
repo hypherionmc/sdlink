@@ -1,7 +1,7 @@
 archivesBaseName = "${mod_name.replace(" ", "")}-Common-${minecraft_version}"
 
 dependencies {
-    implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20.3:${craterlib}:dev"
+    implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20.4:${craterlib}:dev"
 }
 
 /**

@@ -1,14 +1,15 @@
 package com.hypherionmc.sdlink.networking;
 
 import com.hypherionmc.craterlib.core.abstraction.server.AbstractFriendlyByteBuff;
-import com.hypherionmc.craterlib.core.network.CraterPacket;
+import com.hypherionmc.craterlib.core.networking.data.PacketContext;
+import com.hypherionmc.craterlib.core.networking.data.PacketSide;
+import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.client.MentionsController;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 
@@ -16,7 +17,9 @@ import java.util.HashMap;
  * @author HypherionSA
  * Config Packet to send cache data from Server to Client to allow mentions
  */
-public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
+public class MentionsSyncPacket {
+
+    public static final ResourceLocation CHANNEL = new ResourceLocation(SDLinkConstants.MOD_ID, "syncpacket");
 
     private HashMap<String, String> roles;
     private HashMap<String, String> channelHashMap;
@@ -31,7 +34,31 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
         this.users = users;
     }
 
-    @Override
+    public static MentionsSyncPacket decode(FriendlyByteBuf buf) {
+        MentionsSyncPacket p = new MentionsSyncPacket();
+
+        CompoundTag tag = buf.readNbt();
+        if (tag == null)
+            return p;
+
+        CompoundTag rolesTag = tag.getCompound("roles");
+        CompoundTag channelsTag = tag.getCompound("channels");
+        CompoundTag usersTag = tag.getCompound("users");
+
+        p.roles = new HashMap<>();
+        rolesTag.getAllKeys().forEach(k -> p.roles.put(k, rolesTag.getString(k)));
+
+        p.channelHashMap = new HashMap<>();
+        channelsTag.getAllKeys().forEach(k -> p.channelHashMap.put(k, channelsTag.getString(k)));
+
+        p.users = new HashMap<>();
+        usersTag.getAllKeys().forEach(k -> p.users.put(k, usersTag.getString(k)));
+
+        p.mentionsEnabled = tag.getBoolean("mentionsenabled");
+
+        return p;
+    }
+
     public void write(FriendlyByteBuf friendlyByteBuf) {
         CompoundTag tag = new CompoundTag();
         CompoundTag rolesTag = new CompoundTag();
@@ -48,50 +75,27 @@ public class MentionsSyncPacket implements CraterPacket<MentionsSyncPacket> {
         AbstractFriendlyByteBuff.write(friendlyByteBuf, tag);
     }
 
-    @Override
-    public void read(FriendlyByteBuf friendlyByteBuf) {
-        CompoundTag tag = friendlyByteBuf.readNbt();
-        if (tag == null)
-            return;
+    public static void handle(PacketContext<MentionsSyncPacket> ctx) {
+        if (PacketSide.CLIENT.equals(ctx.side())) {
+            MentionsSyncPacket p = ctx.message();
 
-        CompoundTag rolesTag = tag.getCompound("roles");
-        CompoundTag channelsTag = tag.getCompound("channels");
-        CompoundTag usersTag = tag.getCompound("users");
-
-        roles = new HashMap<>();
-        rolesTag.getAllKeys().forEach(k -> roles.put(k, rolesTag.getString(k)));
-
-        channelHashMap = new HashMap<>();
-        channelsTag.getAllKeys().forEach(k -> channelHashMap.put(k, channelsTag.getString(k)));
-
-        users = new HashMap<>();
-        usersTag.getAllKeys().forEach(k -> users.put(k, usersTag.getString(k)));
-
-        mentionsEnabled = tag.getBoolean("mentionsenabled");
-    }
-
-    @Override
-    public PacketHandler<MentionsSyncPacket> createHandler() {
-        return new PacketHandler<>() {
-            @Override
-            public void handle(MentionsSyncPacket mentionsSyncPacket, Player player, Object o) {
-                if (!(roles == null || roles.isEmpty())) {
-                    ResourceLocation rrl = new ResourceLocation("sdlink:roles");
-                    MentionsController.registerMention(rrl, roles.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
-                }
-
-                if (!(channelHashMap == null || channelHashMap.isEmpty())) {
-                    ResourceLocation crl = new ResourceLocation("sdlink:channels");
-                    MentionsController.registerMention(crl, channelHashMap.keySet(), currentWord -> currentWord.startsWith("[#") || currentWord.startsWith("#"));
-                }
-
-                if (!(users == null || users.isEmpty())) {
-                    ResourceLocation url = new ResourceLocation("sdlink:users");
-                    MentionsController.registerMention(url, users.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
-                }
-
-                ClientEvents.mentionsEnabled = mentionsEnabled;
+            if (!(p.roles == null || p.roles.isEmpty())) {
+                ResourceLocation rrl = new ResourceLocation("sdlink:roles");
+                MentionsController.registerMention(rrl, p.roles.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
             }
-        };
+
+            if (!(p.channelHashMap == null || p.channelHashMap.isEmpty())) {
+                ResourceLocation crl = new ResourceLocation("sdlink:channels");
+                MentionsController.registerMention(crl, p.channelHashMap.keySet(), currentWord -> currentWord.startsWith("[#") || currentWord.startsWith("#"));
+            }
+
+            if (!(p.users == null || p.users.isEmpty())) {
+                ResourceLocation url = new ResourceLocation("sdlink:users");
+                MentionsController.registerMention(url, p.users.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
+            }
+
+            ClientEvents.mentionsEnabled = p.mentionsEnabled;
+        }
+
     }
 }

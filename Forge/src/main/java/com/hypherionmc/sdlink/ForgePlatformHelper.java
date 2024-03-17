@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlink;
 
+import com.hypherionmc.craterlib.core.abstraction.server.AbstractServer;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
@@ -19,7 +20,7 @@ public class ForgePlatformHelper implements SDLinkMCPlatform {
         SDLinkFakePlayer fakePlayer = new SDLinkFakePlayer(server, permLevel, member, event);
 
         try {
-            server.getCommands().performPrefixedCommand(fakePlayer, command);
+            AbstractServer.executeCommand(server, fakePlayer, command);
             return Result.success("Command sent to server");
         } catch (Exception e) {
             fakePlayer.sendFailure(Component.literal(e.getMessage()));

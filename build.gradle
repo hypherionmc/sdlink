@@ -35,6 +35,8 @@ subprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
+
         maven {
             name = 'First Dark Maven'
             url = 'https://maven.firstdark.dev/releases/'

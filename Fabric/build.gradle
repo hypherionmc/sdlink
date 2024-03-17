@@ -5,7 +5,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api}"
 
     // Add your deps here
-    implementation "com.hypherionmc.craterlib:CraterLib-Fabric-1.20.3:${craterlib}:dev-shadow"
+    implementation "com.hypherionmc.craterlib:CraterLib-Fabric-1.20.4:${craterlib}:dev-shadow"
 
     // Compat
     modImplementation "maven.modrinth:fabrictailor:2.1.2"
