@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
+import com.hypherionmc.sdlink.core.events.VerificationEvent;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
@@ -33,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanList;
+import net.minecraft.server.players.UserWhiteListEntry;
 import net.minecraft.world.entity.player.Player;
 
 public class ServerEvents {
@@ -77,7 +79,6 @@ public class ServerEvents {
     @CraterEventListener
     public void onServerStarted(CraterServerLifecycleEvent.Started event) {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarted) {
-            BotController.INSTANCE.checkWhiteListing();
 
             DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarted)
@@ -432,6 +433,32 @@ public class ServerEvents {
     public void sdlinkReadyEvent(SDLinkReadyEvent event) {
         if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
             LogReader.init(ModloaderEnvironment.INSTANCE.isDevEnv());
+    }
+
+    @CraterEventListener
+    public void playerVerified(VerificationEvent.PlayerVerified event) {
+        if (!minecraftServer.getPlayerList().isUsingWhitelist())
+            return;
+
+        try {
+            GameProfile p = new GameProfile(event.getAccount().getUuid(), event.getAccount().getUsername());
+            minecraftServer.getPlayerList().getWhiteList().add(new UserWhiteListEntry(p));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @CraterEventListener
+    public void playerUnVerified(VerificationEvent.PlayerUnverified event) {
+        if (!minecraftServer.getPlayerList().isUsingWhitelist())
+            return;
+
+        try {
+            GameProfile p = new GameProfile(event.getAccount().getUuid(), event.getAccount().getUsername());
+            minecraftServer.getPlayerList().getWhiteList().remove(new UserWhiteListEntry(p));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean canSendMessage() {
