@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id "com.hypherionmc.modutils.orion" version "1.0.8"
+    id "com.hypherionmc.modutils.orion" version "1.0.9"
     id 'com.github.johnrengelman.shadow' version '8.0.0'
     id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT"
     //id "me.hypherionmc.modutils.modpublisher" version "1.0.24+"
 }
 
-orion {
+orion.setup {
     enableMirrorMaven = true
     enableReleasesMaven = true
     enableSnapshotsMaven = true
@@ -136,6 +136,8 @@ shadowJar {
         relocate 'org.apache.commons.jxpath', shade_group + 'org.apache.commons.jxpath'
         relocate 'org.apache.commons.logging', shade_group + 'org.apache.commons.logging'
         relocate 'org.reflections', shade_group + 'org.reflections'
+        relocate 'net.bytebuddy', shade_group + 'net.bytebuddy'
+        relocate 'org.checkerframework', shade_group + 'org.checkerframework'
     }
 
     exclude "META-INF/maven/**"
