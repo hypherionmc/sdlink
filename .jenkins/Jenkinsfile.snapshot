@@ -13,7 +13,7 @@ pipeline {
         stage("Notify Discord") {
             steps {
                 discordSend webhookURL: env.SSS_WEBHOOK,
-                        title: "Deploy Started: ${projectName} 1.20.x Deploy #${BUILD_NUMBER}",
+                        title: "Deploy Started: ${projectName} Universal Deploy #${BUILD_NUMBER}",
                         link: env.BUILD_URL,
                         result: 'SUCCESS',
                         description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})"
@@ -29,7 +29,7 @@ pipeline {
 
         stage("Build") {
             steps {
-                sh "./gradlew fusejars"
+                sh "./gradlew build"
             }
         }
     }
@@ -37,7 +37,7 @@ pipeline {
     post {
         always {
             sh "./gradlew --stop"
-            archiveArtifacts artifacts: 'artifacts/fused/*.jar'
+            archiveArtifacts artifacts: 'build/libs/*.jar'
 
             fddsnapshotter apiKey: env.PLATFORM_KEY,
                 projectSlug: "sdlink",
@@ -46,7 +46,7 @@ pipeline {
                 versionName: "Snapshot 3.0.${BUILD_NUMBER}",
                 version: "3.0.${BUILD_NUMBER}",
                 modLoaders: "forge|fabric|quilt",
-                minecraftVersions: "1.20|1.20.1|1.20.2|1.20.3|1.20.4",
+                minecraftVersions: "1.18.2|1.19.2|1.19.3|1.19.4|1.20|1.20.1|1.20.2|1.20.3|1.20.4",
                 failWebhook: env.SSS_WEBHOOK,
                 publishWebhooks: "${env.SSS_WEBHOOK}|${env.FDD_WH}"
 

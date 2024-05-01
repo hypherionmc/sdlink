@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenLocal()
         maven {
             url "https://mcentral.firstdark.dev/releases"
         }
@@ -10,7 +11,5 @@ pluginManagement {
     }
 }
 
-
 rootProject.name = 'sdlink'
-include('Common', 'Fabric', 'Forge')
 

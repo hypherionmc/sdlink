@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "A simple Minecraft to Discord Chat bot with Whitelisting",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contact": {
+    "homepage": "https://github.com/firstdarkdev/sdlink",
+    "issues": "https://github.com/firstdarkdev/sdlink/issues",
+    "discord": "https://discord.firstdark.dev"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      "com.hypherionmc.sdlink.loaders.fabric.SDLinkFabric"
+    ],
+    "client": [
+      "com.hypherionmc.sdlink.loaders.fabric.SDLinkFabricClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14",
+    "fabric": "*",
+    "minecraft": "1.20.x",
+    "craterlib": "*",
+    "java": ">=17"
+  }
+}
