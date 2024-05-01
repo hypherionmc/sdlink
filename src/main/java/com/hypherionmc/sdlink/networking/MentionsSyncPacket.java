@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlink.networking;
 
+import com.hypherionmc.craterlib.client.mentions.MentionsController;
 import com.hypherionmc.craterlib.core.networking.data.PacketContext;
 import com.hypherionmc.craterlib.core.networking.data.PacketSide;
 import com.hypherionmc.craterlib.nojang.nbt.BridgedCompoundTag;
@@ -7,7 +8,6 @@ import com.hypherionmc.craterlib.nojang.network.BridgedFriendlyByteBuf;
 import com.hypherionmc.craterlib.nojang.resources.ResourceIdentifier;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.client.ClientEvents;
-import com.hypherionmc.sdlink.client.MentionsController;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 
 import java.util.HashMap;
