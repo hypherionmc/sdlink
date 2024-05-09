@@ -3,10 +3,10 @@ def projectIcon = "https://cdn.modrinth.com/data/Sh0YauEf/icon.png";
 
 pipeline {
     agent {
-        label "master"
-    }
-    tools {
-        jdk "JAVA17"
+        docker {
+            image "registry.firstdark.dev/java17:latest"
+            alwaysPull true
+        }
     }
 
     stages {
@@ -20,16 +20,10 @@ pipeline {
             }
         }
 
-        stage("Prepare") {
-            steps {
-                sh "chmod +x ./gradlew"
-                sh "./gradlew clean"
-            }
-        }
-
         stage("Build") {
             steps {
-                sh "./gradlew build"
+                sh "chmod +x ./gradlew"
+                sh "./gradlew clean build -PreleaseType=snapshot"
             }
         }
     }
@@ -43,10 +37,8 @@ pipeline {
                 projectSlug: "sdlink",
                 projectName: "${projectName}",
                 projectIcon: "${projectIcon}",
-                versionName: "Snapshot 3.0.${BUILD_NUMBER}",
-                version: "3.0.${BUILD_NUMBER}",
-                modLoaders: "forge|fabric|quilt",
-                minecraftVersions: "1.18.2|1.19.2|1.19.3|1.19.4|1.20|1.20.1|1.20.2|1.20.3|1.20.4",
+                modLoaders: "forge|neoforge|fabric|quilt",
+                minecraftVersions: "1.18.2|1.19.2|1.19.3|1.19.4|1.20|1.20.1|1.20.2|1.20.3|1.20.4|1.20.6",
                 failWebhook: env.SSS_WEBHOOK,
                 publishWebhooks: "${env.SSS_WEBHOOK}|${env.FDD_WH}"
 

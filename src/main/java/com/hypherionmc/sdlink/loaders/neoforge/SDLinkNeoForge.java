@@ -1,25 +1,27 @@
-package com.hypherionmc.sdlink.loaders.forge;
+package com.hypherionmc.sdlink.loaders.neoforge;
 
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
+import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.server.ServerEvents;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 
 @Mod(SDLinkConstants.MOD_ID)
-public class SDLinkForge {
+public class SDLinkNeoForge {
 
-    public SDLinkForge() {
+    public SDLinkNeoForge(IEventBus bus) {
         SDLinkNetworking.registerPackets();
 
-        DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () -> {
+        if (ModloaderEnvironment.INSTANCE.getEnvironment().isServer()) {
             ServerEvents events = ServerEvents.getInstance();
             CraterEventBus.INSTANCE.registerEventListener(events);
-        });
+        }
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientEvents::init);
+        if (ModloaderEnvironment.INSTANCE.getEnvironment().isClient()) {
+            ClientEvents.init();
+        }
     }
 }

@@ -1,9 +1,11 @@
+import com.hypherionmc.modpublisher.properties.ReleaseType
+
 plugins {
     id 'java'
-    id "com.hypherionmc.modutils.orion" version "1.0.9"
+    id "com.hypherionmc.modutils.orion" version "1.0.+"
     id 'com.github.johnrengelman.shadow' version '8.0.0'
     id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT"
-    //id "me.hypherionmc.modutils.modpublisher" version "1.0.24+"
+    id "com.hypherionmc.modutils.modpublisher" version "2.1.+"
 }
 
 orion.setup {
@@ -14,18 +16,18 @@ orion.setup {
     dopplerToken = System.getenv("DOPPLER_KEY")
 
     versioning {
-        identifier("${release_type}")
+        var relType = project.properties["releaseType"] ?: "${release_type}"
+        identifier("${relType}")
     }
 }
 
 group = project_group
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
-archivesBaseName = "${mod_name.replace(" ", "")}-Universal-${minecraft_version}"
+archivesBaseName = "${mod_name.replace(" ", "")}-Universal"
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 configurations {
@@ -84,7 +86,7 @@ unimined.minecraft {
 processResources {
     def buildProps = project.properties.clone()
 
-    filesMatching(['pack.mcmeta', 'fabric.mod.json', "META-INF/mods.toml"]) {
+    filesMatching(['pack.mcmeta', 'fabric.mod.json', "META-INF/mods.toml", "META-INF/neoforge.mods.toml"]) {
         expand buildProps
     }
 }
@@ -138,6 +140,7 @@ shadowJar {
         relocate 'org.reflections', shade_group + 'org.reflections'
         relocate 'net.bytebuddy', shade_group + 'net.bytebuddy'
         relocate 'org.checkerframework', shade_group + 'org.checkerframework'
+        relocate 'com.google.errorprone', shade_group + 'com.google.errorprone'
     }
 
     exclude "META-INF/maven/**"
@@ -179,29 +182,33 @@ tasks.withType(GenerateModuleMetadata).configureEach {
     enabled = false
 }
 
-/*
+shadowJar.doLast {
+    delete(jar.getArchiveFile())
+}
+
 publisher {
     apiKeys {
-        modrinth = System.getenv("MODRINTH_TOKEN")
-        curseforge = System.getenv("CURSE_TOKEN")
+        modrinth(System.getenv("MODRINTH_TOKEN"))
+        curseforge(System.getenv("CURSE_TOKEN"))
     }
 
-    curseID = curse_id
-    modrinthID = modrinth_id
-    versionType = "beta"
-    changelog = "https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md"
-    version = "${minecraft_version}-${project.version}"
-    displayName = "[1.20.x] Simple Discord Link - ${project.version}"
-    gameVersions = ["1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4"]
-    loaders = ["forge", "fabric", "quilt"]
-    artifact = fusejars
+    setDebug(true)
+    setCurseID(curse_id)
+    setModrinthID(modrinth_id)
+    setProjectVersion(project.version.toString())
+    setReleaseType(ReleaseType.BETA)
+    setChangelog("https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md")
+    setDisplayName("Simple Discord Link Universal - ${project.version}")
+    setGameVersions("1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4")
+    setLoaders("forge", "fabric", "quilt", "neoforge")
+    setCurseEnvironment("both")
+    setArtifact(shadowJar)
 
     modrinthDepends {
-        required = ["Nn8Wasaq"]
+        required("Nn8Wasaq")
     }
 
     curseDepends {
-        required = ["craterlib"]
+        required("craterlib")
     }
 }
- */
