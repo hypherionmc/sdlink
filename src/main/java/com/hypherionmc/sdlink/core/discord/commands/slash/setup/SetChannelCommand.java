@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.util.EncryptionUtil;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -43,7 +44,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
     protected void execute(SlashCommandEvent event) {
         event.deferReply(true).queue();
 
-        StandardGuildMessageChannel channel = event.getOption("channel").getAsChannel().asStandardGuildMessageChannel();
+        GuildMessageChannel channel = event.getOption("channel").getAsChannel().asGuildMessageChannel();
         String type = event.getOption("type").getAsString();
         boolean webhook = event.getOption("webhook").getAsBoolean();
 
@@ -55,7 +56,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
         Result result;
 
         if (webhook) {
-            result = setWebhook(channel, type);
+            result = setWebhook((StandardGuildMessageChannel) channel, type);
         } else {
             result = setChannel(channel, type);
         }
@@ -63,7 +64,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
         event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
     }
 
-    private Result setChannel(StandardGuildMessageChannel channel, String type) {
+    private Result setChannel(GuildMessageChannel channel, String type) {
         try {
             switch (type.toLowerCase()) {
                 case "chat": {
@@ -93,18 +94,21 @@ public class SetChannelCommand extends SDLinkSlashCommand {
                 case "chat": {
                     channel.createWebhook("SDLink " + type).queue(s -> {
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.chatWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
                         SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
                     });
                 }
                 case "event": {
                     channel.createWebhook("SDLink " + type).queue(s -> {
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.eventsWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
                         SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
                     });
                 }
                 case "console": {
                     channel.createWebhook("SDLink " + type).queue(s -> {
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.consoleWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
                         SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
                     });
                 }

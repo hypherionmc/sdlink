@@ -76,8 +76,8 @@ public class DiscordEventHandler extends ListenerAdapter {
             ChannelManager.loadChannels();
             BotReadyHooks.startActivityUpdates(event);
             BotReadyHooks.startTopicUpdates();
-            CraterEventBus.INSTANCE.postEvent(new SDLinkReadyEvent());
             CacheManager.loadCache();
+            CraterEventBus.INSTANCE.postEvent(new SDLinkReadyEvent());
         }
     }
 
