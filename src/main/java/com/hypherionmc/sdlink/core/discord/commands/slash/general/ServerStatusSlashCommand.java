@@ -54,8 +54,7 @@ public class ServerStatusSlashCommand extends SDLinkSlashCommand {
                     .append(" free of ")
                     .append(SystemUtils.byteToHuman(hal.getMemory().getTotal()))
                     .append("```\r\n");
-        } catch (Exception e) {
-        }
+        } catch (Exception ignored) {}
 
         stringBuilder
                 .append("**OS:**\r\n```\r\n")

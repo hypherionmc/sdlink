@@ -123,9 +123,7 @@ public class DiscordEventHandler extends ListenerAdapter {
                 sdlinkDatabase.reloadCollection("verifiedaccounts");
             });
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                e.printStackTrace();
-            }
+            BotController.INSTANCE.getLogger().error("Failed to remove linked account", e);
         }
     }
 
@@ -184,9 +182,7 @@ public class DiscordEventHandler extends ListenerAdapter {
                 sdlinkDatabase.reloadCollection("verifiedaccounts");
             });
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                e.printStackTrace();
-            }
+            BotController.INSTANCE.getLogger().error("Failed to remove linked account", e);
         }
     }
 }

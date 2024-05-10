@@ -6,6 +6,7 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.core.util.MessageUtil;
@@ -83,8 +84,7 @@ public class PlayerListSlashCommand extends SDLinkSlashCommand {
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
             event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(true).queue();
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                e.printStackTrace();
+            BotController.INSTANCE.getLogger().error("Failed to run player list command", e);
         }
     }
 }

@@ -59,9 +59,7 @@ public class DiscordMessageHooks {
 
             SDLinkPlatform.minecraftHelper.discordMessageReceived(event.getMember(), message);
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                e.printStackTrace();
-            }
+            BotController.INSTANCE.getLogger().error("Failed to process discord message", e);
         }
     }
 

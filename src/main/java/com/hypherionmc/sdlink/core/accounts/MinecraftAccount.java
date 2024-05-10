@@ -205,18 +205,14 @@ public class MinecraftAccount {
             sdlinkDatabase.upsert(account);
             sdlinkDatabase.reloadCollection("verifiedaccounts");
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                e.printStackTrace();
-            }
+            BotController.INSTANCE.getLogger().error("Failed to store verified account", e);
         }
 
         if (RoleManager.getVerifiedRole() != null) {
             try {
                 guild.addRoleToMember(UserSnowflake.fromId(member.getId()), RoleManager.getVerifiedRole()).queue();
             } catch (Exception e) {
-                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    e.printStackTrace();
-                }
+                BotController.INSTANCE.getLogger().error("Failed to add verified role to user", e);
             }
         }
 
@@ -238,18 +234,14 @@ public class MinecraftAccount {
             sdlinkDatabase.upsert(account);
             sdlinkDatabase.reloadCollection("verifiedaccounts");
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                e.printStackTrace();
-            }
+            BotController.INSTANCE.getLogger().error("Failed to remove verified account", e);
         }
 
         if (RoleManager.getVerifiedRole() != null) {
             try {
                 guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), RoleManager.getVerifiedRole()).queue();
             } catch (Exception e) {
-                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    e.printStackTrace();
-                }
+                BotController.INSTANCE.getLogger().error("Failed to remove verified role from user", e);
             }
         }
 
@@ -376,7 +368,7 @@ public class MinecraftAccount {
         try {
             BotController.INSTANCE.getJDA().getGuilds().get(0).ban(UserSnowflake.fromId(user.getUserId()), 7, TimeUnit.DAYS).queue();
         } catch (Exception e) {
-            e.printStackTrace();
+            BotController.INSTANCE.getLogger().error("Failed to ban discord member", e);
         }
     }
 
@@ -418,7 +410,7 @@ public class MinecraftAccount {
                 return Pair.of(returnname, uuid.isEmpty() ? null : mojangIdToUUID(uuid));
             }
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            BotController.INSTANCE.getLogger().error("Failed to retrieve account info from Mojang API", e);
         }
         return Pair.of("", null);
     }

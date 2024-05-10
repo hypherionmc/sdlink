@@ -60,8 +60,7 @@ public class BotController {
         this.logger = logger;
 
         File newConfigDir = new File("./config/simple-discord-link");
-        if (!newConfigDir.exists())
-            newConfigDir.mkdirs();
+        newConfigDir.mkdirs();
 
         File oldConfig = new File("./config/simple-discord-link.toml");
         if (oldConfig.exists()) {

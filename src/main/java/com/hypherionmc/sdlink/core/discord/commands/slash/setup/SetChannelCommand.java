@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.core.discord.commands.slash.setup;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.util.EncryptionUtil;
@@ -83,7 +84,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
 
             return Result.success("Saved Channel to Config. Restart your server for the channel to become active");
         } catch (Exception e) {
-            e.printStackTrace();
+            BotController.INSTANCE.getLogger().error("Failed to save config", e);
             return Result.error("Failed to save config: " + e.getMessage());
         }
     }
@@ -116,7 +117,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
 
             return Result.success("Saved Webhook to Config. Restart your server for the webhook to become active");
         } catch (Exception e) {
-            e.printStackTrace();
+            BotController.INSTANCE.getLogger().error("Failed to save config", e);
             return Result.error("Failed to save config: " + e.getMessage());
         }
     }
