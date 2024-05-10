@@ -110,6 +110,23 @@ public class DiscordEventHandler extends ListenerAdapter {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
             CacheManager.loadUserCache();
         }
+
+        if (event.getUser().isBot() || !SDLinkConfig.INSTANCE.accessControl.enabled)
+            return;
+
+        try {
+            List<SDLinkAccount> accounts = sdlinkDatabase.getCollection(SDLinkAccount.class);
+            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
+
+            account.ifPresent(a -> {
+                sdlinkDatabase.remove(a, SDLinkAccount.class);
+                sdlinkDatabase.reloadCollection("verifiedaccounts");
+            });
+        } catch (Exception e) {
+            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -152,18 +169,19 @@ public class DiscordEventHandler extends ListenerAdapter {
 
         try {
             List<SDLinkAccount> accounts = sdlinkDatabase.getCollection(SDLinkAccount.class);
-            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
+            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
 
             account.ifPresent(a -> {
                 MinecraftAccount acc = MinecraftAccount.of(a.getUsername());
 
                 if (acc != null) {
-                    sdlinkDatabase.remove(a, SDLinkAccount.class);
                     if (SDLinkConfig.INSTANCE.accessControl.banPlayerOnDiscordBan) {
                         SDLinkPlatform.minecraftHelper.banPlayer(acc);
                     }
-                    sdlinkDatabase.reloadCollection("verifiedaccounts");
                 }
+
+                sdlinkDatabase.remove(a, SDLinkAccount.class);
+                sdlinkDatabase.reloadCollection("verifiedaccounts");
             });
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
