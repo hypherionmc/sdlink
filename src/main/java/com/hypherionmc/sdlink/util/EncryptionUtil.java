@@ -118,9 +118,6 @@ public final class EncryptionUtil {
 
     // Generate Random codes for encryption/decryption
     private String getSaltString() {
-        return RandomStringUtils.random(new Random().nextInt(40), true, true);
+        return RandomStringUtils.random(SDLinkUtils.intInRange(30, 100), true, true);
     }
-
-
-
 }
