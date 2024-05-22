@@ -54,14 +54,17 @@ public class MinecraftCommandHook {
         if (commands.isEmpty()) {
             Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(raw, permLevel, event, account.orElse(null));
             event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             return;
         }
 
         if (commands.stream().anyMatch(raw::startsWith)) {
             Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(raw, Integer.MAX_VALUE, event, account.orElse(null));
             event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
         } else {
             event.getMessage().reply("Sorry, that command is not allowed").mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
         }
     }
 }
