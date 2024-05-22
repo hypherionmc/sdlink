@@ -14,8 +14,7 @@ import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.RoleManager;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.core.util.Profiler;
-import com.hypherionmc.sdlink.core.util.SDLinkUtils;
+import com.hypherionmc.sdlink.util.SDLinkUtils;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -141,12 +140,8 @@ public class MinecraftAccount {
     }
 
     public SDLinkAccount getStoredAccount() {
-        Profiler profiler = Profiler.getProfiler("getStoredAccount");
-        profiler.start("Load Stored Account");
         sdlinkDatabase.reloadCollection("verifiedaccounts");
         SDLinkAccount account = sdlinkDatabase.findById(this.uuid.toString(), SDLinkAccount.class);
-
-        profiler.stop();
         return account == null ? newDBEntry() : account;
     }
 
@@ -178,8 +173,6 @@ public class MinecraftAccount {
 
     @Nullable
     public DiscordUser getDiscordUser() {
-        Profiler profiler = Profiler.getProfiler("getDiscordUser");
-        profiler.start("Loading Discord User");
         SDLinkAccount storedAccount = getStoredAccount();
         if (storedAccount == null || SDLinkUtils.isNullOrEmpty(storedAccount.getDiscordID()))
             return null;
@@ -188,7 +181,6 @@ public class MinecraftAccount {
             return null;
 
         Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getId().equalsIgnoreCase(storedAccount.getDiscordID())).findFirst();
-        profiler.stop();
         return member.map(value -> DiscordUser.of(value.getEffectiveName(), value.getEffectiveAvatarUrl(), value.getIdLong(), value.getAsMention())).orElse(null);
     }
 
@@ -323,8 +315,6 @@ public class MinecraftAccount {
 
 
         if (!SDLinkConfig.INSTANCE.accessControl.requiredRoles.isEmpty() || !SDLinkConfig.INSTANCE.accessControl.deniedRoles.isEmpty()) {
-            Profiler profiler = Profiler.getProfiler("checkRequiredRoles");
-            profiler.start("Checking Required Roles");
             AtomicBoolean anyFound = new AtomicBoolean(false);
             AtomicBoolean deniedFound = new AtomicBoolean(false);
 
@@ -341,7 +331,6 @@ public class MinecraftAccount {
                     }
                 }
             }));
-            profiler.stop();
 
             if (deniedFound.get() && !RoleManager.getDeniedRoles().isEmpty())
                 return Result.error("accessDeniedByRole");

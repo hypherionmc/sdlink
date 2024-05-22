@@ -11,6 +11,7 @@ import com.hypherionmc.sdlink.core.discord.commands.slash.setup.SetChannelComman
 import com.hypherionmc.sdlink.core.discord.commands.slash.verification.*;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.SlashCommand;
+import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.Set;
  * @author HypherionSA
  * Command Manager class to control how commands are registered to discord
  */
+@Getter
 public class CommandManager {
 
     public static final CommandManager INSTANCE = new CommandManager();
@@ -59,7 +61,4 @@ public class CommandManager {
         commands.forEach(client::addSlashCommand);
     }
 
-    public Set<SlashCommand> getCommands() {
-        return commands;
-    }
 }

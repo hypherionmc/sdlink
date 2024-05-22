@@ -91,7 +91,7 @@ public class ChatSettingsConfig {
 
     @Path("ignoredCommands")
     @SpecComment("Commands that should not be broadcast to discord")
-    public List<String> ignoredCommands = new ArrayList<String>() {{
+    public List<String> ignoredCommands = new ArrayList<>() {{
         add("particle");
         add("login");
         add("execute");

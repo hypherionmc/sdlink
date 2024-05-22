@@ -6,7 +6,7 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.core.util.SystemUtils;
+import com.hypherionmc.sdlink.util.SystemUtils;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;

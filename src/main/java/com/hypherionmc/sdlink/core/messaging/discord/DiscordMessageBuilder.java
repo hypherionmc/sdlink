@@ -63,15 +63,9 @@ public final class DiscordMessageBuilder {
             //using regex to replace @here and @everyone mentions
             message = Pattern.compile("@+(here|everyone)").matcher(message).replaceAll("");
 
-//            message = message.replace("@everyone", "");
-//            message = message.replace("@here", "");
-
             if (!SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
-
                 //using regex to replace any mention
                 message = Pattern.compile("<[^>]*\\d+>").matcher(message).replaceAll("");
-
-//                message = message.replace("<@", "");
             }
         }
 

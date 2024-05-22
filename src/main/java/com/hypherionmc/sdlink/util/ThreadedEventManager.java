@@ -2,7 +2,7 @@
  * This file is part of sdlink-core, licensed under the MIT License (MIT).
  * Copyright HypherionSA and Contributors
  */
-package com.hypherionmc.sdlink.core.util;
+package com.hypherionmc.sdlink.util;
 
 import com.hypherionmc.sdlink.core.discord.BotController;
 import net.dv8tion.jda.api.events.GenericEvent;

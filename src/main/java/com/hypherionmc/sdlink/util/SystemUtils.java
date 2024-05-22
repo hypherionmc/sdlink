@@ -2,7 +2,7 @@
  * This file is part of sdlink-core, licensed under the MIT License (MIT).
  * Copyright HypherionSA and Contributors
  */
-package com.hypherionmc.sdlink.core.util;
+package com.hypherionmc.sdlink.util;
 
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;

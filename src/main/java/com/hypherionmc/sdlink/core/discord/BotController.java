@@ -10,8 +10,8 @@ import com.hypherionmc.sdlink.core.discord.events.DiscordEventHandler;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.managers.WebhookManager;
-import com.hypherionmc.sdlink.core.util.EncryptionUtil;
-import com.hypherionmc.sdlink.core.util.ThreadedEventManager;
+import com.hypherionmc.sdlink.util.EncryptionUtil;
+import com.hypherionmc.sdlink.util.ThreadedEventManager;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -62,15 +61,6 @@ public class BotController {
         File newConfigDir = new File("./config/simple-discord-link");
         newConfigDir.mkdirs();
 
-        File oldConfig = new File("./config/simple-discord-link.toml");
-        if (oldConfig.exists()) {
-            try {
-                FileUtils.moveFile(oldConfig, new File(newConfigDir.getAbsolutePath() + File.separator + "simple-discord-link.toml"));
-            } catch (Exception e) {
-                logger.error("Failed to move config file to new location", e);
-            }
-        }
-
         // Initialize Config
         new SDLinkConfig();
 
@@ -90,9 +80,6 @@ public class BotController {
      * @param logger A constructed {@link Logger} that the bot will use
      */
     public static void newInstance(Logger logger) {
-        if (INSTANCE != null) {
-            INSTANCE.shutdownBot(false);
-        }
         new BotController(logger);
     }
 
@@ -108,7 +95,7 @@ public class BotController {
         }
 
         if (SDLinkConfig.INSTANCE.botConfig.botToken.isEmpty()) {
-            logger.error("Missing bot token. Mod will be disabled");
+            logger.error("Missing bot token. Mod will be disabled. Please double check this in {}", SDLinkConfig.INSTANCE.getConfigPath());
             return;
         }
 
@@ -173,18 +160,9 @@ public class BotController {
     }
 
     /**
-     * Shutdown the Bot, without forcing a shutdown
+     * Shutdown the Bot
      */
     public void shutdownBot() {
-        this.shutdownBot(true);
-    }
-
-    /**
-     * Shutdown the Bot, optionally forcing a shutdown
-     *
-     * @param forced Should the shutdown be forced
-     */
-    public void shutdownBot(boolean forced) {
         shutdownCalled = true;
         if (_jda != null) {
             _jda.shutdown();
@@ -192,13 +170,11 @@ public class BotController {
 
         WebhookManager.shutdown();
 
-        if (forced) {
-            // Workaround for Bot thread hanging after server shutdown
-            taskManager.schedule(() -> {
-                taskManager.shutdownNow();
-                System.exit(1);
-            }, 10, TimeUnit.SECONDS);
-        }
+        // Workaround for Bot thread hanging after server shutdown
+        taskManager.schedule(() -> {
+            taskManager.shutdownNow();
+            System.exit(0);
+        }, 10, TimeUnit.SECONDS);
     }
 
     public JDA getJDA() {

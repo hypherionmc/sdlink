@@ -8,9 +8,8 @@ import club.minnced.discord.webhook.WebhookClient;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
-import com.hypherionmc.sdlink.core.messaging.SDLinkWebhookClient;
-import com.hypherionmc.sdlink.core.util.EncryptionUtil;
-import org.apache.commons.lang3.tuple.Pair;
+import com.hypherionmc.sdlink.core.messaging.SDLinkWebhookClientBuilder;
+import com.hypherionmc.sdlink.util.EncryptionUtil;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -100,27 +99,14 @@ public class WebhookManager {
         Matcher webhookMatcher = WEBHOOK_PATTERN.matcher(url);
 
         if (threadMatcher.find() && webhookMatcher.find()) {
-            return new SDLinkWebhookClient(
+            return new SDLinkWebhookClientBuilder(
                     name,
                     String.format("https://discord.com/api/webhooks/%s/%s", webhookMatcher.group(1), webhookMatcher.group(2))
             ).setThreadChannelID(threadMatcher.group(1)).build();
         } else if (webhookMatcher.matches()) {
-            return new SDLinkWebhookClient(name, String.format("https://discord.com/api/webhooks/%s/%s", webhookMatcher.group(1), webhookMatcher.group(2))).build();
+            return new SDLinkWebhookClientBuilder(name, String.format("https://discord.com/api/webhooks/%s/%s", webhookMatcher.group(1), webhookMatcher.group(2))).build();
         }
 
-        return new SDLinkWebhookClient(name, url).build();
-     }
-
-    private static Pair<String, String> parseWebhookUrl(String url) {
-        final Pattern pattern = Pattern.compile("\\?thread_id=[0-9]+", Pattern.CASE_INSENSITIVE);
-        String thread = "0";
-
-        if (pattern.matcher(url).find()) {
-            thread = pattern.matcher(url).group(0);
-        }
-
-        String whurl = url.replace("?thread_id=" + thread, "");
-
-        return Pair.of(whurl, thread);
+        return new SDLinkWebhookClientBuilder(name, url).build();
     }
 }

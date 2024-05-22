@@ -49,7 +49,6 @@ public class VerifyAccountCommand extends SDLinkSlashCommand {
         }
 
         boolean didVerify = false;
-        boolean hasRejected = false;
 
         for (SDLinkAccount account : accounts) {
             if (account.getVerifyCode() == null)

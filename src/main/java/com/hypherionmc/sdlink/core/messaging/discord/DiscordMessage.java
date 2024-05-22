@@ -16,7 +16,7 @@ import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
-import com.hypherionmc.sdlink.core.util.SDLinkUtils;
+import com.hypherionmc.sdlink.util.SDLinkUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;

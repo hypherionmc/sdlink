@@ -25,11 +25,9 @@ public class EmbedManager {
 
     public static void init() {
         embeds.clear();
-
-        if (!embedDir.exists()) {
-            embedDir.mkdirs();
-        }
+        embedDir.mkdirs();
         defaultEmbeds();
+
         if (embedDir.listFiles() == null)
             return;
 

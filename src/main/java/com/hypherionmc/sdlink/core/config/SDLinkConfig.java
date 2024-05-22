@@ -8,7 +8,7 @@ import com.hypherionmc.craterlib.core.config.ConfigController;
 import com.hypherionmc.craterlib.core.config.ModuleConfig;
 import com.hypherionmc.craterlib.core.config.annotations.NoConfigScreen;
 import com.hypherionmc.sdlink.core.config.impl.*;
-import com.hypherionmc.sdlink.core.util.EncryptionUtil;
+import com.hypherionmc.sdlink.util.EncryptionUtil;
 import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;

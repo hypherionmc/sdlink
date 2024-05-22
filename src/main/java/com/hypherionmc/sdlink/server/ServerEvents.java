@@ -20,12 +20,12 @@ import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
-import com.hypherionmc.sdlink.core.util.LogReader;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
+import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
 import shadow.kyori.adventure.text.Component;
@@ -101,10 +101,12 @@ public class ServerEvents {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)
                     .author(DiscordAuthor.SERVER)
-                    .afterSend(() -> BotController.INSTANCE.shutdownBot(true))
+                    .afterSend(() -> BotController.INSTANCE.shutdownBot())
                     .build();
 
             message.sendMessage();
+        } else {
+            BotController.INSTANCE.shutdownBot();
         }
     }
 

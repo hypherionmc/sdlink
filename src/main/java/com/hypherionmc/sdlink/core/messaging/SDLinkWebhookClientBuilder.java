@@ -10,9 +10,9 @@ import club.minnced.discord.webhook.WebhookClientBuilder;
  * @author HypherionSA
  * Wrapped {@link WebhookClientBuilder} for our webhooks
  */
-public class SDLinkWebhookClient extends WebhookClientBuilder {
+public class SDLinkWebhookClientBuilder extends WebhookClientBuilder {
 
-    public SDLinkWebhookClient(String name, String url) {
+    public SDLinkWebhookClientBuilder(String name, String url) {
         super(url);
 
         this.setThreadFactory((job) -> {
@@ -24,7 +24,7 @@ public class SDLinkWebhookClient extends WebhookClientBuilder {
         this.setWait(false);
     }
 
-    public SDLinkWebhookClient setThreadChannelID(String id) {
+    public SDLinkWebhookClientBuilder setThreadChannelID(String id) {
         this.setThreadId(Long.parseLong(id));
         return this;
     }

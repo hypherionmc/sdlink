@@ -6,8 +6,8 @@ package com.hypherionmc.sdlink.core.managers;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.util.SDLinkUtils;
-import com.hypherionmc.sdlink.core.util.SystemUtils;
+import com.hypherionmc.sdlink.util.SDLinkUtils;
+import com.hypherionmc.sdlink.util.SystemUtils;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -32,9 +32,6 @@ public class RoleManager {
 
     /**
      * Check and load the roles required by the bot
-     *
-     * @param errCount
-     * @param builder
      */
     public static void loadRequiredRoles(AtomicInteger errCount, StringBuilder builder) {
         if (SDLinkConfig.INSTANCE.accessControl.enabled) {
@@ -87,7 +84,7 @@ public class RoleManager {
                 .append(") ")
                 .append("Missing ")
                 .append(roleIdentifier)
-                .append(" Role. Role: ")
+                .append(". Role: ")
                 .append(roleID)
                 .append(" cannot be found in the server")
                 .append("\r\n");

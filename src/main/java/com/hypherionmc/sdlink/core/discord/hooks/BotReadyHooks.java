@@ -9,7 +9,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.core.util.SystemUtils;
+import com.hypherionmc.sdlink.util.SystemUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
