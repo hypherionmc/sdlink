@@ -192,7 +192,6 @@ publisher {
         curseforge(System.getenv("CURSE_TOKEN"))
     }
 
-    setDebug(true)
     setCurseID(curse_id)
     setModrinthID(modrinth_id)
     setProjectVersion(project.version.toString())
