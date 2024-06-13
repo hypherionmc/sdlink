@@ -5,7 +5,7 @@ plugins {
     id "com.hypherionmc.modutils.orion" version "1.0.+"
     id 'com.github.johnrengelman.shadow' version '8.0.0'
     id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT"
-    id "com.hypherionmc.modutils.modpublisher" version "2.1.+"
+    id "com.hypherionmc.modutils.modpublisher" version "2.1.5+snapshot.1"
 }
 
 orion.setup {
@@ -199,10 +199,11 @@ publisher {
     setReleaseType(ReleaseType.BETA)
     setChangelog("https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md")
     setDisplayName("Simple Discord Link Universal - ${project.version}")
-    setGameVersions("1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4")
+    setGameVersions("1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.21")
     setLoaders("forge", "fabric", "quilt", "neoforge")
     setCurseEnvironment("both")
     setArtifact(shadowJar)
+    setIsManualRelease(true)
 
     modrinthDepends {
         required("Nn8Wasaq")

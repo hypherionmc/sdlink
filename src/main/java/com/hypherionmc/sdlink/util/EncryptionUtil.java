@@ -12,7 +12,6 @@ import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 /**
  * @author HypherionSA
