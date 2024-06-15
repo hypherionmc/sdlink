@@ -102,7 +102,10 @@ public class MinecraftAccount {
      * @param profile The player GameProfile
      */
     public static MinecraftAccount of(BridgedGameProfile profile) {
-        return new MinecraftAccount(profile.getName(), profile.getId(), profile.getId().version() == 3, true);
+        if (SDLinkPlatform.minecraftHelper.isOnlineMode()) {
+            new MinecraftAccount(profile.getName(), profile.getId(), false, true);
+        }
+        return new MinecraftAccount(profile.getName(), offlinePlayer(profile.getName()).getRight(), true, true);
     }
 
     /**
