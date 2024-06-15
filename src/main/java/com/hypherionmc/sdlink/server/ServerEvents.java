@@ -28,6 +28,7 @@ import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
+import net.dv8tion.jda.api.JDA;
 import shadow.kyori.adventure.text.Component;
 
 @Getter
@@ -81,6 +82,9 @@ public class ServerEvents {
 
             message.sendMessage();
         }
+
+        if (BotController.INSTANCE.getJDA().getStatus() == JDA.Status.CONNECTED && CacheManager.getDiscordMembers().isEmpty())
+            CacheManager.loadCache();
     }
 
     @CraterEventListener

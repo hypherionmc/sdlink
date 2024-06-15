@@ -276,6 +276,9 @@ public class MinecraftAccount {
                 case "memberNotFound" -> {
                     return Result.error(SDLinkConfig.INSTANCE.accessControl.verificationMessages.nonMember);
                 }
+                case "userCacheEmpty" -> {
+                    return Result.error("The discord member cache of this server is empty. Please ask the server owner to run the reloadcache discord command");
+                }
                 case "rolesNotLoaded" -> {
                     return Result.error("Server has required roles configured, but no discord roles were loaded. Please notify the server owner");
                 }
@@ -339,7 +342,7 @@ public class MinecraftAccount {
                 return Result.error("rolesNotFound");
 
             if (member.isEmpty())
-                return Result.error("memberNotFound");
+                return Result.error("memberCacheEmpty");
         }
 
         return Result.success("pass");

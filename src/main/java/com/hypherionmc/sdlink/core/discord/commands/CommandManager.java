@@ -7,6 +7,7 @@ package com.hypherionmc.sdlink.core.discord.commands;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.HelpSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.PlayerListSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.ServerStatusSlashCommand;
+import com.hypherionmc.sdlink.core.discord.commands.slash.setup.ReloadCacheCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.setup.SetChannelCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.verification.*;
 import com.jagrosh.jdautilities.command.CommandClient;
@@ -50,6 +51,9 @@ public class CommandManager {
 
         // SetChannel config Command
         commands.add(new SetChannelCommand());
+
+        // Reload Cache command
+        commands.add(new ReloadCacheCommand());
     }
 
     /**
