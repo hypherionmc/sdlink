@@ -202,7 +202,6 @@ publisher {
     setLoaders("forge", "fabric", "quilt", "neoforge")
     setCurseEnvironment("both")
     setArtifact(shadowJar)
-    setIsManualRelease(true)
 
     modrinthDepends {
         required("Nn8Wasaq")
