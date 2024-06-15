@@ -35,6 +35,7 @@ public class SDLinkMCPlatform {
     }
 
     public boolean playerIsActive(BridgedPlayer player) {
-        return CompatUtils.INSTANCE.isPlayerActive(player);
+        // FIXME This check is reversed inside craterlib by mistake. Once fixed, this has to be swapped back
+        return !CompatUtils.INSTANCE.isPlayerActive(player);
     }
 }
