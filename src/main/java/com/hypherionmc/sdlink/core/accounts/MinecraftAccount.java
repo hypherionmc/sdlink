@@ -103,9 +103,9 @@ public class MinecraftAccount {
      */
     public static MinecraftAccount of(BridgedGameProfile profile) {
         if (SDLinkPlatform.minecraftHelper.isOnlineMode()) {
-            new MinecraftAccount(profile.getName(), profile.getId(), false, true);
+            return new MinecraftAccount(profile.getName(), profile.getId(), false, true);
         }
-        return new MinecraftAccount(profile.getName(), offlinePlayer(profile.getName()).getRight(), true, true);
+        return offline(profile.getName());
     }
 
     /**
