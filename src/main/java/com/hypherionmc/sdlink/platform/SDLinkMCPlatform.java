@@ -36,6 +36,9 @@ public class SDLinkMCPlatform {
 
     public boolean playerIsActive(BridgedPlayer player) {
         // FIXME This check is reversed inside craterlib by mistake. Once fixed, this has to be swapped back
-        return !CompatUtils.INSTANCE.isPlayerActive(player);
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("melius-vanish") || ModloaderEnvironment.INSTANCE.isModLoaded("vmod"))
+            return !CompatUtils.INSTANCE.isPlayerActive(player);
+
+        return CompatUtils.INSTANCE.isPlayerActive(player);
     }
 }
