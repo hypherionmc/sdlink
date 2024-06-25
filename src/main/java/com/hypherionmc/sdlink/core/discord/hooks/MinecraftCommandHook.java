@@ -46,15 +46,9 @@ public class MinecraftCommandHook {
 
         if (permLevel == -1) {
             event.getMessage().reply("Sorry, you don't have permission to execute that command").mentionRepliedUser(false).queue(suc -> {
+                event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
                 suc.delete().queueAfter(5, TimeUnit.SECONDS);
             });
-            return;
-        }
-
-        if (commands.isEmpty()) {
-            Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(raw, permLevel, event, account.orElse(null));
-            event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
-            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             return;
         }
 
@@ -63,7 +57,8 @@ public class MinecraftCommandHook {
             event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
             event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
         } else {
-            event.getMessage().reply("Sorry, that command is not allowed").mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+            Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(raw, permLevel, event, account.orElse(null));
+            event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
             event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
         }
     }
