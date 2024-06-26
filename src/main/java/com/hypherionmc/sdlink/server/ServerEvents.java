@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.JDA;
 import shadow.kyori.adventure.text.Component;
 
 @Getter
+@SuppressWarnings("unused")
 public class ServerEvents {
 
     private BridgedMinecraftServer minecraftServer;
@@ -168,8 +169,10 @@ public class ServerEvents {
         try {
             player = event.getPlayer();
             uuid = SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(player);
-            user = player.getDisplayName();
-            profile = player.getGameProfile();
+            if (player != null) {
+                user = player.getDisplayName();
+                profile = player.getGameProfile();
+            }
         } catch (Exception ignored) {}
 
         if (player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player))
@@ -220,7 +223,11 @@ public class ServerEvents {
             if (!target.equals("@a"))
                 return;
 
-            DiscordAuthor author = DiscordAuthor.of(username, uuid == null ? "" : uuid, profile != null ? profile.getName() : ChatUtils.resolve(player.getName(), false));
+            DiscordAuthor author = DiscordAuthor.of(
+                    username,
+                    uuid == null ? "" : uuid,
+                    profile != null ? profile.getName() : (player != null ? ChatUtils.resolve(player.getName(), false) : "server")
+            );
 
             if (profile != null)
                 author.setGameProfile(profile);
@@ -298,7 +305,7 @@ public class ServerEvents {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                SDLinkConstants.LOGGER.error("Failed to ban, banned discord user", e);
             }
         }
 
@@ -388,7 +395,7 @@ public class ServerEvents {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                SDLinkConstants.LOGGER.error("Failed to ban, banned discord user", e);
             }
 
             var result = account.canLogin();
@@ -439,7 +446,7 @@ public class ServerEvents {
             BridgedGameProfile p = BridgedGameProfile.mojang(event.getAccount().getUuid(), event.getAccount().getUsername());
             minecraftServer.whitelistPlayer(p);
         } catch (Exception e) {
-            e.printStackTrace();
+            SDLinkConstants.LOGGER.error("Failed to whitelist verified player", e);
         }
     }
 
@@ -452,7 +459,7 @@ public class ServerEvents {
             BridgedGameProfile p = BridgedGameProfile.mojang(event.getAccount().getUuid(), event.getAccount().getUsername());
             minecraftServer.unWhitelistPlayer(p);
         } catch (Exception e) {
-            e.printStackTrace();
+            SDLinkConstants.LOGGER.error("Failed to unwhitelist verified player", e);
         }
     }
 
