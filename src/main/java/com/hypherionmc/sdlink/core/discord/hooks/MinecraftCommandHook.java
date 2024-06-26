@@ -10,14 +10,11 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.sql.Time;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
