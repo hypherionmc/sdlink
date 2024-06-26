@@ -32,6 +32,12 @@ public class MinecraftCommandHook {
         if (event.getMessage().getContentRaw().equalsIgnoreCase(SDLinkConfig.INSTANCE.linkedCommands.prefix))
             return;
 
+        if (!SDLinkConfig.INSTANCE.linkedCommands.allowedChannels.isEmpty() && SDLinkConfig.INSTANCE.linkedCommands.allowedChannels.stream().noneMatch(c -> c.equals(event.getChannel().getId()))) {
+            event.getMessage().reply("Sorry, minecraft commands are not allowed in this channel").mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+            return;
+        }
+
         LinkedHashSet<Long> roles = new LinkedHashSet<>();
         roles.add(event.getMember().getIdLong());
         roles.addAll(event.getMember().getRoles().stream().sorted((r1, r2) -> Long.compare(r2.getPositionRaw(), r1.getPositionRaw())).map(ISnowflake::getIdLong).collect(Collectors.toSet()));
