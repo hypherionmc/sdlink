@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.core.discord.commands.slash.verification;
 
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
+import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
@@ -14,6 +15,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.hypherionmc.sdlink.core.managers.DatabaseManager.sdlinkDatabase;
 
 public class StaffVerifyAccountCommand extends SDLinkSlashCommand {
 
@@ -32,6 +36,14 @@ public class StaffVerifyAccountCommand extends SDLinkSlashCommand {
     protected void execute(SlashCommandEvent event) {
         event.deferReply(true).queue();
 
+        sdlinkDatabase.reloadCollection("verifiedaccounts");
+        List<SDLinkAccount> accounts = sdlinkDatabase.findAll(SDLinkAccount.class);
+
+        if (accounts.isEmpty()) {
+            event.getHook().sendMessage("Sorry, but this server does not contain any stored players in its database").setEphemeral(true).queue();
+            return;
+        }
+
         String mcname = event.getOption("mcname").getAsString();
         User user = event.getOption("discorduser").getAsUser();
 
@@ -42,8 +54,14 @@ public class StaffVerifyAccountCommand extends SDLinkSlashCommand {
             return;
         }
 
-        MinecraftAccount minecraftAccount = MinecraftAccount.of(mcname);
+        SDLinkAccount account = accounts.stream().filter(a -> a.getUsername().equalsIgnoreCase(mcname)).findFirst().orElse(null);
 
+        if (account == null) {
+            event.getHook().editOriginal("No account found that matches " + mcname).queue();
+            return;
+        }
+
+        MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
         Result result = minecraftAccount.verifyAccount(member, event.getGuild());
         event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
     }

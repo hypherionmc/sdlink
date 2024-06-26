@@ -38,7 +38,7 @@ public class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
 
         for (SDLinkAccount account : accounts) {
             if (account.getDiscordID() != null && account.getDiscordID().equalsIgnoreCase(event.getMember().getId())) {
-                MinecraftAccount minecraftAccount = MinecraftAccount.of(account.getUsername());
+                MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
                 Result result = minecraftAccount.unverifyAccount(event.getMember(), event.getGuild());
                 event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
                 didUnverify = true;

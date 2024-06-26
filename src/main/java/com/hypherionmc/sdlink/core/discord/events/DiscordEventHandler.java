@@ -170,7 +170,7 @@ public class DiscordEventHandler extends ListenerAdapter {
             Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
 
             account.ifPresent(a -> {
-                MinecraftAccount acc = MinecraftAccount.of(a.getUsername());
+                MinecraftAccount acc = MinecraftAccount.of(a);
 
                 if (acc != null) {
                     if (SDLinkConfig.INSTANCE.accessControl.banPlayerOnDiscordBan) {

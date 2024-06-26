@@ -44,7 +44,7 @@ public final class DiscordMessageBuilder {
         }
 
         if (SDLinkConfig.INSTANCE.chatConfig.useLinkedNames && this.author != DiscordAuthor.SERVER) {
-            MinecraftAccount account = author.getProfile() != null ? MinecraftAccount.of(author.getProfile()) : MinecraftAccount.of(author.getUsername());
+            MinecraftAccount account = MinecraftAccount.of(author.getProfile());
             DiscordUser discordUser = account.getDiscordUser();
 
             if (account != null && discordUser != null) {

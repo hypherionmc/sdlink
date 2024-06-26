@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.hypherionmc.sdlink.core.managers.DatabaseManager.sdlinkDatabase;
 
@@ -54,9 +55,16 @@ public class StaffUnverifyCommand extends SDLinkSlashCommand {
             return;
         }
 
-        MinecraftAccount minecraftAccount = MinecraftAccount.of(mcname);
+        SDLinkAccount account = accounts.stream().filter(a -> a.getUsername().equalsIgnoreCase(mcname)).findFirst().orElse(null);
+
+        if (account == null) {
+            event.getHook().editOriginal("No account found that matches " + mcname).queue();
+            return;
+        }
+
+        MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
         Result result = minecraftAccount.unverifyAccount(member, event.getGuild());
-        event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
+        event.getHook().editOriginal(result.getMessage()).queue();
     }
 
 }

@@ -54,46 +54,26 @@ public class MinecraftAccount {
     @Getter
     private final UUID uuid;
     private final boolean isOffline;
-    private final boolean isValid;
 
     /**
-     * Internal. Use {@link #of(String)} (String)} or {@link #of(com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile)}
+     * Internal.
      *
      * @param username  The Username of the Player
      * @param uuid      The UUID of the player
      * @param isOffline Is this an OFFLINE/Unauthenticated Account
-     * @param isValid   Is the account valid
      */
-    private MinecraftAccount(String username, UUID uuid, boolean isOffline, boolean isValid) {
+    private MinecraftAccount(String username, UUID uuid, boolean isOffline) {
         this.username = username;
         this.uuid = uuid;
         this.isOffline = isOffline;
-        this.isValid = isValid;
     }
 
     /**
-     * Try to fetch a player from the Mojang API.
-     * Will return an offline player if the request fails, or if they don't have a valid account
-     *
-     * @param username The username of the player
+     * Convert a database account into a Minecraft Account
+     * @param account The database entry
      */
-    public static MinecraftAccount of(String username) {
-        if (!SDLinkPlatform.minecraftHelper.isOnlineMode()) {
-            return offline(username);
-        }
-
-        Pair<String, UUID> player = fetchPlayer(username);
-
-        if (player.getRight() == null) {
-            return offline(username);
-        }
-
-        return new MinecraftAccount(
-                player.getLeft(),
-                player.getRight(),
-                false,
-                player.getRight() != null
-        );
+    public static MinecraftAccount of(SDLinkAccount account) {
+        return new MinecraftAccount(account.getUsername(), UUID.fromString(account.getUuid()), account.isOffline());
     }
 
     /**
@@ -103,7 +83,7 @@ public class MinecraftAccount {
      */
     public static MinecraftAccount of(BridgedGameProfile profile) {
         if (SDLinkPlatform.minecraftHelper.isOnlineMode()) {
-            return new MinecraftAccount(profile.getName(), profile.getId(), false, true);
+            return new MinecraftAccount(profile.getName(), profile.getId(), false);
         }
         return offline(profile.getName());
     }
@@ -118,17 +98,10 @@ public class MinecraftAccount {
         return new MinecraftAccount(
                 player.getLeft(),
                 player.getRight(),
-                true,
                 true
         );
     }
 
-    public static SDLinkAccount getStoredFromUUID(String uuid) {
-        sdlinkDatabase.reloadCollection("verifiedaccounts");
-        return sdlinkDatabase.findById(uuid, SDLinkAccount.class);
-    }
-
-    //<editor-fold desc="Helper Methods">
     private static Pair<String, UUID> offlinePlayer(String offlineName) {
         return Pair.of(offlineName, UUID.nameUUIDFromBytes(("OfflinePlayer:" + offlineName).getBytes(StandardCharsets.UTF_8)));
     }
@@ -149,7 +122,7 @@ public class MinecraftAccount {
     }
 
     @NotNull
-    public SDLinkAccount newDBEntry() {
+    private SDLinkAccount newDBEntry() {
         SDLinkAccount account = new SDLinkAccount();
         account.setUsername(this.username);
         account.setUuid(this.uuid.toString());
@@ -366,59 +339,4 @@ public class MinecraftAccount {
             BotController.INSTANCE.getLogger().error("Failed to ban discord member", e);
         }
     }
-
-    public boolean isValid() {
-        return isValid;
-    }
-
-    public boolean isOffline() {
-        return isOffline;
-    }
-
-    private static Pair<String, UUID> fetchPlayer(String name) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .callTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(20, TimeUnit.SECONDS)
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .build();
-
-        try {
-            Request request = new Request.Builder()
-                    .url("https://api.mojang.com/users/profiles/minecraft/" + name)
-                    .cacheControl(new CacheControl.Builder().noCache().build())
-                    .build();
-            Response response = client.newCall(request).execute();
-
-            if (response.isSuccessful() && response.body() != null) {
-                JSONObject obj = new JSONObject(new JSONTokener(response.body().string()));
-                String uuid = "";
-                String returnname = name;
-
-                if (obj.has("name") && !obj.getString("name").isEmpty()) {
-                    returnname = obj.getString("name");
-                }
-                if (obj.has("id") && !obj.getString("id").isEmpty()) {
-                    uuid = obj.getString("id");
-                }
-
-                response.close();
-                return Pair.of(returnname, uuid.isEmpty() ? null : mojangIdToUUID(uuid));
-            }
-        } catch (IOException | JSONException e) {
-            BotController.INSTANCE.getLogger().error("Failed to retrieve account info from Mojang API", e);
-        }
-        return Pair.of("", null);
-    }
-
-    private static UUID mojangIdToUUID(String id) {
-        final List<String> strings = new ArrayList<>();
-        strings.add(id.substring(0, 8));
-        strings.add(id.substring(8, 12));
-        strings.add(id.substring(12, 16));
-        strings.add(id.substring(16, 20));
-        strings.add(id.substring(20, 32));
-
-        return UUID.fromString(String.join("-", strings));
-    }
-    //</editor-fold>
 }
