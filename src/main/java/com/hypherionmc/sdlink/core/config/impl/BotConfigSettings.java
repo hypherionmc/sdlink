@@ -53,6 +53,10 @@ public class BotConfigSettings {
         @SpecComment("Should the bot update the topic of your chat channel automatically every 6 Minutes")
         public boolean doTopicUpdates = true;
 
+        @Path("updateInterval")
+        @SpecComment("How often should the bot update the channel topic (IN MINUTES)? CANNOT BE LOWER THAN 5 MINUTES!")
+        public int updateInterval = 5;
+
         @Path("channelTopic")
         @SpecComment("A topic for the Chat Relay channel. You can use %player%, %maxplayers%, %uptime% or just leave it empty.")
         public String channelTopic = "Playing Minecraft with %players%/%maxplayers% people | Uptime: %uptime%";
