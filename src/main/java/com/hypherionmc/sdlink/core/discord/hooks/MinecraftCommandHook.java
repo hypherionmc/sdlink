@@ -5,12 +5,16 @@
 package com.hypherionmc.sdlink.core.discord.hooks;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.impl.MinecraftCommands;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.Time;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,35 +35,56 @@ public class MinecraftCommandHook {
         if (event.getMessage().getContentRaw().equalsIgnoreCase(SDLinkConfig.INSTANCE.linkedCommands.prefix))
             return;
 
-        Set<Long> roles = event.getMember().getRoles().stream().map(ISnowflake::getIdLong).collect(Collectors.toSet());
+        LinkedHashSet<Long> roles = new LinkedHashSet<>();
         roles.add(event.getMember().getIdLong());
-        roles.add(0L);
+        roles.addAll(event.getMember().getRoles().stream().sorted((r1, r2) -> Long.compare(r2.getPositionRaw(), r1.getPositionRaw())).map(ISnowflake::getIdLong).collect(Collectors.toSet()));
 
         sdlinkDatabase.reloadCollection("verifiedaccounts");
         List<SDLinkAccount> accounts = sdlinkDatabase.findAll(SDLinkAccount.class);
         Optional<SDLinkAccount> account = accounts.stream().filter(u -> u.getDiscordID() != null && u.getDiscordID().equals(event.getMember().getId())).findFirst();
 
-        int permLevel = SDLinkConfig.INSTANCE.linkedCommands.permissions.stream().filter(r -> roles.contains(Long.parseLong(r.role))).map(r -> r.permissionLevel).max(Integer::compareTo).orElse(-1);
-        List<String> commands = SDLinkConfig.INSTANCE.linkedCommands.permissions.stream().filter(c -> roles.contains(Long.parseLong(c.role))).flatMap(c -> c.commands.stream()).filter(s -> !s.isEmpty()).toList();
+        MinecraftCommands.Command allowedCommand = null;
+        for (long roleId : roles) {
+            var firstMatch = SDLinkConfig.INSTANCE.linkedCommands.permissions.stream().filter(r -> Long.parseLong(r.role) == roleId).findFirst();
+            if (firstMatch.isPresent()) {
+                allowedCommand = firstMatch.get();
+                break;
+            }
+        }
 
-        String raw = event.getMessage().getContentRaw().substring(SDLinkConfig.INSTANCE.linkedCommands.prefix.length());
+        if (allowedCommand == null) {
+            allowedCommand = SDLinkConfig.INSTANCE.linkedCommands.permissions.stream().filter(r -> r.role.equals("0")).findFirst().orElse(null);
+        }
 
-        if (permLevel == -1) {
-            event.getMessage().reply("Sorry, you don't have permission to execute that command").mentionRepliedUser(false).queue(suc -> {
-                event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-                suc.delete().queueAfter(5, TimeUnit.SECONDS);
-            });
+        if (allowedCommand == null) {
+            event.getMessage().reply("Sorry, you do not have permission to execute that command").mentionRepliedUser(false).queue(suc -> suc.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             return;
         }
 
-        if (commands.stream().anyMatch(raw::startsWith)) {
-            Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(raw, Integer.MAX_VALUE, event, account.orElse(null));
-            event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
-            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-        } else {
-            Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(raw, permLevel, event, account.orElse(null));
-            event.getMessage().reply(res.getMessage()).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
-            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+        String rawCommand = event.getMessage().getContentRaw().substring(SDLinkConfig.INSTANCE.linkedCommands.prefix.length());
+
+        if (allowedCommand.commands.isEmpty()) {
+            executeCommand(rawCommand, allowedCommand.permissionLevel, event, account.orElse(null));
+            return;
         }
+
+        if (allowedCommand.commands.stream().anyMatch(rawCommand::startsWith)) {
+            executeCommand(rawCommand, Integer.MAX_VALUE, event, account.orElse(null));
+            return;
+        }
+
+        event.getMessage().reply("Sorry, but you are not allowed to execute that command").mentionRepliedUser(false).queue(suc -> {
+            suc.delete().queueAfter(5, TimeUnit.SECONDS);
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+        });
+    }
+
+    private static void executeCommand(String command, int permLevel, MessageReceivedEvent event, SDLinkAccount account) {
+        Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(command, permLevel, event, account);
+        event.getMessage().reply(res.getMessage())
+                .mentionRepliedUser(false)
+                .queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+        event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
     }
 }
