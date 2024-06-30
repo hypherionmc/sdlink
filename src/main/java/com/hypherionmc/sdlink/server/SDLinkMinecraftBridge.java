@@ -142,6 +142,9 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         command = command.replace("%linked_user%", name);
         command = command.replace("%role%", event.getMember().getRoles().stream().map(Role::getName).collect(Collectors.joining()));
 
+        if (!SDLinkConfig.INSTANCE.chatConfig.useLinkedNames)
+            name = SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName;
+
         return SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, event, name);
     }
 
