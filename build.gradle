@@ -197,7 +197,7 @@ publisher {
     setModrinthID(modrinth_id)
     setNightbloomID("sdlink")
     setProjectVersion(project.version.toString())
-    setReleaseType(ReleaseType.BETA)
+    setReleaseType(ReleaseType.RELEASE)
     setChangelog("https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md")
     setDisplayName("Simple Discord Link Universal - ${project.version}")
     setGameVersions("1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.21")
