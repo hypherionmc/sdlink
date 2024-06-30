@@ -125,7 +125,7 @@ public class PermissionChecker {
 
         if (errCount.get() > 0) {
             builder.append("\r\n").append("******************* Simple Discord Link Errors *******************").append("\r\n");
-            controller.getLogger().info(builder.toString());
+            controller.getLogger().error(builder.toString());
         }
     }
 
@@ -150,6 +150,11 @@ public class PermissionChecker {
                     .append(channelName)
                     .append(" ID is not set.... This value is required")
                     .append("\r\n");
+            return;
+        }
+
+        if (channelID.equalsIgnoreCase("0")) {
+            BotController.INSTANCE.getLogger().warn("Channel ID for {} is set to 0. Falling back to chatChannel", channelName);
             return;
         }
 

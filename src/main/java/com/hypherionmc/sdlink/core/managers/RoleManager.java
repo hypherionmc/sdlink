@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -65,18 +66,11 @@ public class RoleManager {
      * @return The role that matched or NULL
      */
     private static Role getRole(AtomicInteger errCount, StringBuilder builder, String roleIdentifier, String roleID) {
-        Role role = null;
-        if (SystemUtils.isLong(roleID)) {
-            role = BotController.INSTANCE.getJDA().getRoleById(roleID);
-        }
+        Optional<Role> role = BotController.INSTANCE.getJDA().getGuilds().get(0).getRoles().
+                stream().filter(r -> r.getId().equalsIgnoreCase(roleID) || r.getName().equalsIgnoreCase(roleID)).findFirst();
 
-        if (role != null) {
-            return role;
-        } else {
-            List<Role> roles = BotController.INSTANCE.getJDA().getRolesByName(roleID, true);
-            if (!roles.isEmpty()) {
-                return roles.get(0);
-            }
+        if (role.isPresent()) {
+            return role.get();
         }
 
         errCount.incrementAndGet();

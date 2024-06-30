@@ -99,8 +99,10 @@ public class BotController {
             return;
         }
 
-        if (!SDLinkConfig.INSTANCE.generalConfig.enabled)
+        if (!SDLinkConfig.INSTANCE.generalConfig.enabled) {
+            logger.warn("Simple Discord Link is disabled. Not continuing");
             return;
+        }
 
         try {
             String token = EncryptionUtil.INSTANCE.decrypt(SDLinkConfig.INSTANCE.botConfig.botToken);
