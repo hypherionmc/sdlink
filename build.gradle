@@ -5,7 +5,7 @@ plugins {
     id "com.hypherionmc.modutils.orion" version "1.0.+"
     id 'com.github.johnrengelman.shadow' version '8.0.0'
     id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT"
-    id "com.hypherionmc.modutils.modpublisher" version "2.1.5+snapshot.1"
+    id "com.hypherionmc.modutils.modpublisher" version "2.1.5+snapshot.2"
 }
 
 orion.setup {
@@ -190,10 +190,12 @@ publisher {
     apiKeys {
         modrinth(System.getenv("MODRINTH_TOKEN"))
         curseforge(System.getenv("CURSE_TOKEN"))
+        nightbloom(System.getenv("PLATFORM_KEY"))
     }
 
     setCurseID(curse_id)
     setModrinthID(modrinth_id)
+    setNightbloomID("sdlink")
     setProjectVersion(project.version.toString())
     setReleaseType(ReleaseType.BETA)
     setChangelog("https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md")
@@ -202,6 +204,7 @@ publisher {
     setLoaders("forge", "fabric", "quilt", "neoforge")
     setCurseEnvironment("both")
     setArtifact(shadowJar)
+    setNightbloomDepends(1)
 
     modrinthDepends {
         required("Nn8Wasaq")
