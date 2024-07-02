@@ -106,18 +106,6 @@ public class BotController {
 
         try {
             String token = EncryptionUtil.INSTANCE.decrypt(SDLinkConfig.INSTANCE.botConfig.botToken);
-            _jda = JDABuilder.createLight(
-                            token,
-                            GatewayIntent.GUILD_MEMBERS,
-                            GatewayIntent.GUILD_MESSAGES,
-                            GatewayIntent.MESSAGE_CONTENT,
-                            GatewayIntent.GUILD_MESSAGE_REACTIONS
-                    )
-                    .setMemberCachePolicy(MemberCachePolicy.ALL)
-                    .setChunkingFilter(ChunkingFilter.ALL)
-                    .setBulkDeleteSplittingEnabled(true)
-                    .setEventManager(new ThreadedEventManager())
-                    .build();
 
             // Setup Commands
             CommandClientBuilder clientBuilder = new CommandClientBuilder();
@@ -130,10 +118,20 @@ public class BotController {
             CommandClient commandClient = clientBuilder.build();
             CommandManager.INSTANCE.register(commandClient);
 
-            // Register Event Handlers
-            _jda.addEventListener(commandClient, eventWaiter, new DiscordEventHandler());
-            _jda.setAutoReconnect(true);
-
+            _jda = JDABuilder.createLight(
+                            token,
+                            GatewayIntent.GUILD_MEMBERS,
+                            GatewayIntent.GUILD_MESSAGES,
+                            GatewayIntent.MESSAGE_CONTENT,
+                            GatewayIntent.GUILD_MESSAGE_REACTIONS
+                    )
+                    .addEventListeners(commandClient, eventWaiter, new DiscordEventHandler())
+                    .setAutoReconnect(true)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .setChunkingFilter(ChunkingFilter.ALL)
+                    .setBulkDeleteSplittingEnabled(true)
+                    .setEventManager(new ThreadedEventManager())
+                    .build();
         } catch (Exception e) {
             logger.error("Failed to connect to discord", e);
         }

@@ -30,7 +30,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.CloseCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -45,6 +47,26 @@ import static com.hypherionmc.sdlink.core.managers.DatabaseManager.sdlinkDatabas
  * and use these hooks to trigger that code
  */
 public class DiscordEventHandler extends ListenerAdapter {
+
+    /**
+     * Discord yeeted the bot connection
+     */
+    @Override
+    public void onShutdown(ShutdownEvent event) {
+        CloseCode code = event.getCloseCode();
+
+        if (code == null) {
+            BotController.INSTANCE.getLogger().error("Got disconnected from discord for an unknown reason. Code: {}", event.getCode());
+            return;
+        }
+
+        if (code == CloseCode.DISALLOWED_INTENTS) {
+            BotController.INSTANCE.getLogger().error("Your bot is missing a required setup step, and cannot continue. Please review https://sdlink.fdd-docs.com/installation/bot-creation/#privileged-gateway-intents to fix this");
+            return;
+        }
+
+        BotController.INSTANCE.getLogger().error("Disconnected from discord with error {}", event.getCloseCode().name());
+    }
 
     /**
      * The bot received a message
