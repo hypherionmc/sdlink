@@ -9,6 +9,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 /**
@@ -22,7 +23,14 @@ public class DiscordMessageHooks {
      */
     public static void discordMessageEvent(MessageReceivedEvent event) {
         try {
-            if (event.getChannel().getIdLong() != ChannelManager.getDestinationChannel(MessageDestination.CHAT).getIdLong())
+            GuildMessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
+
+            if (channel == null) {
+                BotController.INSTANCE.getLogger().warn("Tried to relay discord message before bot is ready. Aborting");
+                return;
+            }
+
+            if (event.getChannel().getIdLong() != channel.getIdLong())
                 return;
 
             if (event.getAuthor().isBot() && SDLinkConfig.INSTANCE.chatConfig.ignoreBots)

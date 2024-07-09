@@ -20,13 +20,13 @@ public class MinecraftCommands {
     @SpecComment("Command Prefix. For example ?weather clear")
     public String prefix = "?";
 
-    @Path("permissions")
-    @SpecComment("List of command permissions")
-    public List<Command> permissions = new ArrayList<>();
-
     @Path("allowedChannels")
     @SpecComment("You can leave this empty, or enter the channel ID's (surrounded by \"\") of channels where linked commands can be used")
     public List<String> allowedChannels = new ArrayList<>();
+
+    @Path("permissions")
+    @SpecComment("List of command permissions")
+    public List<Command> permissions = new ArrayList<>();
 
     public static class Command {
         public String role = "0";
