@@ -5,7 +5,7 @@ plugins {
     id "com.hypherionmc.modutils.orion" version "1.0.+"
     id 'com.github.johnrengelman.shadow' version '8.0.0'
     id "xyz.wagyourtail.unimined" version "1.1.0-SNAPSHOT"
-    id "com.hypherionmc.modutils.modpublisher" version "2.1.5+snapshot.2"
+    id "com.hypherionmc.modutils.modpublisher" version "2.1.6"
 }
 
 orion.setup {
@@ -204,13 +204,16 @@ publisher {
     setLoaders("forge", "fabric", "quilt", "neoforge")
     setCurseEnvironment("both")
     setArtifact(shadowJar)
-    setNightbloomDepends(1)
 
     modrinthDepends {
         required("Nn8Wasaq")
     }
 
     curseDepends {
+        required("craterlib")
+    }
+
+    nightbloomDepends {
         required("craterlib")
     }
 }
