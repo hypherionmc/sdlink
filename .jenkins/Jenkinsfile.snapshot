@@ -45,7 +45,7 @@ pipeline {
                 modLoaders: "forge|neoforge|fabric|quilt",
                 minecraftVersions: "1.18.2|1.19.2|1.19.3|1.19.4|1.20|1.20.1|1.20.2|1.20.3|1.20.4|1.21",
                 type: "snapshot",
-                dependsOn: "1",
+                dependsOn: "required:craterlib",
                 failWebhook: env.SSS_WEBHOOK,
                 publishWebhooks: "${env.SSS_WEBHOOK}|${env.FDD_WH}"
 
