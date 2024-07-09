@@ -80,6 +80,6 @@ public class BotReadyHooks {
                     BotController.INSTANCE.getLogger().info(e.getMessage());
                 }
             }
-        }, Math.max(5, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), Math.max(5, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), TimeUnit.MINUTES);
+        }, Math.max(6, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), Math.max(6, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), TimeUnit.MINUTES);
     }
 }

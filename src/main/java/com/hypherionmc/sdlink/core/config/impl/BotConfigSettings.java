@@ -54,8 +54,8 @@ public class BotConfigSettings {
         public boolean doTopicUpdates = true;
 
         @Path("updateInterval")
-        @SpecComment("How often should the bot update the channel topic (IN MINUTES)? CANNOT BE LOWER THAN 5 MINUTES!")
-        public int updateInterval = 5;
+        @SpecComment("How often should the bot update the channel topic (IN MINUTES)? CANNOT BE LOWER THAN 6 MINUTES!")
+        public int updateInterval = 6;
 
         @Path("channelTopic")
         @SpecComment("A topic for the Chat Relay channel. You can use %player%, %maxplayers%, %uptime% or just leave it empty.")
