@@ -277,7 +277,7 @@ public class ServerEvents {
             }
         }
 
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
+        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
             return;
 
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
@@ -292,9 +292,6 @@ public class ServerEvents {
 
     @CraterEventListener
     public void playerLeaveEvent(CraterPlayerEvent.PlayerLoggedOut event) {
-        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
-            return;
-
         if (SDLinkConfig.INSTANCE.accessControl.enabled) {
             try {
                 if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
@@ -309,7 +306,7 @@ public class ServerEvents {
             }
         }
 
-        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish())
             return;
 
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {

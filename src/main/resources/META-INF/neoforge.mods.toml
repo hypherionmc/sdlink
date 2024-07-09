@@ -29,6 +29,6 @@ issueTrackerURL="https://github.com/firstdarkdev/sdlink/issues"
 [[dependencies.${mod_id}]]
     modId="craterlib"
     mandatory=true
-    versionRange="[2.0,)"
+    versionRange="[2.0.1,)"
     ordering="AFTER"
     side="SERVER"
