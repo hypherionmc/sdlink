@@ -84,7 +84,7 @@ public class ServerEvents {
             message.sendMessage();
         }
 
-        if (BotController.INSTANCE.getJDA().getStatus() == JDA.Status.CONNECTED && CacheManager.getDiscordMembers().isEmpty())
+        if (BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && CacheManager.getDiscordMembers().isEmpty())
             CacheManager.loadCache();
     }
 
