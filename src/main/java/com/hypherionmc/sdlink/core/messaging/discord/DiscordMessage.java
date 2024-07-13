@@ -105,6 +105,12 @@ public final class DiscordMessage {
                     afterSend.run();
             });
         } else {
+            if (channel.getLeft() == null) {
+                if (SDLinkConfig.INSTANCE.generalConfig.debugging)
+                    BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
+                return;
+            }
+
             // Use the configured channel instead
             if (channel.getRight().useEmbed) {
                 EmbedBuilder eb = buildEmbed(true, channel.getRight().embedLayout);

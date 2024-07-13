@@ -11,6 +11,7 @@ import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -44,7 +45,11 @@ public class ChannelManager {
         channelMap.put(MessageDestination.CONSOLE, consoleChannel != null ? Pair.of(consoleChannel, true) : Pair.of(chatChannel, false));
     }
 
+    @Nullable
     public static GuildMessageChannel getDestinationChannel(MessageDestination destination) {
+        if (channelMap.get(destination) == null)
+            return null;
+
         return channelMap.get(destination).getLeft();
     }
 }
