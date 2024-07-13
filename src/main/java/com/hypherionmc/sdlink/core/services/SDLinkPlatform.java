@@ -4,8 +4,8 @@
  */
 package com.hypherionmc.sdlink.core.services;
 
-import com.hypherionmc.craterlib.utils.InternalServiceUtil;
 import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 
 /**
  * @author HypherionSA
@@ -13,6 +13,6 @@ import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
  */
 public class SDLinkPlatform {
 
-    public static IMinecraftHelper minecraftHelper = InternalServiceUtil.load(IMinecraftHelper.class);
+    public static IMinecraftHelper minecraftHelper = new SDLinkMinecraftBridge();
 
 }
