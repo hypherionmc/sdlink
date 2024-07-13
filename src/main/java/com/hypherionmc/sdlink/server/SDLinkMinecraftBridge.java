@@ -110,7 +110,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
 
         if (server != null) {
-            server.getPlayers().forEach(p -> {
+            server.getPlayers().stream().filter(SDLinkMCPlatform.INSTANCE::playerIsActive).forEach(p -> {
                 MinecraftAccount account = MinecraftAccount.of(p.getGameProfile());
                 accounts.add(account);
             });
