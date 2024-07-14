@@ -306,21 +306,19 @@ public class ServerEvents {
             }
         }
 
-        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish())
+        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerLeave || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
             return;
 
-        if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.playerLeave) {
-            String name = ChatUtils.resolve(event.getPlayer().getDisplayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
+        String name = ChatUtils.resolve(event.getPlayer().getDisplayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
-                    .message(SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", name))
-                    .author(DiscordAuthor.SERVER
-                            .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
-                            .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
-                    .build();
+        DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
+                .message(SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", name))
+                .author(DiscordAuthor.SERVER
+                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
+                        .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
+                .build();
 
-            message.sendMessage();
-        }
+        message.sendMessage();
     }
 
     @CraterEventListener
