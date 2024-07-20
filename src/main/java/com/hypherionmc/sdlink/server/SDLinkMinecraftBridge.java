@@ -54,7 +54,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
             }
         }
 
-        String prefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", user.get());
+        String prefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", user.get()).replace("%role%", member.getRoles().get(0).getName());
         Component component = Component.empty();
         Style baseStyle = Style.empty();
         Matcher matcher = patternStart.matcher(prefix);
