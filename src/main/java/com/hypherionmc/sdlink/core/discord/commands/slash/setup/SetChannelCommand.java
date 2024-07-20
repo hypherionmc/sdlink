@@ -43,7 +43,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         GuildMessageChannel channel = event.getOption("channel").getAsChannel().asGuildMessageChannel();
         String type = event.getOption("type").getAsString();
@@ -62,7 +62,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
             result = setChannel(channel, type);
         }
 
-        event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
+        event.getHook().sendMessage(result.getMessage()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
     }
 
     private Result setChannel(GuildMessageChannel channel, String type) {

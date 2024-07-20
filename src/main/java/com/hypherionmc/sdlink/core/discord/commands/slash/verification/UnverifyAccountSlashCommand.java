@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.core.discord.commands.slash.verification;
 
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.messaging.Result;
@@ -24,7 +25,7 @@ public class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         sdlinkDatabase.reloadCollection("verifiedaccounts");
         List<SDLinkAccount> accounts = sdlinkDatabase.findAll(SDLinkAccount.class);
@@ -40,14 +41,14 @@ public class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
             if (account.getDiscordID() != null && account.getDiscordID().equalsIgnoreCase(event.getMember().getId())) {
                 MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
                 Result result = minecraftAccount.unverifyAccount(event.getMember(), event.getGuild());
-                event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
+                event.getHook().sendMessage(result.getMessage()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
                 didUnverify = true;
                 break;
             }
         }
 
         if (!didUnverify)
-            event.getHook().sendMessage("Sorry, we could not un-verify your Minecraft account. Please try again").setEphemeral(true).queue();
+            event.getHook().sendMessage("Sorry, we could not un-verify your Minecraft account. Please try again").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
     }
 
 }

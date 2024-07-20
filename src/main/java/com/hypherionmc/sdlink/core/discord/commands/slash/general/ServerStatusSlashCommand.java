@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.SystemUtils;
@@ -102,7 +103,7 @@ public class ServerStatusSlashCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
         Button refreshBtn = Button.danger("sdrefreshbtn", "Refresh");
         event.getHook().sendMessageEmbeds(runStatusCommand()).addActionRow(refreshBtn).queue();
     }

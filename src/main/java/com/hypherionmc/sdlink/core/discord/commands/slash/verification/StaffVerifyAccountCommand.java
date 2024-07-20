@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.core.discord.commands.slash.verification;
 
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.messaging.Result;
@@ -34,7 +35,7 @@ public class StaffVerifyAccountCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         sdlinkDatabase.reloadCollection("verifiedaccounts");
         List<SDLinkAccount> accounts = sdlinkDatabase.findAll(SDLinkAccount.class);
@@ -50,7 +51,7 @@ public class StaffVerifyAccountCommand extends SDLinkSlashCommand {
         Member member = event.getGuild().getMemberById(user.getId());
 
         if (member == null) {
-            event.getHook().sendMessage(user.getEffectiveName() + " is not a member of this discord server").setEphemeral(true).queue();
+            event.getHook().sendMessage(user.getEffectiveName() + " is not a member of this discord server").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
         }
 
@@ -63,7 +64,7 @@ public class StaffVerifyAccountCommand extends SDLinkSlashCommand {
 
         MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
         Result result = minecraftAccount.verifyAccount(member, event.getGuild());
-        event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
+        event.getHook().sendMessage(result.getMessage()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
     }
 
 }

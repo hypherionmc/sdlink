@@ -30,13 +30,13 @@ public class VerifyAccountCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
 
         int mcCode = event.getOption("code") != null ? event.getOption("code").getAsInt() : 0;
 
         if (mcCode == 0) {
-            event.getHook().sendMessage("You need to provide a verification code").setEphemeral(true).queue();
+            event.getHook().sendMessage("You need to provide a verification code").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
         }
 
@@ -44,7 +44,7 @@ public class VerifyAccountCommand extends SDLinkSlashCommand {
         List<SDLinkAccount> accounts = sdlinkDatabase.findAll(SDLinkAccount.class);
 
         if (accounts.isEmpty()) {
-            event.getHook().sendMessage("Sorry, but this server does not contain any stored players in its database").setEphemeral(true).queue();
+            event.getHook().sendMessage("Sorry, but this server does not contain any stored players in its database").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
         }
 
@@ -69,7 +69,7 @@ public class VerifyAccountCommand extends SDLinkSlashCommand {
         }
 
         if (!didVerify)
-            event.getHook().sendMessage("Sorry, we could not verify your Minecraft account. Please try again").setEphemeral(true).queue();
+            event.getHook().sendMessage("Sorry, we could not verify your Minecraft account. Please try again").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
     }
 
 }

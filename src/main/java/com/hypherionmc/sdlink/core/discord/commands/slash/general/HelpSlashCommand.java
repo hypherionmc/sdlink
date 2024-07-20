@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommand;
@@ -35,6 +36,6 @@ public class HelpSlashCommand extends SDLinkSlashCommand {
         builder.setColor(Color.BLUE);
 
         commands.forEach(cmd -> builder.addField(cmd.getName(), cmd.getHelp(), false));
-        event.getHook().sendMessageEmbeds(builder.build()).setEphemeral(true).queue();
+        event.getHook().sendMessageEmbeds(builder.build()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
     }
 }

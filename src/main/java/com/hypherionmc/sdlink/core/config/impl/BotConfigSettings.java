@@ -18,6 +18,10 @@ public class BotConfigSettings {
     @SpecComment("The token of the Discord Bot to use. This will be encrypted on first load. See https://sdlink.fdd-docs.com/initial-setup/ to find this")
     public String botToken = "";
 
+    @Path("silentReplies")
+    @SpecComment("Use silent replies when Slash Commands are used")
+    public boolean silentReplies = true;
+
     @Path("statusUpdateInterval")
     @SpecComment("How often the Bot Status will update on Discord (in Seconds). Set to 0 to disable")
     public int statusUpdateInterval = 30;

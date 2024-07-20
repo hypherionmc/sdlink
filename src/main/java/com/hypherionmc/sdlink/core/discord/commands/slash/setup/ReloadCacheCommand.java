@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlink.core.discord.commands.slash.setup;
 
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
@@ -19,10 +20,10 @@ public class ReloadCacheCommand extends SDLinkSlashCommand {
         try {
             CacheManager.loadCache();
             ChannelManager.loadChannels();
-            slashCommandEvent.reply("Cache has been reloaded").setEphemeral(true).queue();
+            slashCommandEvent.reply("Cache has been reloaded").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to reload cache", e);
-            slashCommandEvent.reply("Failed to reload cache. Please check your server log").setEphemeral(true).queue();
+            slashCommandEvent.reply("Failed to reload cache. Please check your server log").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
         }
     }
 

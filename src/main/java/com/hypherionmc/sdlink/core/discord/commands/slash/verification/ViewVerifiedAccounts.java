@@ -36,7 +36,7 @@ public class ViewVerifiedAccounts extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
         try {
             ButtonEmbedPaginator.Builder paginator = MessageUtil.defaultPaginator();
 
@@ -77,7 +77,7 @@ public class ViewVerifiedAccounts extends SDLinkSlashCommand {
 
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
-            event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(true).queue();
+            event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             if (SDLinkConfig.INSTANCE.generalConfig.debugging)
                 e.printStackTrace();
         }

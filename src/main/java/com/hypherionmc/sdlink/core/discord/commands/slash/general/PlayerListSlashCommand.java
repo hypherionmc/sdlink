@@ -36,7 +36,7 @@ public class PlayerListSlashCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         try {
             List<MinecraftAccount> players = SDLinkPlatform.minecraftHelper.getOnlinePlayers();
@@ -83,7 +83,7 @@ public class PlayerListSlashCommand extends SDLinkSlashCommand {
 
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
-            event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(true).queue();
+            event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             BotController.INSTANCE.getLogger().error("Failed to run player list command", e);
         }
     }
