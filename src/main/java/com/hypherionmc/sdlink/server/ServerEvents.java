@@ -23,6 +23,7 @@ import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.DiscordCommand;
+import com.hypherionmc.sdlink.server.commands.ReloadBotCommand;
 import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
 import com.hypherionmc.sdlink.server.commands.WhoisCommand;
 import com.hypherionmc.sdlink.util.LogReader;
@@ -52,11 +53,18 @@ public class ServerEvents {
         BotController.INSTANCE.initializeBot();
     }
 
+    public static void reloadBot() {
+        BotController.INSTANCE.shutdownBot();
+        BotController.newInstance(SDLinkConstants.LOGGER);
+        BotController.INSTANCE.initializeBot();
+    }
+
     @CraterEventListener
     public void onCommandRegister(CraterRegisterCommandEvent event) {
         DiscordCommand.register(event);
         ReloadEmbedsCommand.register(event);
         WhoisCommand.register(event);
+        ReloadBotCommand.register(event);
     }
 
     @CraterEventListener
