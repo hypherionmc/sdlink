@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +37,8 @@ import java.util.concurrent.TimeUnit;
 public class BotController {
 
     // Thread Execution Manager
-    public static final ScheduledExecutorService taskManager = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+    public static final ExecutorService taskManager = Executors.newCachedThreadPool();
+    public static final ScheduledExecutorService updatesManager = Executors.newScheduledThreadPool(2);
 
     // Public instance of this class that can be called anywhere
     public static BotController INSTANCE;
@@ -173,6 +175,7 @@ public class BotController {
 
         WebhookManager.shutdown();
         taskManager.shutdownNow();
+        updatesManager.shutdownNow();
     }
 
     public JDA getJDA() {

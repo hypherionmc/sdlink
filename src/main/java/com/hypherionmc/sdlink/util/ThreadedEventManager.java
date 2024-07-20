@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * @author HypherionSA
  * Run discord events in seperate threads
@@ -20,6 +22,6 @@ public class ThreadedEventManager extends InterfacedEventManager {
         if (BotController.taskManager.isShutdown() || BotController.taskManager.isTerminated())
             return;
 
-        BotController.taskManager.submit(() -> super.handle(event));
+        CompletableFuture.runAsync(() -> super.handle(event), BotController.taskManager);
     }
 }
