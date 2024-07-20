@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -165,16 +166,13 @@ public class BotController {
     public void shutdownBot() {
         shutdownCalled = true;
         if (_jda != null) {
-            _jda.shutdown();
+            List<Object> listeners = _jda.getRegisteredListeners();
+            listeners.forEach(l -> _jda.removeEventListener(l));
+            _jda.shutdownNow();
         }
 
         WebhookManager.shutdown();
-
-        // Workaround for Bot thread hanging after server shutdown
-        taskManager.schedule(() -> {
-            taskManager.shutdownNow();
-            System.exit(0);
-        }, 10, TimeUnit.SECONDS);
+        taskManager.shutdownNow();
     }
 
     public JDA getJDA() {
