@@ -49,6 +49,10 @@ public class ChannelWebhookConfig {
         @SpecComment("Prefer Webhook Messages over Standard Bot Messages")
         public boolean enabled = false;
 
+        @Path("webhookNameFormat")
+        @SpecComment("Change how the webhook name is displayed in discord. Available placeholders: %display_name%, %mc_name%")
+        public String webhookNameFormat = "%display_name%";
+
         @Path("chatWebhook")
         @SpecComment("The URL of the channel webhook to use for Chat Messages. Will be encrypted on first run")
         public String chatWebhook = "";
