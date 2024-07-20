@@ -23,6 +23,9 @@ public class DiscordMessageHooks {
      */
     public static void discordMessageEvent(MessageReceivedEvent event) {
         try {
+            if (!event.getChannel().getId().equalsIgnoreCase(SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID))
+                return;
+
             GuildMessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
 
             if (channel == null) {
