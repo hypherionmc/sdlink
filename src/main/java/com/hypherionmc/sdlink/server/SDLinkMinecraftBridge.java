@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import shadow.kyori.adventure.text.Component;
+import shadow.kyori.adventure.text.event.HoverEvent;
 import shadow.kyori.adventure.text.format.NamedTextColor;
 import shadow.kyori.adventure.text.format.Style;
 import shadow.kyori.adventure.text.format.TextColor;
@@ -80,6 +81,10 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         try {
             Component finalComponent = component.append(SDLinkChatUtils.parseChatLinks(s1));
 
+            if (SDLinkConfig.INSTANCE.chatConfig.showDiscordInfo) {
+                finalComponent = appendDiscordInfo(member, finalComponent);
+            }
+
             ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
                     finalComponent,
                     false
@@ -90,6 +95,17 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
                 SDLinkConstants.LOGGER.error("Failed to send message: {}", e.getMessage());
             }
         }
+    }
+
+    private Component appendDiscordInfo(Member member, Component currentComponent) {
+        Component memberDetails = Component.empty();
+        memberDetails = memberDetails
+                .append(Component.text("Display Name: ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(member.getEffectiveName()).style(Style.style().color(NamedTextColor.WHITE).build())).appendNewline())
+                .append(Component.text("Username: ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(member.getUser().getName()).style(Style.style().color(NamedTextColor.WHITE).build())).appendNewline())
+                .append(Component.text("Roles: ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(String.join(", ", member.getRoles().stream().map(Role::getName).toList())).style(Style.style().color(NamedTextColor.WHITE).build())));
+
+        currentComponent = currentComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, memberDetails));
+        return currentComponent;
     }
 
     @Override

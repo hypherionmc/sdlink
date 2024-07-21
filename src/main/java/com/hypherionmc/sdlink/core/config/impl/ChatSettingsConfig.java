@@ -21,6 +21,10 @@ public class ChatSettingsConfig {
     @SpecComment("Use linked account names in Discord/Minecraft messages, instead of the default ones")
     public boolean useLinkedNames = true;
 
+    @Path("showDiscordInfo")
+    @SpecComment("Show the discord name, username and role of the user that sent a message in Minecraft")
+    public boolean showDiscordInfo = false;
+
     @Path("formatting")
     @SpecComment("Convert Discord to MC, and MC to Discord Formatting")
     public boolean formatting = true;
