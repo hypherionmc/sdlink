@@ -58,6 +58,7 @@ public class BotController {
      * @param logger A constructed {@link Logger} that the bot will use
      */
     private BotController(Logger logger, boolean wasReload) {
+        INSTANCE = this;
         this.logger = logger;
 
         File newConfigDir = new File("./config/simple-discord-link");
@@ -82,12 +83,12 @@ public class BotController {
      * @param logger A constructed {@link Logger} that the bot will use
      */
     public static void newInstance(Logger logger) {
-        BotController.INSTANCE = new BotController(logger, false);
+        new BotController(logger, false);
     }
 
     public static void reloadInstance() {
         BotController.INSTANCE.shutdownBot();
-        BotController.INSTANCE = new BotController(INSTANCE.logger, true);
+        new BotController(INSTANCE.logger, true);
         BotController.INSTANCE.initializeBot();
     }
 
