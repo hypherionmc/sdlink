@@ -71,14 +71,17 @@ public class SetChannelCommand extends SDLinkSlashCommand {
                 case "chat": {
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID = channel.getId();
                     SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+                    break;
                 }
                 case "event": {
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID = channel.getId();
                     SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+                    break;
                 }
                 case "console": {
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.consoleChannelID = channel.getId();
                     SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+                    break;
                 }
             }
 
@@ -98,6 +101,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
                         SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
                     });
+                    break;
                 }
                 case "event": {
                     channel.createWebhook("SDLink " + type).queue(s -> {
@@ -105,6 +109,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
                         SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
                     });
+                    break;
                 }
                 case "console": {
                     channel.createWebhook("SDLink " + type).queue(s -> {
@@ -112,6 +117,7 @@ public class SetChannelCommand extends SDLinkSlashCommand {
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
                         SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
                     });
+                    break;
                 }
             }
 
