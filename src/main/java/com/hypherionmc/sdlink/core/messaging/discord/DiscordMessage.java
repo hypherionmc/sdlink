@@ -108,6 +108,8 @@ public final class DiscordMessage {
             if (channel.getLeft() == null) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging)
                     BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
+                if (afterSend != null)
+                    afterSend.run();
                 return;
             }
 

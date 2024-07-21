@@ -19,9 +19,9 @@ public class ThreadedEventManager extends InterfacedEventManager {
 
     @Override
     public void handle(@NotNull GenericEvent event) {
-        if (BotController.taskManager.isShutdown() || BotController.taskManager.isTerminated())
+        if (BotController.INSTANCE.taskManager.isShutdown() || BotController.INSTANCE.taskManager.isTerminated())
             return;
 
-        CompletableFuture.runAsync(() -> super.handle(event), BotController.taskManager);
+        CompletableFuture.runAsync(() -> super.handle(event), BotController.INSTANCE.taskManager);
     }
 }

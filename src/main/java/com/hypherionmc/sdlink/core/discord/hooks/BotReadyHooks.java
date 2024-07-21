@@ -31,7 +31,7 @@ public class BotReadyHooks {
      */
     public static void startActivityUpdates(ReadyEvent event) {
         if (SDLinkConfig.INSTANCE.botConfig.statusUpdateInterval > 0) {
-            BotController.updatesManager.scheduleAtFixedRate(() -> {
+            BotController.INSTANCE.updatesManager.scheduleAtFixedRate(() -> {
                 try {
                     if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
                         Activity act = Activity.of(SDLinkConfig.INSTANCE.botConfig.botStatus.botStatusType, SDLinkConfig.INSTANCE.botConfig.botStatus.botStatus
@@ -63,7 +63,7 @@ public class BotReadyHooks {
         if (!SDLinkConfig.INSTANCE.botConfig.channelTopic.doTopicUpdates)
             return;
 
-        BotController.updatesManager.scheduleAtFixedRate(() -> {
+        BotController.INSTANCE.updatesManager.scheduleAtFixedRate(() -> {
             try {
                 if (BotController.INSTANCE.isBotReady() && (SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic != null && !SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic.isEmpty())) {
                     MessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);

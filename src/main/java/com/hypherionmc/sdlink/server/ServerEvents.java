@@ -54,9 +54,7 @@ public class ServerEvents {
     }
 
     public static void reloadBot() {
-        BotController.INSTANCE.shutdownBot();
-        BotController.newInstance(SDLinkConstants.LOGGER);
-        BotController.INSTANCE.initializeBot();
+        BotController.reloadInstance();
     }
 
     @CraterEventListener
@@ -169,6 +167,9 @@ public class ServerEvents {
             return;
 
         String cmd = event.getCommandString();
+
+        if (cmd.equalsIgnoreCase("reloadbot"))
+            return;
 
         BridgedPlayer player = null;
         String uuid = null;

@@ -8,11 +8,16 @@ import com.hypherionmc.craterlib.core.config.ConfigController;
 import com.hypherionmc.craterlib.core.config.ModuleConfig;
 import com.hypherionmc.craterlib.core.config.annotations.NoConfigScreen;
 import com.hypherionmc.sdlink.core.config.impl.*;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
+import org.apache.commons.io.FileUtils;
 import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 import shadow.hypherionmc.moonconfig.core.file.CommentedFileConfig;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author HypherionSA
@@ -26,6 +31,7 @@ public class SDLinkConfig extends ModuleConfig {
     public transient static SDLinkConfig INSTANCE;
     public transient static int configVer = 16;
     public transient static boolean hasConfigLoaded = false;
+    public transient static boolean wasReload = false;
 
     @Path("general")
     @SpecComment("General Mod Config")
@@ -63,9 +69,14 @@ public class SDLinkConfig extends ModuleConfig {
     @SpecComment("Configure messages that will be ignored when relaying to discord")
     public MessageIgnoreConfig ignoreConfig = new MessageIgnoreConfig();
 
-    public SDLinkConfig() {
+    public SDLinkConfig(boolean wasReload) {
         super("sdlink", "simple-discord-link", "simple-discord-link");
+        SDLinkConfig.wasReload = wasReload;
         registerAndSetup(this);
+    }
+
+    public SDLinkConfig() {
+        this(false);
     }
 
     @Override
@@ -77,7 +88,9 @@ public class SDLinkConfig extends ModuleConfig {
         }
 
         performEncryption();
-        ConfigController.register_config(this);
+        if (!wasReload) {
+            ConfigController.register_config(this);
+        }
         this.configReloaded();
     }
 
@@ -96,6 +109,11 @@ public class SDLinkConfig extends ModuleConfig {
         new ObjectConverter().toConfig(conf, newConfig);
         this.updateConfigValues(config, newConfig, newConfig, "");
         newConfig.set("general.configVersion", configVer);
+        try {
+            FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", ".old")));
+        } catch (IOException e) {
+            BotController.INSTANCE.getLogger().warn("Failed to create config backup.", e);
+        }
         newConfig.save();
 
         newConfig.close();

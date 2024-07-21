@@ -46,7 +46,7 @@ public class PlayerListSlashCommand extends SDLinkSlashCommand {
             AtomicInteger count = new AtomicInteger();
 
             if (players.isEmpty()) {
-                builder.setTitle(String.format("Online Players %s/%s", SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft(), SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()));
+                builder.setTitle("Online Players");
                 builder.setColor(Color.RED);
                 builder.setDescription("There are currently no players online");
                 event.getHook().sendMessageEmbeds(builder.build()).setEphemeral(true).queue();
@@ -64,6 +64,7 @@ public class PlayerListSlashCommand extends SDLinkSlashCommand {
                 builder.clear();
                 builder.setTitle("Online Players - Page " + count.get() + "/" + (int) Math.ceil(((float) players.size() / 10)));
                 builder.setColor(Color.GREEN);
+                builder.setFooter(String.format("%s/%s players online", SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft(), SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()));
 
                 p.forEach(account -> {
                     sb.append("`").append(account.getUsername()).append("`");

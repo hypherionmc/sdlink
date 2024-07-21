@@ -37,8 +37,8 @@ import java.util.concurrent.TimeUnit;
 public class BotController {
 
     // Thread Execution Manager
-    public static final ExecutorService taskManager = Executors.newCachedThreadPool();
-    public static final ScheduledExecutorService updatesManager = Executors.newScheduledThreadPool(2);
+    public final ExecutorService taskManager = Executors.newCachedThreadPool();
+    public final ScheduledExecutorService updatesManager = Executors.newScheduledThreadPool(2);
 
     // Public instance of this class that can be called anywhere
     public static BotController INSTANCE;
@@ -57,15 +57,14 @@ public class BotController {
      *
      * @param logger A constructed {@link Logger} that the bot will use
      */
-    private BotController(Logger logger) {
-        INSTANCE = this;
+    private BotController(Logger logger, boolean wasReload) {
         this.logger = logger;
 
         File newConfigDir = new File("./config/simple-discord-link");
         newConfigDir.mkdirs();
 
         // Initialize Config
-        new SDLinkConfig();
+        new SDLinkConfig(wasReload);
 
         // Initialize Account Storage
         DatabaseManager.initialize();
@@ -83,7 +82,13 @@ public class BotController {
      * @param logger A constructed {@link Logger} that the bot will use
      */
     public static void newInstance(Logger logger) {
-        new BotController(logger);
+        BotController.INSTANCE = new BotController(logger, false);
+    }
+
+    public static void reloadInstance() {
+        BotController.INSTANCE.shutdownBot();
+        BotController.INSTANCE = new BotController(INSTANCE.logger, true);
+        BotController.INSTANCE.initializeBot();
     }
 
     /**
