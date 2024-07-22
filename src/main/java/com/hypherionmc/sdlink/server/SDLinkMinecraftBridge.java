@@ -43,11 +43,9 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         AtomicReference<String> user = new AtomicReference<>(member.getEffectiveName());
 
         try {
-            if (sdlinkDatabase != null) {
+            if (sdlinkDatabase != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
                 List<SDLinkAccount> accounts = sdlinkDatabase.getCollection(SDLinkAccount.class);
-                accounts.stream().filter(a -> a.getDiscordID().equals(member.getId())).findFirst().ifPresent(u -> {
-                    user.set(u.getUsername());
-                });
+                accounts.stream().filter(a -> a.getDiscordID().equals(member.getId())).findFirst().ifPresent(u -> user.set(u.getUsername()));
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
