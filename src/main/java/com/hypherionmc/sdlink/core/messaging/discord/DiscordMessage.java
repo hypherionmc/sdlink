@@ -71,6 +71,7 @@ public final class DiscordMessage {
                 sendNormalMessage();
             }
         } catch (Exception e) {
+            runAfterSend();
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
                 BotController.INSTANCE.getLogger().error("Failed to send Discord Message", e);
             }
@@ -106,37 +107,32 @@ public final class DiscordMessage {
                 builder.setContent(message);
             }
 
-            channel.getMiddle().send(builder.build()).thenRun(() -> {
-                if (afterSend != null)
-                    afterSend.run();
-            });
+            channel.getMiddle().send(builder.build()).thenRun(this::runAfterSend);
         } else {
             if (channel.getLeft() == null) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging)
                     BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
-                if (afterSend != null)
-                    afterSend.run();
+                runAfterSend();
                 return;
             }
 
             // Use the configured channel instead
             if (channel.getRight().useEmbed) {
                 EmbedBuilder eb = buildEmbed(true, channel.getRight().embedLayout);
-                channel.getLeft().sendMessageEmbeds(eb.build()).queue(success -> {
-                    if (afterSend != null)
-                        afterSend.run();
-                });
+                channel.getLeft().sendMessageEmbeds(eb.build()).queue(success -> runAfterSend());
             } else {
                 channel.getLeft().sendMessage(
                                 this.messageType == MessageType.CHAT ?
                                         SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%message%", message)
                                         : message)
-                        .queue(success -> {
-                            if (afterSend != null)
-                                afterSend.run();
-                        });
+                        .queue(success -> runAfterSend());
             }
         }
+    }
+
+    private void runAfterSend() {
+        if (afterSend != null)
+            afterSend.run();
     }
 
     /**
