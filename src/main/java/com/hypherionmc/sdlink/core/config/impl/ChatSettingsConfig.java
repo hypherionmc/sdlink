@@ -22,7 +22,7 @@ public class ChatSettingsConfig {
     public boolean useLinkedNames = true;
 
     @Path("showDiscordInfo")
-    @SpecComment("Show the discord name, username and role of the user that sent a message in Minecraft")
+    @SpecComment("Show the discord name, username and role of the user that sent a message in Minecraft when the message is hovered")
     public boolean showDiscordInfo = false;
 
     @Path("formatting")
