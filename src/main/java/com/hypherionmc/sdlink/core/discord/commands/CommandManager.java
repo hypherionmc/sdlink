@@ -7,6 +7,9 @@ package com.hypherionmc.sdlink.core.discord.commands;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.HelpSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.PlayerListSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.ServerStatusSlashCommand;
+import com.hypherionmc.sdlink.core.discord.commands.slash.hide.HiddenPlayersCommand;
+import com.hypherionmc.sdlink.core.discord.commands.slash.hide.HidePlayerCommand;
+import com.hypherionmc.sdlink.core.discord.commands.slash.hide.UnhidePlayerCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.setup.ReloadCacheCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.setup.SetChannelCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.verification.*;
@@ -54,6 +57,11 @@ public class CommandManager {
 
         // Reload Cache command
         commands.add(new ReloadCacheCommand());
+
+        // Hidden Players
+        commands.add(new HidePlayerCommand());
+        commands.add(new HiddenPlayersCommand());
+        commands.add(new UnhidePlayerCommand());
     }
 
     /**

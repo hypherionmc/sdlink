@@ -9,6 +9,7 @@ import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.events.DiscordEventHandler;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
+import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.ThreadedEventManager;
@@ -75,6 +76,9 @@ public class BotController {
 
         // Initialize Embeds
         EmbedManager.init();
+
+        // Initialize Hidden players
+        HiddenPlayersManager.INSTANCE.loadHiddenPlayers();
     }
 
     /**

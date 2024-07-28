@@ -4,10 +4,12 @@
  */
 package com.hypherionmc.sdlink.core.managers;
 
+import com.hypherionmc.sdlink.core.database.HiddenPlayers;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import io.jsondb.JsonDBTemplate;
+import io.jsondb.annotation.Document;
 
-import java.util.Collections;
+import java.util.*;
 
 /**
  * @author HypherionSA
@@ -17,15 +19,22 @@ public class DatabaseManager {
 
     public static final JsonDBTemplate sdlinkDatabase = new JsonDBTemplate("sdlinkstorage", "com.hypherionmc.sdlink.core.database");
 
+    private static final Set<Class<?>> tables = new LinkedHashSet<>() {{
+        add(SDLinkAccount.class);
+        add(HiddenPlayers.class);
+    }};
+
     static {
-        sdlinkDatabase.setupDB(Collections.singleton(SDLinkAccount.class));
+        sdlinkDatabase.setupDB(tables);
     }
 
     public static void initialize() {
-        if (!sdlinkDatabase.collectionExists(SDLinkAccount.class)) {
-            sdlinkDatabase.createCollection(SDLinkAccount.class);
-        }
+        tables.forEach(t -> {
+            if (!sdlinkDatabase.collectionExists(t)) {
+                sdlinkDatabase.createCollection(t);
+            }
 
-        sdlinkDatabase.reloadCollection("verifiedaccounts");
+            sdlinkDatabase.reloadCollection(t.getAnnotation(Document.class).collection());
+        });
     }
 }

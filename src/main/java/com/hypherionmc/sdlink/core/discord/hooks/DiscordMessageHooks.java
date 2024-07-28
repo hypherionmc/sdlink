@@ -7,6 +7,7 @@ package com.hypherionmc.sdlink.core.discord.hooks;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
+import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -34,6 +35,9 @@ public class DiscordMessageHooks {
             }
 
             if (event.getChannel().getIdLong() != channel.getIdLong())
+                return;
+
+            if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getMember().getId()))
                 return;
 
             if (event.getAuthor().isBot() && SDLinkConfig.INSTANCE.chatConfig.ignoreBots)

@@ -17,15 +17,13 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.core.events.VerificationEvent;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
+import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.core.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
-import com.hypherionmc.sdlink.server.commands.DiscordCommand;
-import com.hypherionmc.sdlink.server.commands.ReloadBotCommand;
-import com.hypherionmc.sdlink.server.commands.ReloadEmbedsCommand;
-import com.hypherionmc.sdlink.server.commands.WhoisCommand;
+import com.hypherionmc.sdlink.server.commands.*;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
@@ -63,6 +61,8 @@ public class ServerEvents {
         ReloadEmbedsCommand.register(event);
         WhoisCommand.register(event);
         ReloadBotCommand.register(event);
+        HidePlayerCommand.register(event);
+        UnhidePlayerCommand.register(event);
     }
 
     @CraterEventListener
@@ -126,6 +126,9 @@ public class ServerEvents {
         if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer())) {
             return;
         }
+
+        if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
+            return;
 
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
     }
