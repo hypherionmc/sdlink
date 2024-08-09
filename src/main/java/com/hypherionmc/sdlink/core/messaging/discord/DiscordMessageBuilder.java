@@ -65,7 +65,7 @@ public final class DiscordMessageBuilder {
 
             if (!SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
                 //using regex to replace any mention
-                message = Pattern.compile("<[^>]*\\d+>").matcher(message).replaceAll("");
+                message = Pattern.compile("<(?!a?:[^:]+:\\d{17,19}>)[^>]*>").matcher(message).replaceAll("");
             }
         }
 
