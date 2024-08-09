@@ -24,6 +24,7 @@ import shadow.kyori.adventure.text.format.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -147,7 +148,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
     }
 
     @Override
-    public Result executeMinecraftCommand(String command, int permLevel, MessageReceivedEvent event, @Nullable SDLinkAccount account) {
+    public void executeMinecraftCommand(String command, int permLevel, MessageReceivedEvent event, @Nullable SDLinkAccount account, CompletableFuture<Result> replier) {
         String name = event.getMember().getEffectiveName();
         if (account != null) {
             name = account.getUsername();
@@ -159,7 +160,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         if (!SDLinkConfig.INSTANCE.chatConfig.useLinkedNames)
             name = SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName;
 
-        return SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, event, name);
+        SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, name, replier);
     }
 
     @Override

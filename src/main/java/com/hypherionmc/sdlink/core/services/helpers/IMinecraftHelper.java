@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author HypherionSA
@@ -32,7 +33,7 @@ public interface IMinecraftHelper {
 
     String getServerVersion();
 
-    Result executeMinecraftCommand(String command, int permLevel, MessageReceivedEvent event, @Nullable SDLinkAccount account);
+    void executeMinecraftCommand(String command, int permLevel, MessageReceivedEvent event, @Nullable SDLinkAccount account, CompletableFuture<Result> replier);
 
     boolean isOnlineMode();
 

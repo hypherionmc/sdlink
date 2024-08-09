@@ -9,20 +9,20 @@ import com.hypherionmc.sdlink.server.ServerEvents;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import shadow.kyori.adventure.text.Component;
 
+import java.util.concurrent.CompletableFuture;
+
 public class SDLinkMCPlatform {
 
     public static final SDLinkMCPlatform INSTANCE = new SDLinkMCPlatform();
 
-    public Result executeCommand(String command, int permLevel, MessageReceivedEvent event, String member) {
+    public void executeCommand(String command, int permLevel, String member, CompletableFuture<Result> replier) {
         BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
-        SDLinkFakePlayer fakePlayer = new SDLinkFakePlayer(server, permLevel, member, event);
+        SDLinkFakePlayer fakePlayer = new SDLinkFakePlayer(server, permLevel, member, replier);
 
         try {
             server.executeCommand(server, fakePlayer, command);
-            return Result.success("Command sent to server");
         } catch (Exception e) {
             fakePlayer.onError(Component.text(e.getMessage()));
-            return Result.error(e.getMessage());
         }
     }
 

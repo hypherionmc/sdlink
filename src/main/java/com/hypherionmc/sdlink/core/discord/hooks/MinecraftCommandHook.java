@@ -10,11 +10,13 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -84,10 +86,15 @@ public class MinecraftCommandHook {
     }
 
     private static void executeCommand(String command, int permLevel, MessageReceivedEvent event, SDLinkAccount account) {
-        Result res = SDLinkPlatform.minecraftHelper.executeMinecraftCommand(command, permLevel, event, account);
-        event.getMessage().reply(res.getMessage())
-                .mentionRepliedUser(false)
-                .queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
-        event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+        event.getMessage().addReaction(Emoji.fromFormatted("U+2705")).queue();
+        CompletableFuture<Result> result = new CompletableFuture<>();
+        SDLinkPlatform.minecraftHelper.executeMinecraftCommand(command, permLevel, event, account, result);
+
+        result.thenAccept(res -> {
+            event.getMessage().reply(res.getMessage())
+                    .mentionRepliedUser(false)
+                    .queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+        });
     }
 }
