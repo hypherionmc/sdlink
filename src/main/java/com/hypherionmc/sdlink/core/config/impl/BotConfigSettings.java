@@ -18,6 +18,10 @@ public class BotConfigSettings {
     @SpecComment("The token of the Discord Bot to use. This will be encrypted on first load. See https://sdlink.fdd-docs.com/initial-setup/ to find this")
     public String botToken = "";
 
+    @Path("printInviteLink")
+    @SpecComment("Print the bot invite link to the console on startup")
+    public boolean printInviteLink = true;
+
     @Path("silentReplies")
     @SpecComment("Use silent replies when Slash Commands are used")
     public boolean silentReplies = true;

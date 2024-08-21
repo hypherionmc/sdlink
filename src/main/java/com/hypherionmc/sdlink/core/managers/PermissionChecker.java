@@ -62,7 +62,8 @@ public class PermissionChecker {
         if (!controller.isBotReady())
             return;
 
-        controller.getLogger().info("Discord Invite Link for Bot: {}", DISCORD_INVITE.replace("{bot_id}", controller.getJDA().getSelfUser().getId()));
+        if (SDLinkConfig.INSTANCE.botConfig.printInviteLink)
+            controller.getLogger().info("Discord Invite Link for Bot: {}", DISCORD_INVITE.replace("{bot_id}", controller.getJDA().getSelfUser().getId()));
 
         if (controller.getJDA().getGuilds().isEmpty()) {
             errCount.incrementAndGet();
