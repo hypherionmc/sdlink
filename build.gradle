@@ -2,7 +2,7 @@ import com.hypherionmc.modpublisher.properties.ReleaseType
 
 plugins {
     id 'java'
-    id "com.hypherionmc.modutils.orion" version "1.0.+"
+    id "com.hypherionmc.modutils.orion" version "1.0.20"
     id 'com.github.johnrengelman.shadow' version '8.0.0'
     id "xyz.wagyourtail.unimined" version "1.3.3"
     id "com.hypherionmc.modutils.modpublisher" version "2.1.6"
@@ -18,6 +18,11 @@ orion.setup {
     versioning {
         var relType = project.properties["releaseType"] ?: "${release_type}"
         identifier("${relType}")
+    }
+
+    tools {
+        lombok()
+        noLoader()
     }
 }
 
@@ -54,12 +59,7 @@ dependencies {
     shade("org.jasypt:jasypt:${jasypt}:lite")
     shade("com.hypherionmc.jsondb:jsondb-core:${json_db}")
 
-    // Compiling Only
-    compileOnly "org.projectlombok:lombok:${lombok}"
-    annotationProcessor "org.projectlombok:lombok:${lombok}"
-
     implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20.4:${craterlib}:dev"
-    implementation "com.hypherionmc.noloaderthanks:noloaderthanks:1.0.0"
 }
 
 
