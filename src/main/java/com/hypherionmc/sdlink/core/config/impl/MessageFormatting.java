@@ -47,7 +47,7 @@ public class MessageFormatting {
     public String achievements = "*%player% has made the advancement [%title%]: %description%*";
 
     @Path("chat")
-    @SpecComment("Chat Messages. THIS DOES NOT APPLY TO EMBED OR WEBHOOK MESSAGES. Available variables: %player%, %message%")
+    @SpecComment("Chat Messages. THIS DOES NOT APPLY TO EMBED OR WEBHOOK MESSAGES. Available variables: %player%, %message%, %mcname%")
     public String chat = "%player%: %message%";
 
     @Path("death")

@@ -123,7 +123,7 @@ public final class DiscordMessage {
             } else {
                 channel.getLeft().sendMessage(
                                 this.messageType == MessageType.CHAT ?
-                                        SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%message%", message)
+                                        SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName()).replace("%message%", message)
                                         : message)
                         .queue(success -> runAfterSend());
             }
