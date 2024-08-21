@@ -38,7 +38,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
     final Pattern patternStart = Pattern.compile("%(.*?)(?:\\|(.*?))?%", Pattern.CASE_INSENSITIVE);
 
     @Override
-    public void discordMessageReceived(Member member, String s1) {
+    public void discordMessageReceived(Member member, String s1, @Nullable String replyMessage) {
         if (SDLinkConfig.INSTANCE.generalConfig.debugging) SDLinkConstants.LOGGER.info("Got message {} from {}", s1, member.getEffectiveName());
 
         AtomicReference<String> user = new AtomicReference<>(member.getEffectiveName());
@@ -80,7 +80,11 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
         try {
             Component finalComponent = component.append(SDLinkChatUtils.parseChatLinks(s1));
 
-            if (SDLinkConfig.INSTANCE.chatConfig.showDiscordInfo) {
+            if (replyMessage != null && !replyMessage.isEmpty()) {
+                finalComponent = finalComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, SDLinkChatUtils.parseChatLinks(replyMessage)));
+            }
+
+            if ((replyMessage == null || replyMessage.isEmpty()) && SDLinkConfig.INSTANCE.chatConfig.showDiscordInfo) {
                 finalComponent = appendDiscordInfo(member, finalComponent);
             }
 

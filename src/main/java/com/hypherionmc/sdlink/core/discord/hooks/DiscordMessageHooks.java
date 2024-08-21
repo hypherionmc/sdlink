@@ -51,6 +51,7 @@ public class DiscordMessageHooks {
             }
 
             String message = event.getMessage().getContentDisplay();
+            String reply = null;
             if (message.isEmpty() && !event.getMessage().getAttachments().isEmpty()) {
                 message = (long) event.getMessage().getAttachments().size() + " attachments";
             }
@@ -62,9 +63,14 @@ public class DiscordMessageHooks {
             if (message.isEmpty())
                 return;
 
-            if (event.getMessage().getReferencedMessage() != null && !event.getMessage().isWebhookMessage()) {
+            if (event.getMessage().getReferencedMessage() != null) {
                 try {
-                    message = "Replied to " + event.getMessage().getReferencedMessage().getMember().getEffectiveName() + ": " + message;
+                    if (event.isWebhookMessage()) {
+                        message = "Replied to " + event.getMessage().getReferencedMessage().getAuthor().getName() + ": " + message;
+                    } else {
+                        message = "Replied to " + event.getMessage().getReferencedMessage().getMember().getEffectiveName() + ": " + message;
+                    }
+                    reply = event.getMessage().getReferencedMessage().getContentDisplay();
                 } catch (Exception e) {
                     if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
                         e.printStackTrace();
@@ -72,7 +78,7 @@ public class DiscordMessageHooks {
                 }
             }
 
-            SDLinkPlatform.minecraftHelper.discordMessageReceived(event.getMember(), message);
+            SDLinkPlatform.minecraftHelper.discordMessageReceived(event.getMember(), message, reply);
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to process discord message", e);
         }

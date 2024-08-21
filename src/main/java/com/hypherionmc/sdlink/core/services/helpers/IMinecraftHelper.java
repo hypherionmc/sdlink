@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface IMinecraftHelper {
 
-    void discordMessageReceived(Member member, String message);
+    void discordMessageReceived(Member member, String message, @Nullable String replyMessage);
 
     Result checkWhitelisting();
 
