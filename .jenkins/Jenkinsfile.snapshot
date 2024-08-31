@@ -43,7 +43,7 @@ pipeline {
                 projectName: "${projectName}",
                 projectIcon: "${projectIcon}",
                 modLoaders: "forge|neoforge|fabric|quilt",
-                minecraftVersions: "1.18.2|1.19.2|1.19.3|1.19.4|1.20|1.20.1|1.20.2|1.20.3|1.20.4|1.21",
+                minecraftVersions: "1.18.2|1.19.2|1.19.3|1.19.4|1.20|1.20.1|1.20.2|1.20.3|1.20.4|1.21|1.21.1",
                 type: "snapshot",
                 dependsOn: "required:craterlib",
                 failWebhook: env.SSS_WEBHOOK,
