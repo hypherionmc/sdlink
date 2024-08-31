@@ -6,10 +6,13 @@ package com.hypherionmc.sdlink.core.discord.hooks;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
+import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -37,10 +40,15 @@ public class DiscordMessageHooks {
             if (event.getChannel().getIdLong() != channel.getIdLong())
                 return;
 
-            if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getMember().getId()))
+            Member member = event.isWebhookMessage() ? SDLWebhookServerMember.of(event.getMessage().getAuthor(), event.getGuild(), event.getJDA()) : event.getMember();
+
+            if (!event.isWebhookMessage() && HiddenPlayersManager.INSTANCE.isPlayerHidden(member.getId()))
                 return;
 
-            if (event.getAuthor().isBot() && SDLinkConfig.INSTANCE.chatConfig.ignoreBots)
+            if (WebhookManager.isAppWebhook(event.getMessage().getAuthor().getIdLong()))
+                return;
+
+            if ((event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.ignoreBots)
                 return;
 
             if (SDLinkConfig.INSTANCE.linkedCommands.enabled && !SDLinkConfig.INSTANCE.linkedCommands.permissions.isEmpty() && event.getMessage().getContentRaw().startsWith(SDLinkConfig.INSTANCE.linkedCommands.prefix))
@@ -65,11 +73,8 @@ public class DiscordMessageHooks {
 
             if (event.getMessage().getReferencedMessage() != null) {
                 try {
-                    if (event.isWebhookMessage()) {
-                        message = "Replied to " + event.getMessage().getReferencedMessage().getAuthor().getName() + ": " + message;
-                    } else {
-                        message = "Replied to " + event.getMessage().getReferencedMessage().getMember().getEffectiveName() + ": " + message;
-                    }
+                    Member replyMember = event.getMessage().getReferencedMessage().isWebhookMessage() ? SDLWebhookServerMember.of(event.getMessage().getReferencedMessage().getAuthor(), event.getGuild(), event.getJDA()) : event.getMessage().getReferencedMessage().getMember();
+                    message = "Replied to " + replyMember.getEffectiveName() + ": " + message;
                     reply = event.getMessage().getReferencedMessage().getContentDisplay();
                 } catch (Exception e) {
                     if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
@@ -78,7 +83,7 @@ public class DiscordMessageHooks {
                 }
             }
 
-            SDLinkPlatform.minecraftHelper.discordMessageReceived(event.getMember(), message, reply);
+            SDLinkPlatform.minecraftHelper.discordMessageReceived(member, message, reply);
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to process discord message", e);
         }

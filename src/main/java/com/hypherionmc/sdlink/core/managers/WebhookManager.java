@@ -12,6 +12,7 @@ import com.hypherionmc.sdlink.core.messaging.SDLinkWebhookClientBuilder;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,5 +109,9 @@ public class WebhookManager {
         }
 
         return new SDLinkWebhookClientBuilder(name, url).build();
+    }
+
+    public static boolean isAppWebhook(long id) {
+        return clientMap.values().stream().filter(Objects::nonNull).anyMatch(c -> c.getId() == id);
     }
 }

@@ -73,16 +73,16 @@ public class DiscordEventHandler extends ListenerAdapter {
      */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if (event.isWebhookMessage())
-            return;
-
         if (event.getAuthor() == event.getJDA().getSelfUser())
             return;
 
         if (!event.isFromGuild())
             return;
 
-        MinecraftCommandHook.discordMessageEvent(event);
+        if (!event.isWebhookMessage()) {
+            MinecraftCommandHook.discordMessageEvent(event);
+        }
+
         DiscordMessageHooks.discordMessageEvent(event);
     }
 
