@@ -9,7 +9,11 @@ public class ReloadBotCommand {
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand cmd = CraterCommand.literal("reloadbot")
                 .requiresPermission(4)
-                .executes(ctx -> ServerEvents.reloadBot());
+                .withNode("sdlink.reloadbot")
+                .execute(ctx -> {
+                    ServerEvents.reloadBot();
+                    return 1;
+                });
 
         event.registerCommand(cmd);
     }

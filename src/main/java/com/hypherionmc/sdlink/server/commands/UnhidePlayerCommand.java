@@ -11,15 +11,17 @@ public class UnhidePlayerCommand {
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand command = CraterCommand.literal("unhideplayer")
                 .requiresPermission(4)
-                .withGameProfileArgument("username", (player, profiles, ctx) -> {
+                .withNode("sdlink.unmuteplayer")
+                .withGameProfilesArgument("username", (player, profiles, ctx) -> {
                     if (profiles.isEmpty()) {
                         ctx.sendSuccess(() -> Component.text("You need to supply a player to unhide"), true);
-                        return;
+                        return 1;
                     }
 
                     BridgedGameProfile profile = profiles.get(0);
                     HiddenPlayersManager.INSTANCE.unhidePlayer(profile.getId().toString());
                     ctx.sendSuccess(() -> Component.text("Player " + profile.getName() + " is now visible"), true);
+                    return 1;
                 });
 
         event.registerCommand(command);

@@ -4,9 +4,10 @@
  */
 package com.hypherionmc.sdlink.core.config;
 
+import com.hypherionmc.craterlib.core.config.AbstractConfig;
 import com.hypherionmc.craterlib.core.config.ConfigController;
-import com.hypherionmc.craterlib.core.config.ModuleConfig;
 import com.hypherionmc.craterlib.core.config.annotations.NoConfigScreen;
+import com.hypherionmc.craterlib.core.config.formats.TomlConfigFormat;
 import com.hypherionmc.sdlink.core.config.impl.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
@@ -24,7 +25,7 @@ import java.io.IOException;
  * The main mod config Structure
  */
 @NoConfigScreen
-public class SDLinkConfig extends ModuleConfig {
+public class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
@@ -80,7 +81,7 @@ public class SDLinkConfig extends ModuleConfig {
     }
 
     @Override
-    public void registerAndSetup(ModuleConfig config) {
+    public void registerAndSetup(SDLinkConfig config) {
         if (this.getConfigPath().exists() && this.getConfigPath().length() >= 2L) {
             this.migrateConfig(config);
         } else {
@@ -95,9 +96,9 @@ public class SDLinkConfig extends ModuleConfig {
     }
 
     @Override
-    public void migrateConfig(ModuleConfig conf) {
-        CommentedFileConfig config = CommentedFileConfig.builder(getConfigPath()).build();
-        CommentedFileConfig newConfig = CommentedFileConfig.builder(getConfigPath()).build();
+    public void migrateConfig(SDLinkConfig conf) {
+        CommentedFileConfig config = CommentedFileConfig.builder(getConfigPath()).sync().build();
+        CommentedFileConfig newConfig = CommentedFileConfig.builder(getConfigPath()).sync().build();
         config.load();
 
         if (config.getInt("general.configVersion") == configVer) {
@@ -107,7 +108,7 @@ public class SDLinkConfig extends ModuleConfig {
         }
 
         new ObjectConverter().toConfig(conf, newConfig);
-        this.updateConfigValues(config, newConfig, newConfig, "");
+        ((TomlConfigFormat<SDLinkConfig>)this.getConfigFormat()).updateConfigValues(config, newConfig, newConfig, "");
         newConfig.set("general.configVersion", configVer);
         try {
             FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", ".old")));
@@ -122,7 +123,7 @@ public class SDLinkConfig extends ModuleConfig {
 
     @Override
     public void configReloaded() {
-        INSTANCE = loadConfig(this);
+        INSTANCE = readConfig(this);
         hasConfigLoaded = true;
     }
 

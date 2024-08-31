@@ -11,17 +11,19 @@ public class WhoisCommand {
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand cmd = CraterCommand.literal("whois")
                 .requiresPermission(4)
-                .withGameProfileArgument("username", (player, profiles, ctx) -> {
+                .withNode("sdlink.whois")
+                .withGameProfilesArgument("username", (player, profiles, ctx) -> {
                     if (BotController.INSTANCE != null) {
                         if (profiles.isEmpty()) {
                             ctx.sendSuccess(() -> Component.text("Unlinked"), true);
-                            return;
+                            return 1;
                         }
 
                         MinecraftAccount account = MinecraftAccount.of(profiles.stream().findFirst().get());
                         String value = account.isAccountVerified() ? account.getDiscordName() : "Unlinked";
                         ctx.sendSuccess(() -> Component.text(value), true);
                     }
+                    return 1;
                 });
 
         event.registerCommand(cmd);

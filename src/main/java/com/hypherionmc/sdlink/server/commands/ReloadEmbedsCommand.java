@@ -10,9 +10,11 @@ public class ReloadEmbedsCommand {
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand cmd = CraterCommand.literal("reloadembeds")
                 .requiresPermission(4)
-                .executes(ctx -> {
+                .withNode("sdlink.reloadembeds")
+                .execute(ctx -> {
                     EmbedManager.init();
                     ctx.sendSuccess(() -> Component.text("Reloaded Embeds"), false);
+                    return 1;
                 });
 
         event.registerCommand(cmd);
