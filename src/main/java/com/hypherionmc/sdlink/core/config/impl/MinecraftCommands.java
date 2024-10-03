@@ -20,6 +20,10 @@ public class MinecraftCommands {
     @SpecComment("Command Prefix. For example ?weather clear")
     public String prefix = "?";
 
+    @Path("keepReplies")
+    @SpecComment("Should command replies be deleted automatically or not")
+    public boolean keepReplies = true;
+
     @Path("allowedChannels")
     @SpecComment("You can leave this empty, or enter the channel ID's (surrounded by \"\") of channels where linked commands can be used")
     public List<String> allowedChannels = new ArrayList<>();

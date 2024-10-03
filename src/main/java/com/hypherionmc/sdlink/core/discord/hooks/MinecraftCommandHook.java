@@ -93,8 +93,15 @@ public class MinecraftCommandHook {
         result.thenAccept(res -> {
             event.getMessage().reply(res.getMessage())
                     .mentionRepliedUser(false)
-                    .queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
-            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+                    .queue(s -> {
+                        if (!SDLinkConfig.INSTANCE.linkedCommands.keepReplies) {
+                            s.delete().queueAfter(5, TimeUnit.SECONDS);
+                        }
+                    });
+
+            if (!SDLinkConfig.INSTANCE.linkedCommands.keepReplies) {
+                event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+            }
         });
     }
 }
