@@ -27,7 +27,6 @@ import com.hypherionmc.sdlink.server.commands.*;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
-import net.dv8tion.jda.api.JDA;
 import shadow.kyori.adventure.text.Component;
 
 @Getter
@@ -263,7 +262,7 @@ public class ServerEvents {
             command = command.split(" ")[0];
         }
 
-        DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.COMMAND)
+        DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.COMMANDS)
                 .author(DiscordAuthor.SERVER)
                 .message(
                         SDLinkConfig.INSTANCE.messageFormatting.commands
@@ -370,7 +369,7 @@ public class ServerEvents {
                 String finalAdvancement = ChatUtils.resolve(event.getTitle(), SDLinkConfig.INSTANCE.chatConfig.formatting);
                 String advancementBody = ChatUtils.resolve(event.getDescription(), SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-                DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENT)
+                DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
                         .message(SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))
                         .author(DiscordAuthor.SERVER
                                 .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))

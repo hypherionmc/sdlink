@@ -5,8 +5,13 @@
 package com.hypherionmc.sdlink.core.config.impl;
 
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
+import com.hypherionmc.sdlink.core.messaging.MessageType;
+import com.hypherionmc.sdlink.util.DestinationHolder;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author HypherionSA
@@ -52,7 +57,7 @@ public class MessageChannelConfig {
 
     public static class DestinationObject {
         @Path("channel")
-        @SpecComment("The Channel the message will be delivered to. Valid entries are CHAT, EVENT, CONSOLE")
+        @SpecComment("The Channel the message will be delivered to. Valid entries are CHAT, EVENT, CONSOLE, OVERRIDE")
         public MessageDestination channel;
 
         @Path("useEmbed")
@@ -63,14 +68,23 @@ public class MessageChannelConfig {
         @SpecComment("Embed Layout to use")
         public String embedLayout;
 
-        DestinationObject(MessageDestination destination, boolean useEmbed, String embedLayout) {
+        @Path("override")
+        @SpecComment("Override the destination with a custom channel/webhook url. Make sure to change `channel` above to OVERRIDE")
+        public String override;
+
+        DestinationObject(MessageDestination destination, boolean useEmbed, String embedLayout, String override) {
             this.channel = destination;
             this.useEmbed = useEmbed;
             this.embedLayout = embedLayout;
+            this.override = override;
         }
 
         public static DestinationObject of(MessageDestination destination, boolean useEmbed, String embedLayout) {
-            return new DestinationObject(destination, useEmbed, embedLayout);
+            return new DestinationObject(destination, useEmbed, embedLayout, "");
+        }
+
+        public DestinationHolder toHolder(MessageType type) {
+            return DestinationHolder.of(this, type);
         }
     }
 }

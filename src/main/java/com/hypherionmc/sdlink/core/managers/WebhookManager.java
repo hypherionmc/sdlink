@@ -6,12 +6,16 @@ package com.hypherionmc.sdlink.core.managers;
 
 import club.minnced.discord.webhook.WebhookClient;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
+import com.hypherionmc.sdlink.core.messaging.MessageType;
 import com.hypherionmc.sdlink.core.messaging.SDLinkWebhookClientBuilder;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +29,7 @@ import static club.minnced.discord.webhook.WebhookClientBuilder.WEBHOOK_PATTERN;
 public class WebhookManager {
 
     private static final HashMap<MessageDestination, WebhookClient> clientMap = new HashMap<>();
+    private static final HashMap<MessageType, WebhookClient> overrides = new HashMap<>();
     private static WebhookClient chatWebhookClient, eventWebhookClient, consoleWebhookClient;
     private static final Pattern THREAD_PATTERN = Pattern.compile("thread_id=(\\d+)");
 
@@ -34,6 +39,7 @@ public class WebhookManager {
      */
     public static void init() {
         clientMap.clear();
+        overrides.clear();
 
         if (SDLinkConfig.INSTANCE == null || !SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled)
             return;
@@ -71,6 +77,28 @@ public class WebhookManager {
 
         clientMap.put(MessageDestination.EVENT, eventWebhookClient);
         clientMap.put(MessageDestination.CONSOLE, consoleWebhookClient);
+
+        for (Map.Entry<MessageType, MessageChannelConfig.DestinationObject> d : CacheManager.messageDestinations.entrySet()) {
+            if (!d.getValue().channel.isOverride() || d.getValue().override == null || !d.getValue().override.startsWith("http:"))
+                continue;
+
+            if (overrides.containsKey(d.getKey()))
+                continue;
+
+            String url = EncryptionUtil.INSTANCE.decrypt(d.getValue().override);
+            WebhookClient client = createClient(d.getKey().name() + " override", url);
+            BotController.INSTANCE.getLogger().info("Using Webhook override for {} Messages", d.getKey().name());
+
+            overrides.put(d.getKey(), client);
+        }
+    }
+
+    @Nullable
+    public static WebhookClient getOverride(MessageType type) {
+        if (overrides.get(type) == null)
+            return null;
+
+        return overrides.get(type);
     }
 
     public static WebhookClient getWebhookClient(MessageDestination destination) {
@@ -87,6 +115,11 @@ public class WebhookManager {
         if (consoleWebhookClient != null) {
             consoleWebhookClient.close();
         }
+
+        overrides.forEach((k, v) -> {
+            if (v != null)
+                v.close();
+        });
     }
 
     /**
@@ -112,6 +145,7 @@ public class WebhookManager {
     }
 
     public static boolean isAppWebhook(long id) {
-        return clientMap.values().stream().filter(Objects::nonNull).anyMatch(c -> c.getId() == id);
+        return clientMap.values().stream().filter(Objects::nonNull).anyMatch(c -> c.getId() == id)
+                || overrides.values().stream().filter(Objects::nonNull).anyMatch(c -> c.getId() == id);
     }
 }

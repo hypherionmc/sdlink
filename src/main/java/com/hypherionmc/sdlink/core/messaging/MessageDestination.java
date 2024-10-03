@@ -11,7 +11,8 @@ package com.hypherionmc.sdlink.core.messaging;
 public enum MessageDestination {
     CHAT,
     EVENT,
-    CONSOLE;
+    CONSOLE,
+    OVERRIDE;
 
     public boolean isChat() {
         return this == CHAT;
@@ -23,5 +24,9 @@ public enum MessageDestination {
 
     public boolean isConsole() {
         return this == CONSOLE;
+    }
+
+    public boolean isOverride() {
+        return this == OVERRIDE;
     }
 }

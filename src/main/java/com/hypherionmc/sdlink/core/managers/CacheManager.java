@@ -4,15 +4,16 @@
  */
 package com.hypherionmc.sdlink.core.managers;
 
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.core.messaging.MessageType;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class CacheManager {
 
@@ -24,6 +25,19 @@ public class CacheManager {
     private static final HashMap<String, String> userCache = new HashMap<>();
     @Getter
     private static final Set<Member> discordMembers = new HashSet<>();
+
+    @Getter
+    public static final HashMap<MessageType, MessageChannelConfig.DestinationObject> messageDestinations = new HashMap<>() {{
+        put(MessageType.CHAT, SDLinkConfig.INSTANCE.messageDestinations.chat);
+        put(MessageType.START, SDLinkConfig.INSTANCE.messageDestinations.start);
+        put(MessageType.STOP, SDLinkConfig.INSTANCE.messageDestinations.stop);
+        put(MessageType.JOIN, SDLinkConfig.INSTANCE.messageDestinations.join);
+        put(MessageType.LEAVE, SDLinkConfig.INSTANCE.messageDestinations.leave);
+        put(MessageType.ADVANCEMENTS, SDLinkConfig.INSTANCE.messageDestinations.advancements);
+        put(MessageType.DEATH, SDLinkConfig.INSTANCE.messageDestinations.death);
+        put(MessageType.COMMANDS, SDLinkConfig.INSTANCE.messageDestinations.commands);
+        put(MessageType.CUSTOM, SDLinkConfig.INSTANCE.messageDestinations.custom);
+    }};
 
     public static void loadCache() {
         loadChannelCache();

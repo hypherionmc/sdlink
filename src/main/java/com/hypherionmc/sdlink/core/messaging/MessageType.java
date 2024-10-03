@@ -14,9 +14,9 @@ public enum MessageType {
     STOP,
     JOIN,
     LEAVE,
-    ADVANCEMENT,
+    ADVANCEMENTS,
     DEATH,
-    COMMAND,
+    COMMANDS,
     CONSOLE,
     CUSTOM
 }
