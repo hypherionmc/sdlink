@@ -10,9 +10,6 @@ import com.hypherionmc.sdlink.util.DestinationHolder;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author HypherionSA
  * Config Structure to control the destinations of messages

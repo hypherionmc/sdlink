@@ -6,7 +6,6 @@ import com.hypherionmc.craterlib.nojang.server.BridgedMinecraftServer;
 import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.server.ServerEvents;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import shadow.kyori.adventure.text.Component;
 
 import java.util.concurrent.CompletableFuture;

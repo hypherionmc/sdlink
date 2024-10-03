@@ -7,12 +7,10 @@ package com.hypherionmc.sdlink.core.managers;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.SDLinkUtils;
-import com.hypherionmc.sdlink.util.SystemUtils;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;

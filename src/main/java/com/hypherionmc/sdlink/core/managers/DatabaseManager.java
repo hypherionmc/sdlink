@@ -9,7 +9,8 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import io.jsondb.JsonDBTemplate;
 import io.jsondb.annotation.Document;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author HypherionSA
