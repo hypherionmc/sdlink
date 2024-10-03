@@ -174,6 +174,14 @@ public class MinecraftAccount {
             }
         }
 
+        if (SDLinkConfig.INSTANCE.accessControl.changeDiscordNickname) {
+            try {
+                member.modifyNickname(account.getUsername()).queue();
+            } catch (Exception e) {
+                BotController.INSTANCE.getLogger().error("Failed to update Nickname for {}", member.getEffectiveName(), e);
+            }
+        }
+
         CraterEventBus.INSTANCE.postEvent(new VerificationEvent.PlayerVerified(this));
 
         return Result.success("Your account has been verified");
@@ -200,6 +208,16 @@ public class MinecraftAccount {
                 guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), RoleManager.getVerifiedRole()).queue();
             } catch (Exception e) {
                 BotController.INSTANCE.getLogger().error("Failed to remove verified role from user", e);
+            }
+        }
+
+        if (SDLinkConfig.INSTANCE.accessControl.changeDiscordNickname) {
+            try {
+                if (member.getNickname() != null && member.getNickname().equalsIgnoreCase(account.getUsername())) {
+                    member.modifyNickname(null).queue();
+                }
+            } catch (Exception e) {
+                BotController.INSTANCE.getLogger().error("Failed to update Nickname for {}", member.getEffectiveName(), e);
             }
         }
 

@@ -24,6 +24,10 @@ public class AccessControl {
     @SpecComment("Can players verify multiple Minecraft Accounts")
     public boolean allowMultipleAccounts = false;
 
+    @Path("changeDiscordNickname")
+    @SpecComment("Change the discord user nickname to their Minecraft name when their accounts are linked")
+    public boolean changeDiscordNickname = false;
+
     @Path("requiredRoles")
     @SpecComment("Optional: The player requires any of these roles to be able to join your server")
     public List<String> requiredRoles = new ArrayList<>();
