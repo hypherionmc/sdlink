@@ -27,6 +27,9 @@ public class DiscordMessageHooks {
      */
     public static void discordMessageEvent(MessageReceivedEvent event) {
         try {
+            if (!SDLinkConfig.INSTANCE.chatConfig.discordMessages)
+                return;
+
             if (!event.getChannel().getId().equalsIgnoreCase(SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID))
                 return;
 

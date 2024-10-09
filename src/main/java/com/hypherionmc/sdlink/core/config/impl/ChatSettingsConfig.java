@@ -69,6 +69,10 @@ public class ChatSettingsConfig {
     @SpecComment("Should the chat be relayed")
     public boolean playerMessages = true;
 
+    @Path("discordMessages")
+    @SpecComment("Should discord messages be relayed to Minecraft")
+    public boolean discordMessages = true;
+
     @Path("playerJoin")
     @SpecComment("Should Player Join messages be posted")
     public boolean playerJoin = true;
