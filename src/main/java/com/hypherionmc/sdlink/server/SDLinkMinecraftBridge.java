@@ -3,6 +3,7 @@ package com.hypherionmc.sdlink.server;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.craterlib.nojang.server.BridgedMinecraftServer;
+import com.hypherionmc.craterlib.utils.ChatUtils;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -75,7 +76,7 @@ public class SDLinkMinecraftBridge implements IMinecraftHelper {
             }
         }
 
-        component = component.append(Component.text(prefix.substring(lastAppendPosition)).style(baseStyle));
+        component = component.append(ChatUtils.format(prefix.substring(lastAppendPosition)).applyFallbackStyle(baseStyle));
 
         try {
             Component finalComponent = component.append(SDLinkChatUtils.parseChatLinks(s1));
