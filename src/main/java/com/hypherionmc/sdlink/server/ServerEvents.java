@@ -2,6 +2,7 @@ package com.hypherionmc.sdlink.server;
 
 import com.hypherionmc.craterlib.api.events.common.CraterPlayerDeathEvent;
 import com.hypherionmc.craterlib.api.events.server.*;
+import com.hypherionmc.craterlib.compat.FTBEssentials;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
 import com.hypherionmc.craterlib.core.networking.CraterPacketNetwork;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
@@ -127,6 +128,9 @@ public class ServerEvents {
         }
 
         if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
+            return;
+
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("ftbessentials") && FTBEssentials.isPlayerMuted(event.getPlayer()))
             return;
 
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
