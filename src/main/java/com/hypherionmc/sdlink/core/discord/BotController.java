@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.core.discord;
 
+import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.events.DiscordEventHandler;
@@ -66,6 +67,7 @@ public class BotController {
 
         // Initialize Config
         new SDLinkConfig(wasReload);
+        new SDLinkCompatConfig(wasReload);
 
         // Initialize Account Storage
         DatabaseManager.initialize();

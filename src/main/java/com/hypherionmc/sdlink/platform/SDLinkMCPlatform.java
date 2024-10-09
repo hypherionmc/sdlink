@@ -4,6 +4,7 @@ import com.hypherionmc.craterlib.core.platform.CompatUtils;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.craterlib.nojang.server.BridgedMinecraftServer;
 import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
+import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.messaging.Result;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import shadow.kyori.adventure.text.Component;
@@ -34,6 +35,10 @@ public class SDLinkMCPlatform {
     }
 
     public boolean playerIsActive(BridgedPlayer player) {
+        if (!SDLinkCompatConfig.INSTANCE.common.vanish) {
+            return true;
+        }
+
         // FIXME This check is reversed inside craterlib by mistake. Once fixed, this has to be swapped back
         if (ModloaderEnvironment.INSTANCE.isModLoaded("melius-vanish") || ModloaderEnvironment.INSTANCE.isModLoaded("vmod"))
             return !CompatUtils.INSTANCE.isPlayerActive(player);

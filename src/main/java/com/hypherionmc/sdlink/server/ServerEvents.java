@@ -13,6 +13,7 @@ import com.hypherionmc.craterlib.utils.ChatUtils;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.core.accounts.MinecraftAccount;
+import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.events.SDLinkReadyEvent;
@@ -130,7 +131,7 @@ public class ServerEvents {
         if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
             return;
 
-        if (ModloaderEnvironment.INSTANCE.isModLoaded("ftbessentials") && FTBEssentials.isPlayerMuted(event.getPlayer()))
+        if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && ModloaderEnvironment.INSTANCE.isModLoaded("ftbessentials") && FTBEssentials.isPlayerMuted(event.getPlayer()))
             return;
 
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
