@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 import static net.dv8tion.jda.api.EmbedBuilder.ZERO_WIDTH_SPACE;
@@ -212,8 +213,12 @@ public final class DiscordMessage {
         builder.setUrl(data.getString("url", null));
         builder.setDescription(data.getString("description", ""));
 
-        if (!data.isNull("timestamp") && !data.getString("timestamp").equalsIgnoreCase("0")) {
-            builder.setTimestamp(OffsetDateTime.parse(data.getString("timestamp")));
+        if (!data.isNull("timestamp")) {
+            if (data.getString("timestamp").equalsIgnoreCase("1")) {
+                builder.setTimestamp(Instant.now());
+            } else if (!data.getString("timestamp").equalsIgnoreCase("0")) {
+                builder.setTimestamp(OffsetDateTime.parse(data.getString("timestamp")));
+            }
         }
 
         if (data.getString("color", "#000000").startsWith("#")) {
