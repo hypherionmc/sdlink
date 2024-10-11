@@ -26,6 +26,10 @@ public class SDLinkCompatConfig extends AbstractConfig<SDLinkCompatConfig> {
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
+    @Path("configVersion")
+    @SpecComment("INTERNAL. DO NOT TOUCH")
+    public int configVersion = configVer;
+
     @Path("common")
     @SpecComment("Disable/Enable basic integrations")
     public CommonCompat common = new CommonCompat();

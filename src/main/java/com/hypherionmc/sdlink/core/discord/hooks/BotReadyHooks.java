@@ -8,7 +8,6 @@ import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.sdlink.compat.MModeCompat;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.config.impl.compat.MaintenanceModeCompat;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
@@ -43,6 +42,7 @@ public class BotReadyHooks {
                                 && ModloaderEnvironment.INSTANCE.isModLoaded("mmode")
                                 && MModeCompat.getMotd() != null
                                 && !MModeCompat.getMotd().isEmpty()
+                                && MModeCompat.maintenanceActive
                                 && SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.updateBotStatus) {
                             event.getJDA().getPresence().setActivity(Activity.customStatus(MModeCompat.getMotd()));
                         } else {
@@ -90,6 +90,7 @@ public class BotReadyHooks {
                                 && ModloaderEnvironment.INSTANCE.isModLoaded("mmode")
                                 && MModeCompat.getMotd() != null
                                 && !MModeCompat.getMotd().isEmpty()
+                                && MModeCompat.maintenanceActive
                                 && SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.updateChannelTopic) {
                             mc.getManager().setTopic(MModeCompat.getMotd()).queue();
                         } else {

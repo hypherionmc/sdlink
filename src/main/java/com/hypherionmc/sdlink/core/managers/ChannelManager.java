@@ -9,6 +9,7 @@ import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.messaging.MessageDestination;
 import com.hypherionmc.sdlink.core.messaging.MessageType;
+import com.hypherionmc.sdlink.util.EncryptionUtil;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -50,7 +51,8 @@ public class ChannelManager {
         channelMap.put(MessageDestination.CONSOLE, consoleChannel != null ? consoleChannel : chatChannel);
 
         for (Map.Entry<MessageType, MessageChannelConfig.DestinationObject> d : CacheManager.messageDestinations.entrySet()) {
-            if (!d.getValue().channel.isOverride() || d.getValue().override == null || d.getValue().override.startsWith("http"))
+            String override = EncryptionUtil.INSTANCE.decrypt(d.getValue().override);
+            if (!d.getValue().channel.isOverride() || d.getValue().override == null || override.startsWith("http"))
                 continue;
 
             String id = d.getValue().override;
@@ -63,6 +65,7 @@ public class ChannelManager {
                 continue;
             }
 
+            BotController.INSTANCE.getLogger().info("Using channel override {} for {}", channel.getName(), d.getKey().name());
             overrideChannels.put(d.getKey(), channel);
         }
     }

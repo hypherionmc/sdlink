@@ -87,4 +87,12 @@ public class SDLinkChatUtils {
         return component;
     }
 
+    public static shadow.kyori.adventure.text.Component format(String value) {
+        try {
+            return ChatUtils.format(value);
+        } catch (Exception ignored) {}
+
+        return Component.text(value);
+    }
+
 }

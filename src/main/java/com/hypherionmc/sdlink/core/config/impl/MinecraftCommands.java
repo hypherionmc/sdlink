@@ -22,7 +22,7 @@ public class MinecraftCommands {
 
     @Path("keepReplies")
     @SpecComment("Should command replies be deleted automatically or not")
-    public boolean keepReplies = true;
+    public boolean keepReplies = false;
 
     @Path("allowedChannels")
     @SpecComment("You can leave this empty, or enter the channel ID's (surrounded by \"\") of channels where linked commands can be used")

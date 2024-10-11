@@ -89,6 +89,9 @@ public final class EncryptionUtil {
         if (!canRun)
             return input;
 
+        if (!isEncrypted(input))
+            return input;
+
         input = internalDecrypt(input);
 
         if (input.startsWith("enc:")) {
@@ -101,6 +104,7 @@ public final class EncryptionUtil {
     private String internalDecrypt(String input) {
         if (!canRun)
             return input;
+
         return encryptor.decrypt(input);
     }
 

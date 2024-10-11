@@ -91,11 +91,8 @@ public class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
             this.saveConfig(config);
         }
 
-        performEncryption();
-        if (!wasReload) {
-            ConfigController.register_config(this);
-        }
         this.configReloaded();
+        performEncryption(wasReload);
     }
 
     @Override
@@ -133,7 +130,7 @@ public class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     /**
      * Apply encryption to Bot-Token and Webhook URLS
      */
-    private void performEncryption() {
+    private void performEncryption(boolean wasReload) {
         CommentedFileConfig oldConfig = CommentedFileConfig.builder(this.getConfigPath()).sync().build();
         oldConfig.load();
 
@@ -163,7 +160,7 @@ public class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         }
 
         for (Map.Entry<MessageType, MessageChannelConfig.DestinationObject> d : CacheManager.messageDestinations.entrySet()) {
-            if (!d.getValue().channel.isOverride() || d.getValue().override == null || !d.getValue().override.startsWith("http:"))
+            if (!d.getValue().channel.isOverride() || d.getValue().override == null || !d.getValue().override.startsWith("http"))
                 continue;
 
             String url = d.getValue().override;
@@ -172,9 +169,15 @@ public class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
         oldConfig.save();
         oldConfig.close();
+
+        if (!wasReload) {
+            ConfigController.register_config(this);
+        }
+        this.configReloaded();
     }
 
     private void encryptOverrideUrls(String key, CommentedFileConfig oldConfig, String url) {
-        oldConfig.set("messageDestinations." + key + ".override", "webhook:" + EncryptionUtil.INSTANCE.encrypt(url));
+        System.out.println("messageDestinations." + key + ".override");
+        oldConfig.set("messageDestinations." + key + ".override", EncryptionUtil.INSTANCE.encrypt(url));
     }
 }

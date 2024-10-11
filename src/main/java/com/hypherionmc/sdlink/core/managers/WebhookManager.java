@@ -79,13 +79,13 @@ public class WebhookManager {
         clientMap.put(MessageDestination.CONSOLE, consoleWebhookClient);
 
         for (Map.Entry<MessageType, MessageChannelConfig.DestinationObject> d : CacheManager.messageDestinations.entrySet()) {
-            if (!d.getValue().channel.isOverride() || d.getValue().override == null || !d.getValue().override.startsWith("http:"))
+            String url = EncryptionUtil.INSTANCE.decrypt(d.getValue().override);
+            if (!d.getValue().channel.isOverride() || d.getValue().override == null || !url.startsWith("http"))
                 continue;
 
             if (overrides.containsKey(d.getKey()))
                 continue;
 
-            String url = EncryptionUtil.INSTANCE.decrypt(d.getValue().override);
             WebhookClient client = createClient(d.getKey().name() + " override", url);
             BotController.INSTANCE.getLogger().info("Using Webhook override for {} Messages", d.getKey().name());
 
