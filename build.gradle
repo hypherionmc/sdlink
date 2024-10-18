@@ -203,7 +203,7 @@ publisher {
     setProjectVersion(project.version.toString())
     setReleaseType(ReleaseType.RELEASE)
     setChangelog("https://raw.githubusercontent.com/hypherionmc/changelogs/main/sdlink/combo.md")
-    setDisplayName("Simple Discord Link Universal - ${project.version}")
+    setDisplayName("[1.18.2-1.21.1] Simple Discord Link Universal - ${project.version}")
     setGameVersions("1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.21", "1.21.1")
     setLoaders("forge", "fabric", "quilt", "neoforge")
     setCurseEnvironment("both")

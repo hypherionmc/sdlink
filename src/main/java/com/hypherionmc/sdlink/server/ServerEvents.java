@@ -412,7 +412,7 @@ public class ServerEvents {
             var result = account.canLogin();
 
             if (result.isError())
-                event.setMessage(Component.text(result.getMessage()));
+                event.setMessage(SDLinkChatUtils.format(result.getMessage()));
         }
     }
 
