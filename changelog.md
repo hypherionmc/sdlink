@@ -21,6 +21,7 @@
 - Allow Verify and Unverify commands to be used in DM, and verification codes can also be DM'ed to the bot
 - Compatibility with Player Revive Mod - [#107](https://github.com/hypherionmc/sdlink/issues/107)
 - Added feature to log Whitelist changes to a channel - [#78](https://github.com/hypherionmc/sdlink/issues/78)
+- Config Option to add your own Avatar Service URL
 
 **Technical Changes**:
 

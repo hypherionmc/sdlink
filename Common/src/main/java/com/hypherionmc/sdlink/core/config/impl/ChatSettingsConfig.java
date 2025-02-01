@@ -33,8 +33,12 @@ public final class ChatSettingsConfig {
     @SpecComment("Should console messages be sent to the Console Channel")
     public boolean sendConsoleMessages = false;
 
+    @Path("customAvatarService")
+    @SpecComment("Add your own Avatar service URL here. Use {uuid} to replace the player ID in the URL")
+    public String customAvatarService = "https://crafatar.com/avatars/{uuid}";
+
     @Path("playerAvatarType")
-    @SpecComment("The type of image to use as the player icon in messages. Valid entries are: AVATAR, HEAD, BODY, COMBO")
+    @SpecComment("The type of image to use as the player icon in messages. Valid entries are: AVATAR, HEAD, BODY, COMBO, CUSTOM")
     public AvatarType playerAvatarType = AvatarType.HEAD;
 
     @Path("relayTellRaw")

@@ -12,7 +12,8 @@ public enum AvatarType {
     AVATAR("https://mc-heads.net/avatar/{uuid}/512"),
     HEAD("https://mc-heads.net/head/{uuid}/512"),
     BODY("https://mc-heads.net/body/{uuid}"),
-    COMBO("https://mc-heads.net/combo/{uuid}/512");
+    COMBO("https://mc-heads.net/combo/{uuid}/512"),
+    CUSTOM("");
 
     private final String url;
 
@@ -26,6 +27,10 @@ public enum AvatarType {
     }
 
     public String resolve(String uuid) {
+        if (this == CUSTOM) {
+            return SDLinkConfig.INSTANCE.chatConfig.customAvatarService.replace("{uuid}", uuid);
+        }
+
         return this.url.replace("{uuid}", uuid);
     }
 }
