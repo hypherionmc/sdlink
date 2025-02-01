@@ -1,10 +1,12 @@
 package com.hypherionmc.sdlink.server;
 
 import com.hypherionmc.craterlib.api.events.common.CraterPlayerDeathEvent;
+import com.hypherionmc.craterlib.api.events.compat.PlayerRevivedEvent;
 import com.hypherionmc.craterlib.api.events.server.*;
 import com.hypherionmc.craterlib.compat.FTBEssentials;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
 import com.hypherionmc.craterlib.core.networking.CraterPacketNetwork;
+import com.hypherionmc.craterlib.core.platform.CompatUtils;
 import com.hypherionmc.craterlib.core.platform.LoaderType;
 import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
@@ -388,12 +390,29 @@ public final class ServerEvents {
 
         BridgedPlayer player = event.getPlayer();
 
-        if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.deathMessages) {
+        if (canSendMessage()) {
             String name = ChatUtils.resolve(player.getDisplayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
             String msg = ChatUtils.resolve(event.getDeathMessage(), SDLinkConfig.INSTANCE.chatConfig.formatting);
+            String finalMessage = SDLinkConfig.INSTANCE.messageFormatting.death;
+
+            if (SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled && ModloaderEnvironment.INSTANCE.isModLoaded("playerrevive")) {
+                if (!CompatUtils.INSTANCE.isPlayerBleeding(player) && !CompatUtils.INSTANCE.playerBledOut(player)) {
+                    System.out.println("WAITING");
+                    finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.reviveWaitingMessage;
+                }
+
+                if (CompatUtils.INSTANCE.playerBledOut(player)) {
+                    System.out.println("BLED OUT");
+                    finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.playerBledOutMessage;
+                }
+            }
 
             if (msg.startsWith(name + " ")) {
                 msg = msg.substring((name + " ").length());
+            }
+
+            if (!SDLinkConfig.INSTANCE.chatConfig.deathMessages && !(ModloaderEnvironment.INSTANCE.isModLoaded("playerrevive") && SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled)) {
+                return;
             }
 
             MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
@@ -404,7 +423,7 @@ public final class ServerEvents {
             }
 
             DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
-                    .message(SDLinkConfig.INSTANCE.messageFormatting.death.replace("%player%", name).replace("%message%", msg))
+                    .message(finalMessage.replace("%player%", name).replace("%message%", msg))
                     .author(DiscordAuthor.SERVER
                             .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
                             .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
@@ -534,6 +553,58 @@ public final class ServerEvents {
 
     public boolean canSendMessage() {
         return BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && SDLinkConfig.INSTANCE != null;
+    }
+
+    @CraterEventListener
+    public void playerRevivedEvent(PlayerRevivedEvent event) {
+        if (!canSendMessage() || !SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled)
+            return;
+
+        BridgedPlayer player = event.getPlayer();
+        String name = ChatUtils.resolve(player.getDisplayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
+        String finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.revivedMessage;
+
+        MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+        DiscordUser discordUser = mcAccount.getDiscordUser();
+
+        if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+            name = discordUser.getEffectiveName();
+        }
+
+        DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
+                .message(finalMessage.replace("%player%", name))
+                .author(DiscordAuthor.SERVER
+                        .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
+                        .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
+                .build();
+
+        message.sendMessage();
+    }
+
+    @CraterEventListener
+    public void userWhitelisted(WhitelistChangedEvent.EntryAdded event) {
+        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.whitelistChanged)
+            return;
+
+        DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
+                .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistAdded.replace("%player%", event.getProfile().getName()))
+                .author(DiscordAuthor.SERVER)
+                .build();
+
+        message.sendMessage();
+    }
+
+    @CraterEventListener
+    public void userWhitelisted(WhitelistChangedEvent.EntryRemoved event) {
+        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.whitelistChanged)
+            return;
+
+        DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
+                .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistRemoved.replace("%player%", event.getProfile().getName()))
+                .author(DiscordAuthor.SERVER)
+                .build();
+
+        message.sendMessage();
     }
 
 }

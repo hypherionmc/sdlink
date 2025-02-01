@@ -94,6 +94,7 @@ public final class CacheManager {
             messageDestinations.put(MessageType.ADVANCEMENTS, SDLinkConfig.INSTANCE.messageDestinations.advancements);
             messageDestinations.put(MessageType.DEATH, SDLinkConfig.INSTANCE.messageDestinations.death);
             messageDestinations.put(MessageType.COMMANDS, SDLinkConfig.INSTANCE.messageDestinations.commands);
+            messageDestinations.put(MessageType.WHITELIST, SDLinkConfig.INSTANCE.messageDestinations.whitelist);
             messageDestinations.put(MessageType.CUSTOM, SDLinkConfig.INSTANCE.messageDestinations.custom);
         } catch (Exception ignored) {}
     }

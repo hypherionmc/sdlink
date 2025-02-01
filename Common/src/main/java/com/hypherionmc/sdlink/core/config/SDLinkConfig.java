@@ -36,7 +36,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 23;
+    public transient static int configVer = 24;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
@@ -207,7 +207,6 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     }
 
     private void encryptOverrideUrls(String key, CommentedFileConfig oldConfig, String url) {
-        System.out.println("messageDestinations." + key + ".override");
         oldConfig.set("messageDestinations." + key + ".override", EncryptionUtil.INSTANCE.encrypt(url));
     }
 }

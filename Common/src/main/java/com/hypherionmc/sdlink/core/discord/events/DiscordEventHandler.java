@@ -112,6 +112,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
         }
 
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
+            isStuckInNotReady = false;
             BotController.INSTANCE.getLogger().info("Successfully connected to discord");
 
             PermissionChecker.checkBotSetup();

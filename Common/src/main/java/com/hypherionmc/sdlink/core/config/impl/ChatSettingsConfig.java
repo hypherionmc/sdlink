@@ -97,6 +97,10 @@ public final class ChatSettingsConfig {
     @SpecComment("Should commands be posted to discord")
     public boolean broadcastCommands = true;
 
+    @Path("whitelistChanged")
+    @SpecComment("Should whitelist changes be posted to discord")
+    public boolean whitelistChanged = false;
+
     @Path("ignoredCommands")
     @SpecComment("Commands that should not be broadcast to discord")
     public List<String> ignoredCommands = new ArrayList<>() {{

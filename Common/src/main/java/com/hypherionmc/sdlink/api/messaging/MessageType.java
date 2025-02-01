@@ -18,5 +18,6 @@ public enum MessageType {
     DEATH,
     COMMANDS,
     CONSOLE,
+    WHITELIST,
     CUSTOM
 }

@@ -48,6 +48,10 @@ public final class MessageChannelConfig {
     @SpecComment("Control where COMMAND messages are delivered")
     public DestinationObject commands = DestinationObject.of(MessageDestination.EVENT, false, "default");
 
+    @Path("whitelist")
+    @SpecComment("Control where WHITELIST change messages are delivered")
+    public DestinationObject whitelist = DestinationObject.of(MessageDestination.CONSOLE, false, "default");
+
     @Path("custom")
     @SpecComment("Control where messages that match none of the above are delivered")
     public DestinationObject custom = DestinationObject.of(MessageDestination.EVENT, false, "default");

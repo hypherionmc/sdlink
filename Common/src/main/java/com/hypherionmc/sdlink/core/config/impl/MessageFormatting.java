@@ -54,6 +54,14 @@ public final class MessageFormatting {
     @SpecComment("Death Messages. Available variables: %player%, %message%")
     public String death = "%player% %message%";
 
+    @Path("whitelistAdded")
+    @SpecComment("Message to be sent when a player is added to the whitelist")
+    public String whitelistAdded = "%player% has been whitelisted!";
+
+    @Path("whitelistRemoved")
+    @SpecComment("Message to be sent when a player is removed from the whitelist")
+    public String whitelistRemoved = "%player% has been removed from the whitelist!";
+
     @Path("commands")
     @SpecComment("Command Messages. Available variables: %player%, %command%")
     public String commands = "%player% **executed command**: *%command%*";
