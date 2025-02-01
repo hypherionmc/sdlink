@@ -63,9 +63,9 @@ public final class DiscordMessage {
         if (message.isEmpty())
             return;
 
-        BotController.INSTANCE.getSpamManager().receiveMessage(message);
+        BotController.INSTANCE.getSpamManager().receiveMessage(String.format("%s:%s", this.author.getUsername(), this.message));
 
-        if (BotController.INSTANCE.getSpamManager().isBlocked(message)) {
+        if (BotController.INSTANCE.getSpamManager().isBlocked(String.format("%s:%s", this.author.getUsername(), this.message))) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging)
                 BotController.INSTANCE.getLogger().warn("Blocked message {} due to spam", message);
 
