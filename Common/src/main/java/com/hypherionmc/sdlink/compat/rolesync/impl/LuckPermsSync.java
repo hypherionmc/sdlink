@@ -31,7 +31,6 @@ public class LuckPermsSync extends AbstractRoleSyncer {
 
     @Override
     public void sync(BridgedPlayer p, List<Role> roles, Guild guild, Member member) {
-        LuckPermsCompat.INSTANCE.getUserGroups(p.getUUID()).forEach(System.out::println);
 
         // Discord to Minecraft Sync
         if (SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncToMinecraft) {

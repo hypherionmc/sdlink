@@ -397,12 +397,10 @@ public final class ServerEvents {
 
             if (SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled && ModloaderEnvironment.INSTANCE.isModLoaded("playerrevive")) {
                 if (!CompatUtils.INSTANCE.isPlayerBleeding(player) && !CompatUtils.INSTANCE.playerBledOut(player)) {
-                    System.out.println("WAITING");
                     finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.reviveWaitingMessage;
                 }
 
                 if (CompatUtils.INSTANCE.playerBledOut(player)) {
-                    System.out.println("BLED OUT");
                     finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.playerBledOutMessage;
                 }
             }

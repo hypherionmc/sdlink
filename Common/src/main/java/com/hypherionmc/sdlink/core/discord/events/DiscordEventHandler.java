@@ -86,7 +86,6 @@ public final class DiscordEventHandler extends ListenerAdapter {
             return;
 
         if (event.isFromType(ChannelType.PRIVATE)) {
-            System.out.println("Checking Code");
             DiscordMessageHooks.checkVerification(event);
             return;
         }
