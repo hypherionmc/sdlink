@@ -104,7 +104,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
      * The bot is connected to discord and ready to begin sending messages
      */
     @Override
-    public void onStatusChange(StatusChangeEvent event) {
+    public void onReady(@NotNull ReadyEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.LOADING_SUBSYSTEMS) {
             isStuckInNotReady = true;
             startReadyDetection(event.getJDA());
@@ -247,7 +247,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
     private void startReadyDetection(JDA jda) {
         BotController.INSTANCE.updatesManager.scheduleAtFixedRate(() -> {
             if (isStuckInNotReady && jda.getStatus() == JDA.Status.CONNECTED) {
-                onStatusChange(new StatusChangeEvent(jda, jda.getStatus(), JDA.Status.LOADING_SUBSYSTEMS));
+                onReady(new ReadyEvent(jda));
                 isStuckInNotReady = false;
             }
         }, 5, 5, TimeUnit.SECONDS);

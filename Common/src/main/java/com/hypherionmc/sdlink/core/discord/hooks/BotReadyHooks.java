@@ -35,7 +35,7 @@ public final class BotReadyHooks {
      *
      * @param event The {@link ReadyEvent}
      */
-    public static void startActivityUpdates(StatusChangeEvent event) {
+    public static void startActivityUpdates(ReadyEvent event) {
         if (SDLinkConfig.INSTANCE.botConfig.statusUpdateInterval > 0) {
             BotController.INSTANCE.updatesManager.scheduleAtFixedRate(() -> {
                 try {
