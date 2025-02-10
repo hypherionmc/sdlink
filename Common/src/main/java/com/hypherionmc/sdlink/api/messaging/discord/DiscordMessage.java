@@ -194,6 +194,7 @@ public final class DiscordMessage {
                 .replace("%message_contents%", this.message)
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
                 .replace("%player_name%", this.author.getRealPlayerName())
+                .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
                 .replace("%username%", this.author.getUsername());
 
         DataObject object = DataObject.fromJson(embedJson);
