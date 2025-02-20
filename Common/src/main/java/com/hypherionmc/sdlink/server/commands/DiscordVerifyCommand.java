@@ -13,7 +13,7 @@ public class DiscordVerifyCommand {
 
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand cmd = CraterCommand.literal("discordverify")
-                .requiresPermission(1)
+                .requiresPermission(0)
                 .withNode("sdlink.discord_verify")
                 .execute(ctx -> {
                     if (!ctx.isPlayer() || ctx.getPlayer() == null) {
