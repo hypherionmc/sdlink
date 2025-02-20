@@ -36,7 +36,7 @@ public final class DiscordAuthor {
      * @param isServer    Is the Author the Minecraft Server
      */
     private DiscordAuthor(String displayName, String avatar, String username, boolean isServer, String uuid) {
-        this.displayName = displayName;
+        this.displayName = displayName.replace("_", "\\_");
         this.avatar = avatar;
         this.username = username;
         this.isServer = isServer;

@@ -9,8 +9,9 @@
 
 - Fix bot randomly reconnecting to discord, and reloading everything and causing ratelimit spams
 - Remove left over debug logging from LuckPerms rank syncing
-- Fixed deathMessages config option being ignored
+- Fixed deathMessages config option being ignored - [#147](https://github.com/hypherionmc/sdlink/issues/147)
+- Escape underscore (_) from usernames, so discord does not format it. - [#145](https://github.com/hypherionmc/sdlink/issues/145)
 
 **New Features**:
 
-- Add a new %current_time% placeholder for embeds, usable with `<t:TIME>` and similar
+- Add a new %current_time% placeholder for embeds, usable with `<t:TIME>` and similar - [#143](https://github.com/hypherionmc/sdlink/issues/143)
