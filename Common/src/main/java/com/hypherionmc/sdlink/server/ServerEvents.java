@@ -409,7 +409,7 @@ public final class ServerEvents {
                 msg = msg.substring((name + " ").length());
             }
 
-            if (!SDLinkConfig.INSTANCE.chatConfig.deathMessages && !(ModloaderEnvironment.INSTANCE.isModLoaded("playerrevive") && SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled)) {
+            if (!SDLinkConfig.INSTANCE.chatConfig.deathMessages) {
                 return;
             }
 

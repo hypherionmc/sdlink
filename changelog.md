@@ -7,8 +7,9 @@
 
 **Bug Fixes**:
 
-- Fix bot randomly reconnecting to discord, and reloading everything
+- Fix bot randomly reconnecting to discord, and reloading everything and causing ratelimit spams
 - Remove left over debug logging from LuckPerms rank syncing
+- Fixed deathMessages config option being ignored
 
 **New Features**:
 
