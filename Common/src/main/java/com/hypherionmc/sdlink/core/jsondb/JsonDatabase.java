@@ -53,6 +53,9 @@ public class JsonDatabase {
             String line;
             boolean skipHeader = true;
             while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty())
+                    continue;
+
                 if (skipHeader) {
                     skipHeader = false;
                     continue;
