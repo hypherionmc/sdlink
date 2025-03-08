@@ -314,6 +314,9 @@ public final class ServerEvents {
             }
         }
 
+        if (event.isFromVanish() && !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage)
+            return;
+
         if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
             return;
 
@@ -360,6 +363,9 @@ public final class ServerEvents {
                 SDLinkConstants.LOGGER.error("Failed to ban, banned discord user", e);
             }
         }
+
+        if (event.isFromVanish() && !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage)
+            return;
 
         if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerLeave || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
             return;

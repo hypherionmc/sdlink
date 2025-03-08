@@ -11,3 +11,7 @@
 - Fix Database engine failing to read database files that end with 2 empty lines
 - Don't relay raw Config Editor URLs to Console Relay
 - Fix `%player_name%` placeholder not being usable in Chat Embeds
+
+**New Features**:
+
+- Added Vanish Config flag to disable fake join/leave messages
