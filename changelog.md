@@ -9,3 +9,4 @@
 
 - Fix /discordverify command permissions, so that it's usable by everyone
 - Fix Database engine failing to read database files that end with 2 empty lines
+- Don't relay raw Config Editor URLs to Console Relay

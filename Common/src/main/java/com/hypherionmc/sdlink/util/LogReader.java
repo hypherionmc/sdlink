@@ -95,6 +95,7 @@ public final class LogReader extends AbstractAppender {
                         return;
                     if (System.currentTimeMillis() - time > 250) {
                         logs = logs.replaceAll("\\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\\b", "[REDACTED]");
+                        logs = logs.replaceAll("https:\\/\\/editor\\.firstdark\\.dev\\/[a-zA-Z0-9]+", "[REDACTED]");
 
                         if (logs.length() > 2000) {
                             logs = logs.substring(0, 1999);
