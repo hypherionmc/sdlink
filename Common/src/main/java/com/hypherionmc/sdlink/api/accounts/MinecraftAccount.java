@@ -153,11 +153,13 @@ public final class MinecraftAccount {
             BotController.INSTANCE.getLogger().error("Failed to store verified account", e);
         }
 
-        if (RoleManager.getVerifiedRole() != null) {
-            try {
-                guild.addRoleToMember(UserSnowflake.fromId(member.getId()), RoleManager.getVerifiedRole()).queue();
-            } catch (Exception e) {
-                BotController.INSTANCE.getLogger().error("Failed to add verified role to user", e);
+        if (!RoleManager.getVerifiedRole().isEmpty()) {
+            for (Role role : RoleManager.getVerifiedRole()) {
+                try {
+                    guild.addRoleToMember(UserSnowflake.fromId(member.getId()), role).queue();
+                } catch (Exception e) {
+                    BotController.INSTANCE.getLogger().error("Failed to add verified role {} to user", role.getName(), e);
+                }
             }
         }
 
@@ -190,11 +192,13 @@ public final class MinecraftAccount {
             BotController.INSTANCE.getLogger().error("Failed to remove verified account", e);
         }
 
-        if (RoleManager.getVerifiedRole() != null) {
-            try {
-                guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), RoleManager.getVerifiedRole()).queue();
-            } catch (Exception e) {
-                BotController.INSTANCE.getLogger().error("Failed to remove verified role from user", e);
+        if (!RoleManager.getVerifiedRole().isEmpty()) {
+            for (Role role : RoleManager.getVerifiedRole()) {
+                try {
+                    guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
+                } catch (Exception e) {
+                    BotController.INSTANCE.getLogger().error("Failed to remove verified role {} from user", role.getName(), e);
+                }
             }
         }
 

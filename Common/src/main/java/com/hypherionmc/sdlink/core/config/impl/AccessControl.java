@@ -42,7 +42,7 @@ public final class AccessControl {
 
     @Path("verifiedRole")
     @SpecComment("Optional: Role name or ID to assign to verified player accounts")
-    public String verifiedRole = "";
+    public List<String> verifiedRole = new ArrayList<>();
 
     @Path("verificationMessages")
     @SpecComment("Configure messages shown to players when they don't meet verification requirements")

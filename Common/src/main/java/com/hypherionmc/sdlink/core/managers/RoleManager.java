@@ -28,13 +28,13 @@ public final class RoleManager {
     private static final Set<Role> deniedRoles = new HashSet<>();
 
     @Getter
-    private static Role verifiedRole = null;
+    private static final Set<Role> verifiedRole = new HashSet<>();
 
     @Getter
-    private static Set<Role> luckPermsRoles = new HashSet<>();
+    private static final Set<Role> luckPermsRoles = new HashSet<>();
 
     @Getter
-    private static Set<Role> ftbRanksRoles = new HashSet<>();
+    private static final Set<Role> ftbRanksRoles = new HashSet<>();
 
     /**
      * Check and load the roles required by the bot
@@ -44,7 +44,7 @@ public final class RoleManager {
         deniedRoles.clear();
         luckPermsRoles.clear();
         ftbRanksRoles.clear();
-        verifiedRole = null;
+        verifiedRole.clear();
 
         if (SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
             SDLinkConfig.INSTANCE.accessControl.requiredRoles.forEach(r -> {
@@ -61,8 +61,13 @@ public final class RoleManager {
                     deniedRoles.add(role);
             });
 
-            if (!SDLinkUtils.isNullOrEmpty(SDLinkConfig.INSTANCE.accessControl.verifiedRole)) {
-                verifiedRole = getRole(errCount, builder, "Verified Player", SDLinkConfig.INSTANCE.accessControl.verifiedRole);
+            if (!SDLinkConfig.INSTANCE.accessControl.verifiedRole.isEmpty()) {
+                for (String r : SDLinkConfig.INSTANCE.accessControl.verifiedRole) {
+                    Role ver = getRole(errCount, builder, "Verified Player", r);
+
+                    if (ver != null)
+                        verifiedRole.add(ver);
+                }
             }
         }
 

@@ -22,6 +22,8 @@ import shadow.hypherionmc.moonconfig.core.file.CommentedFileConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import static com.hypherionmc.sdlink.core.managers.CacheManager.reloadChannelConfigCache;
@@ -194,6 +196,13 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
             if (ver < 21) {
                 if (finalKey.equalsIgnoreCase("botConfig.botStatus")) {
                     outputConfig.set(finalKey, RandomArrayList.of(value));
+                    return;
+                }
+            }
+
+            if (ver < 26) {
+                if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
+                    outputConfig.set(finalKey, new ArrayList<>(Collections.singleton(value)));
                     return;
                 }
             }
