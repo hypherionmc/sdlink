@@ -6,8 +6,13 @@ package com.hypherionmc.sdlink.api.accounts;
 
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import lombok.Getter;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author HypherionSA
@@ -19,7 +24,7 @@ public final class DiscordAuthor {
     // User used for Server Messages
     public static final DiscordAuthor SERVER = new DiscordAuthor(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName, SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar, "server", true, "");
 
-    private final String displayName;
+    private String displayName;
     private final String avatar;
     private final boolean isServer;
     private String username;
@@ -36,11 +41,57 @@ public final class DiscordAuthor {
      * @param isServer    Is the Author the Minecraft Server
      */
     private DiscordAuthor(String displayName, String avatar, String username, boolean isServer, String uuid) {
-        this.displayName = displayName.replace("_", "\\_");
+        //this.displayName = displayName.replace("_", "\\_");
         this.avatar = avatar;
         this.username = username;
         this.isServer = isServer;
         this.uuid = uuid;
+
+        if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
+            for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
+                if (i.target == MessageIgnoreConfig.FilterTarget.CHAT)
+                    continue;
+
+                boolean isMatch = false;
+
+                switch (i.searchMode) {
+                    case MATCHES:
+                        isMatch = displayName.equalsIgnoreCase(i.search);
+                        break;
+
+                    case CONTAINS:
+                        isMatch = displayName.contains(i.search);
+                        break;
+
+                    case STARTS_WITH:
+                        isMatch = displayName.startsWith(i.search);
+                        break;
+
+                    case REGEX:
+                        try {
+                            Pattern pattern = Pattern.compile(i.search);
+                            Matcher matcher = pattern.matcher(displayName);
+                            isMatch = matcher.find();
+                        } catch (Exception e) {
+                            BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
+                        }
+                        break;
+                }
+
+                if (isMatch && i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
+                    if (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX) {
+                        this.displayName = displayName.replaceAll(i.search, i.replace);
+                    } else {
+                        this.displayName = displayName.replace(i.search, i.replace);
+                    }
+                }
+            }
+        }
+
+        if (this.displayName == null || this.displayName.isEmpty())
+            this.displayName = displayName;
+
+        this.displayName = this.displayName.replace("_", "\\_");
     }
 
     /**

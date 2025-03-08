@@ -27,7 +27,8 @@ public final class MessageIgnoreConfig {
     public enum FilterMode {
         STARTS_WITH,
         MATCHES,
-        CONTAINS
+        CONTAINS,
+        REGEX
     }
 
     public enum ActionMode {
@@ -35,7 +36,16 @@ public final class MessageIgnoreConfig {
         IGNORE
     }
 
+    public enum FilterTarget {
+        CHAT,
+        USERNAME
+    }
+
     public static class Ignore {
+        @Path("target")
+        @SpecComment("Should this filter target Chat messages or Usernames")
+        public FilterTarget target = FilterTarget.CHAT;
+
         @Path("search")
         @SpecComment("The text to search for in the message")
         public String search;
@@ -45,7 +55,7 @@ public final class MessageIgnoreConfig {
         public String replace;
 
         @Path("searchMode")
-        @SpecComment("How should `search` be found in the text. Valid entries are STARTS_WITH, MATCHES and CONTAINS")
+        @SpecComment("How should `search` be found in the text. Valid entries are STARTS_WITH, MATCHES and CONTAINS, REGEX")
         public FilterMode searchMode = FilterMode.CONTAINS;
 
         @Path("action")

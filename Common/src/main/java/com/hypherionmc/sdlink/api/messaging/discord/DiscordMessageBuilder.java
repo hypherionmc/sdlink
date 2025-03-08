@@ -10,13 +10,16 @@ import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
+import lombok.Getter;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author HypherionSA
  * Used to construct a {@link DiscordMessage} to be sent back to discord
  */
+@Getter
 public final class DiscordMessageBuilder {
 
     private final MessageType messageType;
@@ -71,31 +74,47 @@ public final class DiscordMessageBuilder {
 
         if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
             for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
-                if (i.searchMode == MessageIgnoreConfig.FilterMode.MATCHES && message.equalsIgnoreCase(i.search)) {
-                    if (i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
-                        message = message.replace(i.search, i.replace);
-                    } else {
-                        message = "";
-                    }
+                if (i.target == MessageIgnoreConfig.FilterTarget.USERNAME)
+                    continue;
+
+                boolean isMatch = false;
+
+                switch (i.searchMode) {
+                    case MATCHES:
+                        isMatch = message.equalsIgnoreCase(i.search);
+                        break;
+
+                    case CONTAINS:
+                        isMatch = message.contains(i.search);
+                        break;
+
+                    case STARTS_WITH:
+                        isMatch = message.startsWith(i.search);
+                        break;
+
+                    case REGEX:
+                        try {
+                            Pattern pattern = Pattern.compile(i.search);
+                            Matcher matcher = pattern.matcher(message);
+                            isMatch = matcher.find();
+                        } catch (Exception e) {
+                            System.err.println("Invalid regex pattern: " + i.search);
+                        }
+                        break;
                 }
 
-                if (i.searchMode == MessageIgnoreConfig.FilterMode.CONTAINS && message.contains(i.search)) {
+                if (isMatch) {
                     if (i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
-                        message = message.replace(i.search, i.replace);
-                    } else {
-                        message = "";
-                    }
-                }
-
-                if (i.searchMode == MessageIgnoreConfig.FilterMode.STARTS_WITH && message.startsWith(i.search)) {
-                    if (i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
-                        message = message.replace(i.search, i.replace);
+                        message = (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX)
+                                ? message.replaceAll(i.search, i.replace)
+                                : message.replace(i.search, i.replace);
                     } else {
                         message = "";
                     }
                 }
             }
         }
+
 
         this.message = message;
         return this;
@@ -119,21 +138,5 @@ public final class DiscordMessageBuilder {
         }
 
         return new DiscordMessage(this);
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public MessageType getMessageType() {
-        return messageType;
-    }
-
-    public DiscordAuthor getAuthor() {
-        return author;
-    }
-
-    public Runnable getAfterSend() {
-        return afterSend;
     }
 }

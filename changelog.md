@@ -15,3 +15,5 @@
 **New Features**:
 
 - Added Vanish Config flag to disable fake join/leave messages
+- Allow Regex matching for Message filtering
+- Allow message filtering to be used on Usernames as well
