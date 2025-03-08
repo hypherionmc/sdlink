@@ -162,7 +162,7 @@ public final class ServerEvents {
                     msg = SDLinkChatUtils.parse(msg);
                 }
 
-                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile);
+                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile).setPlayerName(gameProfile.getName());
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                         .message(msg)
                         .author(!fromServer ? author : DiscordAuthor.SERVER)
