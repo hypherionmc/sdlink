@@ -12,6 +12,7 @@ import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.craterlib.nojang.server.BridgedMinecraftServer;
 import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
+import com.hypherionmc.craterlib.nojang.world.level.BridgedGameRules;
 import com.hypherionmc.craterlib.utils.ChatUtils;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
@@ -394,6 +395,9 @@ public final class ServerEvents {
         if (event.getPlayer().isServerPlayer() && !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
             return;
 
+        if (!minecraftServer.getGameRules().getBoolean(BridgedGameRules.RULE_SHOWDEATHMESSAGES) && SDLinkConfig.INSTANCE.chatConfig.deathMessages.followGameRule())
+            return;
+
         BridgedPlayer player = event.getPlayer();
 
         if (canSendMessage()) {
@@ -415,7 +419,7 @@ public final class ServerEvents {
                 msg = msg.substring((name + " ").length());
             }
 
-            if (!SDLinkConfig.INSTANCE.chatConfig.deathMessages) {
+            if (SDLinkConfig.INSTANCE.chatConfig.deathMessages.isFalse()) {
                 return;
             }
 
@@ -442,8 +446,11 @@ public final class ServerEvents {
         if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
             return;
 
+        if (!minecraftServer.getGameRules().getBoolean(BridgedGameRules.RULE_ANNOUNCE_ADVANCEMENTS) && SDLinkConfig.INSTANCE.chatConfig.advancementMessages.followGameRule())
+            return;
+
         try {
-            if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.advancementMessages) {
+            if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.advancementMessages.isTrue()) {
                 String username = ChatUtils.resolve(event.getPlayer().getDisplayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
                 String finalAdvancement = ChatUtils.resolve(event.getTitle(), SDLinkConfig.INSTANCE.chatConfig.formatting);
                 String advancementBody = ChatUtils.resolve(event.getDescription(), SDLinkConfig.INSTANCE.chatConfig.formatting);

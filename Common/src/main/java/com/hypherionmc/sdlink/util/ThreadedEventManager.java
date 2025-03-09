@@ -7,6 +7,7 @@ package com.hypherionmc.sdlink.util;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +20,7 @@ public final class ThreadedEventManager extends InterfacedEventManager {
 
     @Override
     public void handle(@NotNull GenericEvent event) {
+        Minecraft.getInstance().level.getGameRules().get
         if (BotController.INSTANCE.taskManager.isShutdown() || BotController.INSTANCE.taskManager.isTerminated())
             return;
 

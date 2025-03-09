@@ -205,6 +205,11 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
                     outputConfig.set(finalKey, new ArrayList<>(Collections.singleton(value)));
                     return;
                 }
+
+                if (finalKey.equalsIgnoreCase("chat.advancementMessages") || finalKey.equalsIgnoreCase("chat.deathMessages")) {
+                    outputConfig.set(finalKey, ((boolean) oldConfig.get(finalKey)) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
+                    return;
+                }
             }
 
             if (value instanceof CommentedConfig commentedConfig) {

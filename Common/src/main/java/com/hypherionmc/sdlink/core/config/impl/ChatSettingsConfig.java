@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.core.config.impl;
 
 import com.hypherionmc.sdlink.core.config.AvatarType;
+import com.hypherionmc.sdlink.core.config.TriBoolean;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 
@@ -87,11 +88,11 @@ public final class ChatSettingsConfig {
 
     @Path("advancementMessages")
     @SpecComment("Should Advancement messages be posted")
-    public boolean advancementMessages = true;
+    public TriBoolean advancementMessages = TriBoolean.ALWAYS;
 
     @Path("deathMessages")
     @SpecComment("Should Death Announcements be posted")
-    public boolean deathMessages = true;
+    public TriBoolean deathMessages = TriBoolean.ALWAYS;
 
     @Path("sendSayCommand")
     @SpecComment("Should Messages from the /say command be posted")
@@ -111,6 +112,7 @@ public final class ChatSettingsConfig {
         add("particle");
         add("login");
         add("execute");
+        add("sdconfigeditor");
     }};
 
     @Path("allowMentionsFromChat")

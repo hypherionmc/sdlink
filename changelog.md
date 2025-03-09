@@ -18,3 +18,4 @@
 - Allow Regex matching for Message filtering
 - Allow message filtering to be used on Usernames as well
 - Access Control/Optional Verification can now give multiple `verifiedRole`s
+- Allow advancements and death messages to respect game rules
