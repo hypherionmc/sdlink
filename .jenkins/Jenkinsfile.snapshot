@@ -15,6 +15,12 @@ pipeline {
    }
 
     stages {
+        stage('Checkout') {
+            steps {
+                scmSkip(deleteBuild: false, skipPattern:'.*\\[ci skip\\].*')
+            }
+        }
+
         stage("Notify Discord") {
             steps {
                 discordSend webhookURL: env.SSS_WEBHOOK,
