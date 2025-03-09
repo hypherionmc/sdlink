@@ -87,11 +87,11 @@ public final class ChatSettingsConfig {
     public boolean playerLeave = true;
 
     @Path("advancementMessages")
-    @SpecComment("Should Advancement messages be posted")
+    @SpecComment("Should Advancement messages be posted. Valid values are ALWAYS, NEVER or GAMERULE")
     public TriBoolean advancementMessages = TriBoolean.ALWAYS;
 
     @Path("deathMessages")
-    @SpecComment("Should Death Announcements be posted")
+    @SpecComment("Should Death Announcements be posted. Valid values are ALWAYS, NEVER or GAMERULE")
     public TriBoolean deathMessages = TriBoolean.ALWAYS;
 
     @Path("sendSayCommand")
