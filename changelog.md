@@ -11,7 +11,8 @@
 - Fix Database engine failing to read database files that end with 2 empty lines - hypherionsa
 - Don't relay raw Config Editor URLs to Console Relay - hypherionsa
 - Fix `%player_name%` placeholder not being usable in Chat Embeds - hypherionsa
-- Fix certain methods of bypassing the mention filter - unsigned-32-bit-integer - [#151](https://github.com/hypherionmc/sdlink/pull/151)
+- Fix certain methods of bypassing the mention filter - unsigned-32-bit-integer - [#PR 151](https://github.com/hypherionmc/sdlink/pull/151)
+- Webhook names containing `_` being formatted as `\_` - hypherionsa - [#152](https://github.com/hypherionmc/sdlink/issues/152)
 
 **New Features**:
 

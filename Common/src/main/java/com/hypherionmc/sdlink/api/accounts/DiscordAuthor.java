@@ -46,6 +46,9 @@ public final class DiscordAuthor {
         this.username = username;
         this.isServer = isServer;
         this.uuid = uuid;
+        this.displayName = displayName;
+
+        this.displayName = this.displayName.replace("_", "\\_");
 
         if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
             for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
@@ -88,10 +91,10 @@ public final class DiscordAuthor {
             }
         }
 
-        if (this.displayName == null || this.displayName.isEmpty())
+        if (this.displayName == null || this.displayName.isEmpty()) {
             this.displayName = displayName;
-
-        this.displayName = this.displayName.replace("_", "\\_");
+            this.displayName = this.displayName.replace("_", "\\_");
+        }
     }
 
     /**

@@ -117,7 +117,7 @@ public final class DiscordMessage {
             }
 
             if (messageType == MessageType.CHAT) {
-                builder.setUsername(SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.webhookNameFormat.replace("%display_name%", this.author.getDisplayName()).replace("%mc_name%", this.author.getUsername()));
+                builder.setUsername(SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.webhookNameFormat.replace("%display_name%", this.author.getDisplayName().replace("\\_", "_")).replace("%mc_name%", this.author.getUsername()));
             } else {
                 builder.setUsername(this.author.getDisplayName());
             }
