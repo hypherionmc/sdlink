@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.api.messaging.discord;
 
+import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
@@ -18,16 +19,22 @@ import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.util.DestinationHolder;
 import com.hypherionmc.sdlink.util.SDLinkUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.EmbedBuilder.ZERO_WIDTH_SPACE;
 
@@ -96,6 +103,19 @@ public final class DiscordMessage {
         if (channel.hasWebhook() && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled) {
             WebhookMessageBuilder builder = new WebhookMessageBuilder();
 
+            if (messageType != MessageType.CHAT || !SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat || channel.channel() == null) {
+                builder.setAllowedMentions(AllowedMentions.none());
+            } else if (channel.channel().getGuild().getPublicRole().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
+                builder.setAllowedMentions(AllowedMentions.all());
+            } else {
+                builder.setAllowedMentions(
+                        new AllowedMentions()
+                                .withParseUsers(true)
+                                .withParseEveryone(false)
+                                .withRoles(getMentionableRoles(message))
+                );
+            }
+
             if (messageType == MessageType.CHAT) {
                 builder.setUsername(SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.webhookNameFormat.replace("%display_name%", this.author.getDisplayName()).replace("%mc_name%", this.author.getUsername()));
             } else {
@@ -123,19 +143,54 @@ public final class DiscordMessage {
                 runAfterSend();
                 return;
             }
+            MessageCreateBuilder builder = new MessageCreateBuilder();
+
+            if (messageType != MessageType.CHAT || !SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+                builder.setAllowedMentions(EnumSet.noneOf(Message.MentionType.class));
+            } else if (channel.channel().getGuild().getPublicRole().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
+                builder.setAllowedMentions(EnumSet.allOf(Message.MentionType.class));
+            } else {
+                builder.setAllowedMentions(EnumSet.of(Message.MentionType.USER));
+                builder.mentionRoles(getMentionableRoles(message));
+            }
 
             // Use the configured channel instead
             if (channel.useEmbed()) {
                 EmbedBuilder eb = buildEmbed(true, channel.embedLayout());
-                channel.channel().sendMessageEmbeds(eb.build()).queue(success -> runAfterSend());
+                builder.setEmbeds(eb.build());
             } else {
-                channel.channel().sendMessage(
-                                this.messageType == MessageType.CHAT ?
-                                        SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName()).replace("%message%", message)
-                                        : message)
-                        .queue(success -> runAfterSend());
+                String content = this.messageType == MessageType.CHAT ?
+                        SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName()).replace("%message%", message)
+                        : message;
+                builder.setContent(content);
             }
+            channel.channel().sendMessage(builder.build()).queue(success -> runAfterSend());
         }
+    }
+
+    /**
+     * Gets all the roles in a message that are mentionable
+     */
+    private Set<String> getMentionableRoles(String message) {
+        return Message.MentionType.ROLE.getPattern().matcher(message).results()
+                .map(match -> match.group(1))
+                .filter(this::isRoleMentionable)
+                .distinct()
+                .limit(100)
+                .collect(Collectors.toSet());
+    }
+
+    private boolean isRoleMentionable(String roleId) {
+        Role role;
+        try {
+            role = resolveDestination().channel().getGuild().getRoleById(roleId);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        if (role == null) {
+            return false;
+        }
+        return role.isMentionable();
     }
 
     private void runAfterSend() {
@@ -153,7 +208,12 @@ public final class DiscordMessage {
 
             MessageChannel channel = ChannelManager.getConsoleChannel();
             if (channel != null) {
-                channel.sendMessage(this.message).queue();
+                channel.sendMessage(
+                        new MessageCreateBuilder()
+                                .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
+                                .setContent(this.message)
+                                .build()
+                ).queue();
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
