@@ -1,3 +1,0 @@
-files:
-  - source: /Common/src/main/resources/assets/lang/*.json
-    translation: /Common/src/main/resources/assets/lang/%locale_with_underscore%.json
