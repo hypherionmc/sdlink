@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
+import com.hypherionmc.sdlink.util.translations.Text;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -21,7 +22,7 @@ public final class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
     public UnverifyAccountSlashCommand() {
         super(false);
         this.name = "unverify";
-        this.help = "Unverify your previously verified Minecraft account";
+        this.help = Text.translate("command.unverify.help").toString();
         this.guildOnly = false;
     }
 
@@ -32,19 +33,19 @@ public final class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
         List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);
 
         if (accounts.isEmpty()) {
-            event.getHook().sendMessage("Sorry, but this server does not contain any stored players in its database").setEphemeral(true).queue();
+            event.getHook().sendMessage(Text.translate("error.no_db_accounts").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
         }
 
         Guild guild = event.isFromGuild() ? event.getGuild() : (event.getJDA().getGuilds().isEmpty() ? null : event.getJDA().getGuilds().get(0));
         if (guild == null) {
-            event.getHook().sendMessage("Sorry, I cannot find a discord server attached to this bot. Please report this to the server operator").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            event.getHook().sendMessage(Text.translate("error.no_discord_server").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
         }
 
         Member m = event.isFromGuild() ? event.getMember() : guild.getMemberById(event.getUser().getId());
         if (m == null) {
-            event.getHook().sendMessage("Sorry, you do not seem to be a member of " + guild.getName() + ". Please try again").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            event.getHook().sendMessage(Text.translate("error.not_a_member_of", guild.getName()).toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
         }
 
@@ -61,7 +62,7 @@ public final class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
         }
 
         if (!didUnverify)
-            event.getHook().sendMessage("Sorry, we could not un-verify your Minecraft account. Please try again").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            event.getHook().sendMessage(Text.translate("command.unverify.failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
     }
 
 }

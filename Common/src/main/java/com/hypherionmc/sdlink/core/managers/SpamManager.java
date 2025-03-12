@@ -1,7 +1,5 @@
 package com.hypherionmc.sdlink.core.managers;
 
-import com.hypherionmc.sdlink.core.discord.BotController;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

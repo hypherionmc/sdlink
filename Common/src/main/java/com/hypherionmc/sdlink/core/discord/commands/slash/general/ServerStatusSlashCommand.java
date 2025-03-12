@@ -21,6 +21,7 @@ import oshi.hardware.HardwareAbstractionLayer;
  * Informational command to give you a quick overview of the hardware/player
  * status of your server
  */
+// TODO: Translation
 public final class ServerStatusSlashCommand extends SDLinkSlashCommand {
 
     public ServerStatusSlashCommand() {

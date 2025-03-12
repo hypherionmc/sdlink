@@ -13,6 +13,7 @@ import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
+import com.hypherionmc.sdlink.util.translations.Text;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -103,9 +104,9 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
     private Component appendDiscordInfo(Member member, Component currentComponent) {
         Component memberDetails = Component.empty();
         memberDetails = memberDetails
-                .append(Component.text("Display Name: ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(member.getEffectiveName()).style(Style.style().color(NamedTextColor.WHITE).build())).appendNewline())
-                .append(Component.text("Username: ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(member.getUser().getName()).style(Style.style().color(NamedTextColor.WHITE).build())).appendNewline())
-                .append(Component.text("Roles: ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(String.join(", ", member.getRoles().stream().map(Role::getName).toList())).style(Style.style().color(NamedTextColor.WHITE).build())));
+                .append(Component.text(Text.translate("tooltip.display_name") + ": ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(member.getEffectiveName()).style(Style.style().color(NamedTextColor.WHITE).build())).appendNewline())
+                .append(Component.text(Text.translate("tooltip.username") + ": ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(member.getUser().getName()).style(Style.style().color(NamedTextColor.WHITE).build())).appendNewline())
+                .append(Component.text(Text.translate("tooltip.roles") + ": ").style(Style.style().color(NamedTextColor.YELLOW).build()).append(Component.text(String.join(", ", member.getRoles().stream().map(Role::getName).toList())).style(Style.style().color(NamedTextColor.WHITE).build())));
 
         currentComponent = currentComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, memberDetails));
         return currentComponent;
@@ -147,7 +148,7 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
     public String getServerVersion() {
         BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
         if (server == null)
-            return "Unknown - Unknown";
+            return Text.translate("error.unknown") + " - " + Text.translate("error.unknown") ;
         return server.getServerModName() + " - " + server.getName();
     }
 

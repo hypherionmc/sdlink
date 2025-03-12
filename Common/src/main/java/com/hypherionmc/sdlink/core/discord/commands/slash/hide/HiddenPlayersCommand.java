@@ -6,6 +6,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.util.MessageUtil;
+import com.hypherionmc.sdlink.util.translations.Text;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jagrosh.jdautilities.menu.ButtonEmbedPaginator;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,7 +24,7 @@ public final class HiddenPlayersCommand extends SDLinkSlashCommand {
         super(true);
 
         this.name = "hiddenplayers";
-        this.help = "List all hidden players on your server";
+        this.help = Text.translate("command.hiddenplayers.help").toString();
         this.guildOnly = true;
     }
 
@@ -39,9 +40,9 @@ public final class HiddenPlayersCommand extends SDLinkSlashCommand {
             AtomicInteger count = new AtomicInteger();
 
             if (hiddenPlayers.isEmpty()) {
-                builder.setTitle("Hidden Players");
+                builder.setTitle(Text.translate("command.hiddenplayers.title").toString());
                 builder.setColor(Color.RED);
-                builder.setDescription("There are currently no hidden players");
+                builder.setDescription(Text.translate("command.hiddenplayers.no_players"));
                 event.getHook().sendMessageEmbeds(builder.build()).setEphemeral(true).queue();
                 return;
             }
@@ -55,7 +56,7 @@ public final class HiddenPlayersCommand extends SDLinkSlashCommand {
                 StringBuilder sb = new StringBuilder();
                 count.getAndIncrement();
                 builder.clear();
-                builder.setTitle("Hidden Players - Page " + count.get() + "/" + (int) Math.ceil(((float) hiddenPlayers.size() / 10)));
+                builder.setTitle(Text.translate("command.hiddenplayers.title_page", count.get(),(int) Math.ceil(((float) hiddenPlayers.size() / 10))).toString());
                 builder.setColor(Color.GREEN);
 
                 p.forEach(account -> {
@@ -73,7 +74,7 @@ public final class HiddenPlayersCommand extends SDLinkSlashCommand {
 
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
-            event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            event.getHook().sendMessage(Text.translate("error.command_failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             BotController.INSTANCE.getLogger().error("Failed to run hidden player list command", e);
         }
     }

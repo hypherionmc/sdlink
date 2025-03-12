@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.MessageUtil;
+import com.hypherionmc.sdlink.util.translations.Text;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jagrosh.jdautilities.menu.ButtonEmbedPaginator;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -30,7 +31,7 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
         super(false);
 
         this.name = "playerlist";
-        this.help = "List currently online players on the server";
+        this.help = Text.translate("command.playerlist.help").toString();
         this.guildOnly = true;
     }
 
@@ -46,9 +47,9 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
             AtomicInteger count = new AtomicInteger();
 
             if (players.isEmpty()) {
-                builder.setTitle("Online Players");
+                builder.setTitle(Text.translate("command.playerlist.title").toString());
                 builder.setColor(Color.RED);
-                builder.setDescription("There are currently no players online");
+                builder.setDescription(Text.translate("command.playerlist.no_online"));
                 event.getHook().sendMessageEmbeds(builder.build()).setEphemeral(true).queue();
                 return;
             }
@@ -62,9 +63,9 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
                 StringBuilder sb = new StringBuilder();
                 count.getAndIncrement();
                 builder.clear();
-                builder.setTitle("Online Players - Page " + count.get() + "/" + (int) Math.ceil(((float) players.size() / 10)));
+                builder.setTitle(Text.translate("command.playerlist.title_page", count.get(),(int) Math.ceil(((float) players.size() / 10))).toString());
                 builder.setColor(Color.GREEN);
-                builder.setFooter(String.format("%s/%s players online", SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft(), SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()));
+                builder.setFooter(Text.translate("command.playerlist.footer", SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft(), SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()).toString());
 
                 p.forEach(account -> {
                     sb.append("`").append(account.getUsername()).append("`");
@@ -84,7 +85,7 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
 
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
-            event.getHook().sendMessage("Failed to execute command. Please see your server log").setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            event.getHook().sendMessage(Text.translate("error.command_failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             BotController.INSTANCE.getLogger().error("Failed to run player list command", e);
         }
     }

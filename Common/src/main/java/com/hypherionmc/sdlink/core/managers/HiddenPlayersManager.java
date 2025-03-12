@@ -3,6 +3,7 @@ package com.hypherionmc.sdlink.core.managers;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.database.HiddenPlayers;
+import com.hypherionmc.sdlink.util.translations.Text;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -26,10 +27,10 @@ public final class HiddenPlayersManager {
             HiddenPlayers player = HiddenPlayers.of(identifier, displayName, type);
             DatabaseManager.INSTANCE.updateEntry(player);
             hiddenPlayers.put(identifier, player);
-            return Result.success(displayName + " is now hidden");
+            return Result.success(Text.translate("hiding.now_hidden", displayName));
         } catch (Exception e) {
             SDLinkConstants.LOGGER.error("Failed to hide player {}", displayName, e);
-            return Result.error("Failed to hide player. Error: " + e.getMessage());
+            return Result.error(Text.translate("hiding.failed", e.getMessage()));
         }
     }
 
@@ -38,15 +39,15 @@ public final class HiddenPlayersManager {
             HiddenPlayers player = DatabaseManager.INSTANCE.findById(identifier, HiddenPlayers.class);
 
             if (player == null) {
-                return Result.error("Player is not hidden");
+                return Result.error(Text.translate("hiding.not_hidden"));
             }
 
             hiddenPlayers.remove(identifier);
             DatabaseManager.INSTANCE.deleteEntry(player);
-            return Result.success("Player " + player.getDisplayName() + " is no longer hidden");
+            return Result.success(Text.translate("hiding.unhidden", player.getDisplayName()));
         } catch (Exception e) {
             SDLinkConstants.LOGGER.error("Failed to unhide player {}", identifier, e);
-            return Result.error("Failed to unhide player. Error: " + e.getMessage());
+            return Result.error(Text.translate("hiding.unhide_failed", e.getMessage()));
         }
     }
 

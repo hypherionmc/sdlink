@@ -3,6 +3,8 @@ package com.hypherionmc.sdlink.server.commands;
 import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
 import com.hypherionmc.sdlink.server.ServerEvents;
+import com.hypherionmc.sdlink.util.translations.Text;
+import shadow.kyori.adventure.text.Component;
 
 public final class ReloadBotCommand {
 
@@ -12,6 +14,7 @@ public final class ReloadBotCommand {
                 .withNode("sdlink.reloadbot")
                 .execute(ctx -> {
                     ServerEvents.reloadBot(true);
+                    ctx.sendSuccess(() -> Component.text(Text.translate("feedback.bot_reloaded").toString()), true);
                     return 1;
                 });
 

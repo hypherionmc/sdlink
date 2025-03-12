@@ -16,6 +16,7 @@ import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.translations.Text;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReference;
@@ -86,7 +87,7 @@ public final class DiscordMessageHooks {
             }
 
             if (!message.isEmpty() && !event.getMessage().getAttachments().isEmpty()) {
-                message = message + " (+" + (long) event.getMessage().getAttachments().size() + " attachments)";
+                message = message + " " + Text.translate("message.attachments", (long) event.getMessage().getAttachments().size());
             }
 
             if (message.isEmpty())
@@ -95,7 +96,7 @@ public final class DiscordMessageHooks {
             if (event.getMessage().getReferencedMessage() != null) {
                 try {
                     Member replyMember = event.getMessage().getReferencedMessage().isWebhookMessage() ? SDLWebhookServerMember.of(event.getMessage().getReferencedMessage().getAuthor(), event.getGuild(), event.getJDA()) : event.getMessage().getReferencedMessage().getMember();
-                    message = "Replied to " + replyMember.getEffectiveName() + ": " + message;
+                    message = Text.translate("message.replied_to", replyMember.getEffectiveName(), message).toString();
                     reply = event.getMessage().getReferencedMessage().getContentDisplay();
                     reply = EmojiManager.replaceAllEmojis(reply, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
                 } catch (Exception e) {
@@ -117,26 +118,26 @@ public final class DiscordMessageHooks {
         String message = event.getMessage().getContentStripped();
 
         if (message.length() != 4) {
-            event.getMessage().reply("Sorry, I can only handle 4 digit verification code messages. Please try again").queue();
+            event.getMessage().reply(Text.translate("error.code_length")).queue();
             return;
         }
 
         Guild guild = event.getJDA().getGuilds().isEmpty() ? null : event.getJDA().getGuilds().get(0);
         if (guild == null) {
-            event.getMessage().reply("I couldn't find a discord server linked to this bot. Please inform the server operators").queue();
+            event.getMessage().reply(Text.translate("error.no_discord_server")).queue();
             return;
         }
 
         Member m = guild.getMemberById(event.getAuthor().getIdLong());
         if (m == null) {
-            event.getMessage().reply("You do not appear to be a member of " + event.getGuild().getName() + ". Cannot proceed").queue();
+            event.getMessage().reply(Text.translate("error.not_a_member_of", event.getGuild().getName())).queue();
             return;
         }
 
         List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);
 
         if (accounts.isEmpty()) {
-            event.getMessage().reply("Sorry, but this server does not contain any stored players in its database").queue();
+            event.getMessage().reply(Text.translate("error.no_db_accounts")).queue();
             return;
         }
 
@@ -147,11 +148,11 @@ public final class DiscordMessageHooks {
                 continue;
 
             if (accounts.stream().anyMatch(a -> a.getDiscordID() != null && a.getDiscordID().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
-                event.getMessage().reply("Sorry, you already have a verified account and this server does not allow multiple accounts").queue();
+                event.getMessage().reply(Text.translate("command.verify.already_verified")).queue();
                 return;
             }
 
-            if (account.getVerifyCode().equalsIgnoreCase(String.valueOf(message))) {
+            if (account.getVerifyCode().equalsIgnoreCase(message)) {
                 MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
                 Result result = minecraftAccount.verifyAccount(m, guild);
                 event.getMessage().reply(result.getMessage()).queue();
@@ -161,6 +162,6 @@ public final class DiscordMessageHooks {
         }
 
         if (!didVerify)
-            event.getMessage().reply("Sorry, we could not verify your Minecraft account. Please try again").queue();
+            event.getMessage().reply(Text.translate("command.verify.failed")).queue();
     }
 }

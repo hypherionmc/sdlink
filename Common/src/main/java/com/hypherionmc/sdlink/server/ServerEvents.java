@@ -36,6 +36,7 @@ import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.*;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
+import com.hypherionmc.sdlink.util.translations.Text;
 import lombok.Getter;
 import shadow.kyori.adventure.text.Component;
 
@@ -190,7 +191,7 @@ public final class ServerEvents {
 
         BridgedPlayer player = null;
         String uuid = null;
-        Component user = Component.text("Unknown");
+        Component user = Component.text(Text.translate("error.unknown").toString());
         BridgedGameProfile profile = null;
         try {
             player = event.getPlayer();

@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import lombok.Getter;
 
 import java.util.regex.Matcher;
@@ -88,7 +89,7 @@ public final class DiscordMessageBuilder {
                             Matcher matcher = pattern.matcher(message);
                             isMatch = matcher.find();
                         } catch (Exception e) {
-                            System.err.println("Invalid regex pattern: " + i.search);
+                            BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
                         }
                         break;
                 }

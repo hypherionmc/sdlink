@@ -15,7 +15,7 @@ public final class DestinationHolder {
     private final WebhookClient webhookClient;
     private final MessageChannelConfig.DestinationObject destination;
 
-    protected DestinationHolder(MessageChannelConfig.DestinationObject destination, MessageType type) {
+    private DestinationHolder(MessageChannelConfig.DestinationObject destination, MessageType type) {
 
         if (ChannelManager.getOverride(type) != null) {
             this.channel = ChannelManager.getOverride(type);

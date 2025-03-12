@@ -22,6 +22,10 @@ public final class GeneralConfigSettings {
     @SpecComment("Enable Additional Logging. Used for Fault Finding. WARNING: CAUSES LOG SPAM!")
     public boolean debugging = false;
 
+    @Path("language")
+    @SpecComment("The active language to use for built in messages. Defaults to en_us if a language is not found")
+    public String language = "en_us";
+
     @Path("configVersion")
     @SpecComment("Internal version control. DO NOT TOUCH!")
     public int configVersion = SDLinkConfig.configVer;

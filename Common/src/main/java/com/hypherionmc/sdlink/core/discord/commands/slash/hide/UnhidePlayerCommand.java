@@ -6,6 +6,7 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
+import com.hypherionmc.sdlink.util.translations.Text;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -19,7 +20,7 @@ public final class UnhidePlayerCommand extends SDLinkSlashCommand {
     public UnhidePlayerCommand() {
         super(true);
         this.name = "unhideplayer";
-        this.help = "Make a discord user visible";
+        this.help = Text.translate("command.unhideplayer.help").toString();
 
         this.options = new ArrayList<>() {{
             add(new OptionData(OptionType.USER, "user", "The user to make visible").setRequired(true));
@@ -35,13 +36,13 @@ public final class UnhidePlayerCommand extends SDLinkSlashCommand {
 
         if (mc) {
             if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
-                event.getHook().editOriginal("The minecraft option cannot be used when both access control and optionalVerification is disabled").queue();
+                event.getHook().editOriginal(Text.translate("command.hideplayer.access_control").toString()).queue();
                 return;
             }
 
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class).stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(user.getId())).toList();
             if (accounts.isEmpty()) {
-                event.getHook().editOriginal("Cannot find linked minecraft account for user " + user.getAsMention()).queue();
+                event.getHook().editOriginal(Text.translate("command.hideplayer.account_not_found", user.getAsMention()).toString()).queue();
             } else {
                 for (SDLinkAccount account : accounts) {
                     HiddenPlayersManager.INSTANCE.unhidePlayer(account.getUuid());

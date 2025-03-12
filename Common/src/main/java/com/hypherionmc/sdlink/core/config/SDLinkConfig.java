@@ -12,6 +12,7 @@ import com.hypherionmc.sdlink.core.config.impl.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
+import com.hypherionmc.sdlink.util.translations.TranslationManager;
 import org.apache.commons.io.FileUtils;
 import shadow.hypherionmc.moonconfig.core.CommentedConfig;
 import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
@@ -38,7 +39,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 26;
+    public transient static int configVer = 27;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
@@ -136,6 +137,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         INSTANCE = readConfig(this);
         hasConfigLoaded = true;
         reloadChannelConfigCache();
+        TranslationManager.INSTANCE.loadTranslations(this.generalConfig.language);
     }
 
     /**

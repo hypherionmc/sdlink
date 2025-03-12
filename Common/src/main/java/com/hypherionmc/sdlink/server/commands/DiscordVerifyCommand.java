@@ -7,6 +7,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkUtils;
+import com.hypherionmc.sdlink.util.translations.Text;
 import shadow.kyori.adventure.text.Component;
 
 public class DiscordVerifyCommand {
@@ -17,12 +18,12 @@ public class DiscordVerifyCommand {
                 .withNode("sdlink.discord_verify")
                 .execute(ctx -> {
                     if (!ctx.isPlayer() || ctx.getPlayer() == null) {
-                        ctx.sendFailure(Component.text("This command can only be used by players"));
+                        ctx.sendFailure(Component.text(Text.translate("error.verify.only_by_players").toString()));
                         return 1;
                     }
 
                     if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
-                        ctx.sendFailure(Component.text("Verification is not enabled for this server"));
+                        ctx.sendFailure(Component.text(Text.translate("error.verify.not_enabled").toString()));
                         return 1;
                     }
 
@@ -30,7 +31,7 @@ public class DiscordVerifyCommand {
                     SDLinkAccount sdLinkAccount = account.getStoredAccount();
 
                     if (sdLinkAccount == null) {
-                        ctx.sendFailure(Component.text("Failed to load your account"));
+                        ctx.sendFailure(Component.text(Text.translate("account.load_failed").toString()));
                         return 1;
                     }
 

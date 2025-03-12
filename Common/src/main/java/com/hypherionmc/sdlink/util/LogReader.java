@@ -39,7 +39,7 @@ public final class LogReader extends AbstractAppender {
     private long time;
     private Thread messageScheduler;
 
-    protected LogReader(String name, Filter filter) {
+    private LogReader(String name, Filter filter) {
         super(name, filter, null, true, new Property[0]);
     }
 
