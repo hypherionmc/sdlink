@@ -103,17 +103,17 @@ public final class DiscordMessage {
         if (channel.hasWebhook() && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled) {
             WebhookMessageBuilder builder = new WebhookMessageBuilder();
 
-            if (messageType != MessageType.CHAT || !SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat || channel.channel() == null) {
-                builder.setAllowedMentions(AllowedMentions.none());
-            } else if (channel.channel().getGuild().getPublicRole().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
+            if (messageType == MessageType.START || messageType == MessageType.STOP) {
                 builder.setAllowedMentions(AllowedMentions.all());
-            } else {
+            } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat && channel.channel() != null) {
                 builder.setAllowedMentions(
                         new AllowedMentions()
                                 .withParseUsers(true)
                                 .withParseEveryone(false)
                                 .withRoles(getMentionableRoles(message))
                 );
+            } else {
+                builder.setAllowedMentions(AllowedMentions.none());
             }
 
             if (messageType == MessageType.CHAT) {
@@ -145,13 +145,13 @@ public final class DiscordMessage {
             }
             MessageCreateBuilder builder = new MessageCreateBuilder();
 
-            if (messageType != MessageType.CHAT || !SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
-                builder.setAllowedMentions(EnumSet.noneOf(Message.MentionType.class));
-            } else if (channel.channel().getGuild().getPublicRole().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
+            if (messageType == MessageType.START || messageType == MessageType.STOP) {
                 builder.setAllowedMentions(EnumSet.allOf(Message.MentionType.class));
-            } else {
+            } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
                 builder.setAllowedMentions(EnumSet.of(Message.MentionType.USER));
                 builder.mentionRoles(getMentionableRoles(message));
+            } else {
+                builder.setAllowedMentions(EnumSet.noneOf(Message.MentionType.class));
             }
 
             // Use the configured channel instead
