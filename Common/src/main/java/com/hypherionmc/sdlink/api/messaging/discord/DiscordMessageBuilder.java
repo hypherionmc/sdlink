@@ -62,16 +62,6 @@ public final class DiscordMessageBuilder {
      * The Actual message that will be sent
      */
     public DiscordMessageBuilder message(String message) {
-        if (this.messageType == MessageType.CHAT) {
-            //using regex to replace @here and @everyone mentions
-            message = Pattern.compile("@+(here|everyone)").matcher(message).replaceAll("");
-
-            if (!SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
-                //using regex to replace any mention
-                message = Pattern.compile("<(?!a?:[^:]+:\\d{17,19}>)[^>]*>").matcher(message).replaceAll("");
-            }
-        }
-
         if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
             for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
                 if (i.target == MessageIgnoreConfig.FilterTarget.USERNAME)

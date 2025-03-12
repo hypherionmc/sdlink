@@ -116,6 +116,6 @@ public final class ChatSettingsConfig {
     }};
 
     @Path("allowMentionsFromChat")
-    @SpecComment("Allow mentioning discord roles, users and channels from Minecraft Chat")
+    @SpecComment("Allow mentioning discord roles and users from Minecraft Chat")
     public boolean allowMentionsFromChat = false;
 }
