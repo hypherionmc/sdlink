@@ -316,12 +316,6 @@ public final class ServerEvents {
             }
         }
 
-        if (event.isFromVanish() && !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage)
-            return;
-
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
-            return;
-
         SDLinkAccount account = DatabaseManager.INSTANCE.findById(event.getPlayer().getStringUUID(), SDLinkAccount.class);
 
         if (account != null) {
@@ -338,6 +332,14 @@ public final class ServerEvents {
             playerName = discordUser.getEffectiveName();
         }
 
+        RoleSync.INSTANCE.sync(event.getPlayer());
+
+        if (event.isFromVanish() && !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage)
+            return;
+
+        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
+            return;
+
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", playerName))
                 .author(DiscordAuthor.SERVER
@@ -346,8 +348,6 @@ public final class ServerEvents {
                 .build();
 
         discordMessage.sendMessage();
-
-        RoleSync.INSTANCE.sync(event.getPlayer());
     }
 
     @CraterEventListener

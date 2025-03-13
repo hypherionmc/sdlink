@@ -13,6 +13,7 @@
 - Fix `%player_name%` placeholder not being usable in Chat Embeds - hypherionsa
 - Fix certain methods of bypassing the mention filter - unsigned-32-bit-integer - [#PR 151](https://github.com/hypherionmc/sdlink/pull/151)
 - Webhook names containing `_` being formatted as `\_` - hypherionsa - [#152](https://github.com/hypherionmc/sdlink/issues/152)
+- Fixed events that happen on login (like rank sync) not running when Join messages are disabled, or the user is vanished - hypherionsa
 
 **New Features**:
 
