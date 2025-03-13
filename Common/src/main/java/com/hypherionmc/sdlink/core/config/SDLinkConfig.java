@@ -204,7 +204,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
             if (ver < 26) {
                 if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
-                    outputConfig.set(finalKey, new ArrayList<>(Collections.singleton(value)));
+                    outputConfig.set(finalKey, value.toString().isEmpty() ? Collections.emptyList() : Collections.singletonList(value));
                     return;
                 }
 
