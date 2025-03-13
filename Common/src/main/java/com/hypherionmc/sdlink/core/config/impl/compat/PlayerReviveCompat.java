@@ -3,7 +3,7 @@ package com.hypherionmc.sdlink.core.config.impl.compat;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 
-public class PlayerReviveCompat {
+public final class PlayerReviveCompat {
 
     @Path("enabled")
     @SpecComment("Should integration with Player Revive Mod be enabled")

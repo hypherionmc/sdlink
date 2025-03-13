@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @author HypherionSA
  * Basic Message Spam Detector
  */
-public class SpamManager {
+public final class SpamManager {
 
     private final ConcurrentHashMap<String, List<Long>> messageTimestamps = new ConcurrentHashMap<>();
     private final Set<String> blockedMessages = new HashSet<>();

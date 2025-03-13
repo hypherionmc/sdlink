@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.List;
 
-public class RoleSync {
+public final class RoleSync {
 
     public static final RoleSync INSTANCE = new RoleSync();
 

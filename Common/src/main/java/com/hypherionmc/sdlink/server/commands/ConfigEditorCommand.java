@@ -6,7 +6,7 @@ import com.hypherionmc.sdlink.core.editor.ConfigEditorClient;
 import com.hypherionmc.sdlink.util.translations.Text;
 import shadow.kyori.adventure.text.Component;
 
-public class ConfigEditorCommand {
+public final class ConfigEditorCommand {
 
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand cmd = CraterCommand.literal("sdconfigeditor")

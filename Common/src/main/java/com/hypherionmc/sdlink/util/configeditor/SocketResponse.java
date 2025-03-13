@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor(staticName = "of")
 @Getter
-public class SocketResponse {
+public final class SocketResponse {
 
     private String socketCode;
     private String message;

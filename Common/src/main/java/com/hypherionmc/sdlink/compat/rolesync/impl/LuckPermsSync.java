@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class LuckPermsSync extends AbstractRoleSyncer {
+public final class LuckPermsSync extends AbstractRoleSyncer {
 
     public static final LuckPermsSync INSTANCE = new LuckPermsSync();
 

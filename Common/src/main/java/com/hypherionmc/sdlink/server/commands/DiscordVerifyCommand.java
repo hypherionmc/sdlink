@@ -10,7 +10,7 @@ import com.hypherionmc.sdlink.util.SDLinkUtils;
 import com.hypherionmc.sdlink.util.translations.Text;
 import shadow.kyori.adventure.text.Component;
 
-public class DiscordVerifyCommand {
+public final class DiscordVerifyCommand {
 
     public static void register(CraterRegisterCommandEvent event) {
         CraterCommand cmd = CraterCommand.literal("discordverify")

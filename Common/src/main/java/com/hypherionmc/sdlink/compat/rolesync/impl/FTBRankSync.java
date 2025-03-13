@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import java.util.List;
 import java.util.Optional;
 
-public class FTBRankSync extends AbstractRoleSyncer {
+public final class FTBRankSync extends AbstractRoleSyncer {
 
     public static final FTBRankSync INSTANCE = new FTBRankSync();
 

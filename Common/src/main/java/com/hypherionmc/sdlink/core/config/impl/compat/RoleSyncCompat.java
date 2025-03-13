@@ -8,7 +8,7 @@ import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoleSyncCompat {
+public final class RoleSyncCompat {
 
     @Path("syncToMinecraft")
     @SpecComment("Sync Groups/Ranks to Minecraft from Discord Roles")
