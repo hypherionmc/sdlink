@@ -3,7 +3,7 @@
 - [Documentation](https://sdlink.fdd-docs.com)
 - This single jar works on 1.18.2-1.21.4
 
-*Requires CraterLib 2.1.3 or newer*
+*Requires CraterLib 2.1.4 or newer*
 
 **Bug Fixes**:
 
@@ -23,3 +23,8 @@
 - Access Control/Optional Verification can now give multiple `verifiedRole`s - hypherionsa
 - Allow advancements and death messages to respect game rules - hypherionsa
 - Hard coded english messages and responses can now be translated into different languages (TRANSLATORS WANTED) - hypherionsa
+
+**Experimental Features**:
+
+- Added new Experimental Feature System
+- Added SDLink Relay System. Allowing multiple bots to relay their chats, and other things to multiple servers. Only available as an experimental flag for now

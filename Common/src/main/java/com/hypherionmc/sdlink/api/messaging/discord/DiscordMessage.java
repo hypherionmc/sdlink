@@ -248,11 +248,11 @@ public final class DiscordMessage {
         }
 
         embedJson = embedJson
-                .replace("%author%", this.author.getDisplayName())
+                .replace("%author%", this.author.getDisplayName().replace("_", "\\_"))
                 .replace("%avatar%", this.author.getAvatar())
                 .replace("%message_contents%", this.message)
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
-                .replace("%player_name%", this.author.getRealPlayerName())
+                .replace("%player_name%", this.author.getRealPlayerName().replace("_", "\\_"))
                 .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
                 .replace("%username%", this.author.getUsername().replace("_", "\\_"));
 
