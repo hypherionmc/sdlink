@@ -8,8 +8,11 @@ import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
+import com.hypherionmc.sdlink.core.relay.RelayMessage;
+import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
@@ -87,6 +90,17 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
 
             if ((replyMessage == null || replyMessage.isEmpty()) && SDLinkConfig.INSTANCE.chatConfig.showDiscordInfo) {
                 finalComponent = appendDiscordInfo(member, finalComponent);
+            }
+
+            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayDiscordChats) {
+                RelayMessage relayMessage = RelayMessage.of(
+                        RelayMessage.MessageType.DISCORD,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        null,
+                        SDLinkChatUtils.serializer.serialize(finalComponent)
+                );
+
+                SDLinkRelayClient.INSTANCE.relayMessage(relayMessage);
             }
 
             ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(

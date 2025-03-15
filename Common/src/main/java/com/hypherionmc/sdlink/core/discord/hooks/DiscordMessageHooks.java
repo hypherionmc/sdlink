@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
 
 import java.util.List;

@@ -6,10 +6,13 @@ package com.hypherionmc.sdlink.core.discord;
 
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.events.DiscordEventHandler;
 import com.hypherionmc.sdlink.core.editor.ConfigEditorClient;
+import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.managers.*;
+import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.ThreadedEventManager;
 import com.jagrosh.jdautilities.command.CommandClient;
@@ -28,7 +31,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author HypherionSA
@@ -67,9 +69,17 @@ public final class BotController {
         File newConfigDir = new File("./config/simple-discord-link");
         newConfigDir.mkdirs();
 
+        ExperimentalFeatures.INSTANCE.loadFeatures();
+
         // Initialize Config
         new SDLinkConfig(wasReload);
         new SDLinkCompatConfig(wasReload);
+
+        // TODO: Remove when released
+        // Experimental Feature
+        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER) {
+            new SDLinkRelayConfig(wasReload);
+        }
 
         // Initialize Account Storage
         DatabaseManager.INSTANCE.initialize();
@@ -203,6 +213,10 @@ public final class BotController {
         if (!isReload) {
             try {
                 ConfigEditorClient.INSTANCE.closeServer();
+
+                // TODO: Remove on release
+                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER)
+                    SDLinkRelayClient.INSTANCE.closeServer(true);
             } catch (Exception ignored) {}
         }
     }

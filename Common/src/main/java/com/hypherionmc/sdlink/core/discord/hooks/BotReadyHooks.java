@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
-import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 
 import java.util.concurrent.TimeUnit;

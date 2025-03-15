@@ -23,7 +23,6 @@ import shadow.hypherionmc.moonconfig.core.file.CommentedFileConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
@@ -137,7 +136,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         INSTANCE = readConfig(this);
         hasConfigLoaded = true;
         reloadChannelConfigCache();
-        TranslationManager.INSTANCE.loadTranslations(this.generalConfig.language);
+        TranslationManager.INSTANCE.loadTranslations(SDLinkConfig.INSTANCE.generalConfig.language);
     }
 
     /**
@@ -204,7 +203,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
             if (ver < 26) {
                 if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
-                    outputConfig.set(finalKey, value.toString().isEmpty() ? Collections.emptyList() : Collections.singletonList(value));
+                    outputConfig.set(finalKey, value.toString().trim().isEmpty() ? Collections.emptyList() : Collections.singletonList(value));
                     return;
                 }
 

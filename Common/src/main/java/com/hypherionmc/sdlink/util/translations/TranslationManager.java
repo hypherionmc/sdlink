@@ -7,8 +7,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.*;
-import java.util.Collections;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Map;
 
 /**

@@ -26,11 +26,15 @@ import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
+import com.hypherionmc.sdlink.core.relay.DataMessage;
+import com.hypherionmc.sdlink.core.relay.RelayMessage;
+import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.*;
@@ -39,6 +43,8 @@ import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.Text;
 import lombok.Getter;
 import shadow.kyori.adventure.text.Component;
+
+import java.util.UUID;
 
 @Getter
 @SuppressWarnings("unused")
@@ -171,6 +177,16 @@ public final class ServerEvents {
                         .build();
 
                 discordMessage.sendMessage();
+
+                if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+                    RelayMessage newRelay = RelayMessage.of(
+                            RelayMessage.MessageType.CHAT,
+                            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                            DataMessage.of(user, gameProfile.getName(), message, gameProfile.getId(), null, false)
+                    );
+
+                    SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+                }
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.generalConfig.debugging) {
@@ -244,6 +260,23 @@ public final class ServerEvents {
                     .build();
 
             discordMessage.sendMessage();
+
+            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+
+                RelayMessage newRelay = RelayMessage.of(
+                        RelayMessage.MessageType.CHAT,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        DataMessage.of(
+                                event.getPlayer() == null ? Component.text("Server") : event.getPlayer().getDisplayName(),
+                                event.getPlayer() == null ? "server" : event.getPlayer().getGameProfile().getName(),
+                                Component.text(msg),
+                                event.getPlayer() == null ? UUID.randomUUID() : event.getPlayer().getUUID(),
+                                event.getPlayer() == null
+                        )
+                );
+
+                SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+            }
             return;
         }
 
@@ -340,19 +373,37 @@ public final class ServerEvents {
         if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
             return;
 
+        String msg = SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", playerName);
+
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
-                .message(SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", playerName))
+                .message(msg)
                 .author(DiscordAuthor.SERVER
                         .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                 .build();
 
         discordMessage.sendMessage();
+
+        if (SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages) {
+            RelayMessage newRelay = RelayMessage.of(
+                    RelayMessage.MessageType.JOIN,
+                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                    DataMessage.of(
+                            event.getPlayer().getDisplayName(),
+                            event.getPlayer().getGameProfile().getName(),
+                            null,
+                            event.getPlayer().getUUID(),
+                            false
+                    )
+            );
+
+            SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+        }
     }
 
     @CraterEventListener
     public void playerLeaveEvent(CraterPlayerEvent.PlayerLoggedOut event) {
-        if (SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
+        if ((SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification)) {
             try {
                 if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
                     MinecraftAccount account = MinecraftAccount.of(event.getPlayer().getGameProfile());
@@ -381,14 +432,32 @@ public final class ServerEvents {
             playerName = discordUser.getEffectiveName();
         }
 
+        String msg = SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", playerName);
+
         DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
-                .message(SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", playerName))
+                .message(msg)
                 .author(DiscordAuthor.SERVER
                         .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
                 .build();
 
         message.sendMessage();
+
+        if (SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages) {
+            RelayMessage newRelay = RelayMessage.of(
+                    RelayMessage.MessageType.LEAVE,
+                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                    DataMessage.of(
+                            event.getPlayer().getDisplayName(),
+                            event.getPlayer().getGameProfile().getName(),
+                            null,
+                            event.getPlayer().getUUID(),
+                            false
+                    )
+            );
+
+            SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+        }
     }
 
     @CraterEventListener
@@ -431,14 +500,31 @@ public final class ServerEvents {
                 name = discordUser.getEffectiveName();
             }
 
+            finalMessage = finalMessage.replace("%player%", name).replace("%message%", msg);
+
             DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
-                    .message(finalMessage.replace("%player%", name).replace("%message%", msg))
+                    .message(finalMessage)
                     .author(DiscordAuthor.SERVER
                             .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
                             .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                     .build();
 
             message.sendMessage();
+
+            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages) {
+                RelayMessage newRelay = RelayMessage.of(
+                        RelayMessage.MessageType.DEATH,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        DataMessage.of(
+                                event.getPlayer().getDisplayName(),
+                                event.getPlayer().getGameProfile().getName(),
+                                event.getDeathMessage(),
+                                event.getPlayer().getUUID(),
+                                false)
+                );
+
+                SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+            }
         }
     }
 
@@ -463,14 +549,32 @@ public final class ServerEvents {
                     username = discordUser.getEffectiveName();
                 }
 
+                String msg = SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody);
+
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
-                        .message(SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody))
+                        .message(msg)
                         .author(DiscordAuthor.SERVER
                                 .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
                                 .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                         .build();
 
                 discordMessage.sendMessage();
+
+                if (SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages) {
+                    RelayMessage newRelay = RelayMessage.of(
+                            RelayMessage.MessageType.ADVANCEMENT,
+                            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                            DataMessage.of(
+                                    event.getPlayer().getDisplayName(),
+                                    event.getPlayer().getGameProfile().getName(),
+                                    event.getTitle(),
+                                    event.getPlayer().getUUID(),
+                                    event.getDescription(),
+                                    false)
+                    );
+
+                    SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+                }
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

@@ -9,7 +9,9 @@ import shadow.kyori.adventure.text.event.ClickEvent;
 import shadow.kyori.adventure.text.event.HoverEvent;
 import shadow.kyori.adventure.text.format.NamedTextColor;
 import shadow.kyori.adventure.text.format.Style;
+import shadow.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
+import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,7 @@ public final class SDLinkChatUtils {
 
     private static final Pattern CHANNEL_PATTERN = Pattern.compile("\\[#(.*?)\\]", Pattern.CASE_INSENSITIVE);
     private static final Pattern USER_ROLE_PATTERN = Pattern.compile("\\[@(.*?)\\]", Pattern.CASE_INSENSITIVE);
+    public static final GsonComponentSerializer serializer = GetSerializerFromCraterLib();
 
     public static String parse(String message) {
         String finalMessage = message;
@@ -85,6 +88,21 @@ public final class SDLinkChatUtils {
         component = component.append(ChatUtils.resolve(remaining, SDLinkConfig.INSTANCE.chatConfig.formatting));
 
         return component;
+    }
+
+    // TODO: Remove this when CraterLib is fixed!!!!!
+    private static GsonComponentSerializer GetSerializerFromCraterLib() {
+        try {
+            Class<?> clazz = ChatUtils.class;
+            Field field = clazz.getDeclaredField("adventureSerializer");
+            field.setAccessible(true);
+            Object serializer = field.get(null);
+            return (GsonComponentSerializer) serializer;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return GsonComponentSerializer.gson();
     }
 
 }
