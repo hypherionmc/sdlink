@@ -74,8 +74,8 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     @SpecComment("Execute Minecraft commands in Discord")
     public MinecraftCommands linkedCommands = new MinecraftCommands();
 
-    @Path("ignoredMessages")
-    @SpecComment("Configure messages that will be ignored when relaying to discord")
+    @Path("filtering")
+    @SpecComment("Configure message/username filtering for discord messages")
     public MessageIgnoreConfig ignoreConfig = new MessageIgnoreConfig();
 
     @Path("triggerCommands")
@@ -136,7 +136,10 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         INSTANCE = readConfig(this);
         hasConfigLoaded = true;
         reloadChannelConfigCache();
-        TranslationManager.INSTANCE.loadTranslations(SDLinkConfig.INSTANCE.generalConfig.language);
+
+        try {
+            TranslationManager.INSTANCE.loadTranslations(SDLinkConfig.INSTANCE.generalConfig.language);
+        } catch (Exception ignored) {} // This sometimes fails randomly
     }
 
     /**
@@ -196,14 +199,14 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
             if (ver < 21) {
                 if (finalKey.equalsIgnoreCase("botConfig.botStatus")) {
-                    outputConfig.set(finalKey, RandomArrayList.of(value));
+                    outputConfig.set(finalKey, RandomArrayList.of(oldConfig.get(finalKey)));
                     return;
                 }
             }
 
             if (ver < 27) {
                 if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
-                    outputConfig.set(finalKey, value.toString().trim().isEmpty() ? Collections.emptyList() : Collections.singletonList(value));
+                    outputConfig.set(finalKey, oldConfig.get(finalKey).toString().trim().isEmpty() ? Collections.emptyList() : Collections.singletonList(oldConfig.get(finalKey)));
                     return;
                 }
 
@@ -213,13 +216,15 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
                 }
             }
 
-            if (ver < 28) {
+            if (ver == 27 || ver <= 26) {
                 if (finalKey.equalsIgnoreCase("messageFormatting.advancements")) {
-                    if (oldConfig.get("messageFormatting.achievements") instanceof TriBoolean) {
-                        outputConfig.set("messageFormatting.achievements", value);
-                    } else {
-                        outputConfig.set("messageFormatting.achievements", ((boolean) oldConfig.get("messageFormatting.achievements")) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
-                    }
+                    outputConfig.set(finalKey, oldConfig.get("messageFormatting.achievements"));
+                    return;
+                }
+
+                if (finalKey.equalsIgnoreCase("ignoredMessages")) {
+                    outputConfig.set("filtering", oldConfig.get("ignoredMessages"));
+                    outputConfig.set("filtering.enabled", oldConfig.get("ignoredMessages.enabled"));
                     return;
                 }
             }

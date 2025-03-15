@@ -95,6 +95,11 @@ public final class DiscordMessageBuilder {
                 }
 
                 if (isMatch) {
+                    if (messageType == MessageType.CONSOLE && i.ignoreConsole) {
+                        this.message = message;
+                        return this;
+                    }
+
                     if (i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
                         message = (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX)
                                 ? message.replaceAll(i.search, i.replace)

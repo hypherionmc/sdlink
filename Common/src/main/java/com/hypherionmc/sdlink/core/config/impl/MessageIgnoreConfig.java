@@ -12,8 +12,8 @@ import java.util.List;
 
 public final class MessageIgnoreConfig {
 
-    @Path("ignoredMessages")
-    @SpecComment("Filter certain types of messages from being relayed back to discord")
+    @Path("enabled")
+    @SpecComment("Enable the filter system")
     public boolean enabled = true;
 
     @Path("entries")
@@ -45,6 +45,10 @@ public final class MessageIgnoreConfig {
         @Path("target")
         @SpecComment("Should this filter target Chat messages or Usernames")
         public FilterTarget target = FilterTarget.CHAT;
+
+        @Path("ignoreConsole")
+        @SpecComment("Ignore this filter in Console Messages")
+        public boolean ignoreConsole = false;
 
         @Path("search")
         @SpecComment("The text to search for in the message")

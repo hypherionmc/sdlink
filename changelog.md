@@ -23,12 +23,14 @@
 - Access Control/Optional Verification can now give multiple `verifiedRole`s - hypherionsa
 - Allow advancements and death messages to respect game rules - hypherionsa
 - Hard coded english messages and responses can now be translated into different languages (TRANSLATORS WANTED) - hypherionsa
+- Added flag to disable message filter on console messages - hypherionsa
 
 **Changes**:
 
-- Renamed Advancements config field from `achievements` to `advancements`
+- Renamed Advancements config field from `achievements` to `advancements` - hypherionsa
+- Renamed `ignoredMessages` to `filtering` - hypherionsa
 
 **Experimental Features**:
 
-- Added new Experimental Feature System
-- Added SDLink Relay System. Allowing multiple bots to relay their chats, and other things to multiple servers. Only available as an experimental flag for now
+- Added new Experimental Feature System - hypherionsa
+- Added SDLink Relay System. Allowing multiple bots to relay their chats, and other things to multiple servers. Only available as an experimental flag for now - hypherionsa
