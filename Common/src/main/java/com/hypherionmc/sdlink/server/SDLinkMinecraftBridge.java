@@ -97,7 +97,7 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
                         RelayMessage.MessageType.DISCORD,
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
                         null,
-                        SDLinkChatUtils.serializer.serialize(finalComponent)
+                        ChatUtils.getAdventureSerializer().serialize(finalComponent)
                 );
 
                 SDLinkRelayClient.INSTANCE.relayMessage(relayMessage);

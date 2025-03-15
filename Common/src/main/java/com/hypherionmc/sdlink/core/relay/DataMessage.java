@@ -1,6 +1,6 @@
 package com.hypherionmc.sdlink.core.relay;
 
-import com.hypherionmc.sdlink.util.SDLinkChatUtils;
+import com.hypherionmc.craterlib.utils.ChatUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,19 +25,19 @@ public class DataMessage {
     }
 
     public static DataMessage of(Component displayName, String username, @Nullable Component message, UUID uuid, @Nullable Component additional, boolean isFromServer) {
-        return of(SDLinkChatUtils.serializer.serialize(displayName), username, message == null ? null : SDLinkChatUtils.serializer.serialize(message), uuid, additional == null ? null : SDLinkChatUtils.serializer.serialize(additional), isFromServer);
+        return of(ChatUtils.getAdventureSerializer().serialize(displayName), username, message == null ? null : ChatUtils.getAdventureSerializer().serialize(message), uuid, additional == null ? null : ChatUtils.getAdventureSerializer().serialize(additional), isFromServer);
     }
 
     public Component displayName() {
-        return SDLinkChatUtils.serializer.deserialize(displayName);
+        return ChatUtils.getAdventureSerializer().deserialize(displayName);
     }
 
     public Component message() {
-        return SDLinkChatUtils.serializer.deserialize(message);
+        return ChatUtils.getAdventureSerializer().deserialize(message);
     }
 
     public Component additional() {
-        return SDLinkChatUtils.serializer.deserialize(additional);
+        return ChatUtils.getAdventureSerializer().deserialize(additional);
     }
 
 }

@@ -201,7 +201,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
         // Message was a user message sent in discord
         if (relayMessage.getType() == RelayMessage.MessageType.DISCORD) {
             ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
-                    base.append(SDLinkChatUtils.serializer.deserialize(relayMessage.getMessage())),
+                    base.append(ChatUtils.getAdventureSerializer().deserialize(relayMessage.getMessage())),
                     false
             );
             return;
