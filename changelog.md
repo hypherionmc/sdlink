@@ -24,6 +24,10 @@
 - Allow advancements and death messages to respect game rules - hypherionsa
 - Hard coded english messages and responses can now be translated into different languages (TRANSLATORS WANTED) - hypherionsa
 
+**Changes**:
+
+- Renamed Advancements config field from `achievements` to `advancements`
+
 **Experimental Features**:
 
 - Added new Experimental Feature System

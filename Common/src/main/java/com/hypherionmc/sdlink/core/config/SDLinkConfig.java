@@ -38,7 +38,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 27;
+    public transient static int configVer = 28;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
@@ -201,7 +201,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
                 }
             }
 
-            if (ver < 26) {
+            if (ver < 27) {
                 if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
                     outputConfig.set(finalKey, value.toString().trim().isEmpty() ? Collections.emptyList() : Collections.singletonList(value));
                     return;
@@ -209,6 +209,17 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
                 if (finalKey.equalsIgnoreCase("chat.advancementMessages") || finalKey.equalsIgnoreCase("chat.deathMessages")) {
                     outputConfig.set(finalKey, ((boolean) oldConfig.get(finalKey)) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
+                    return;
+                }
+            }
+
+            if (ver < 28) {
+                if (finalKey.equalsIgnoreCase("messageFormatting.advancements")) {
+                    if (oldConfig.get("messageFormatting.achievements") instanceof TriBoolean) {
+                        outputConfig.set("messageFormatting.achievements", value);
+                    } else {
+                        outputConfig.set("messageFormatting.achievements", ((boolean) oldConfig.get("messageFormatting.achievements")) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
+                    }
                     return;
                 }
             }

@@ -42,8 +42,8 @@ public final class MessageFormatting {
     @SpecComment("Player Left Message. Use %player% to display the player name")
     public String playerLeft = "*%player% has left the server!*";
 
-    @Path("achievements")
-    @SpecComment("Achievement Messages. Available variables: %player%, %title%, %description%")
+    @Path("advancements")
+    @SpecComment("Advancement Messages. Available variables: %player%, %title%, %description%")
     public String achievements = "*%player% has made the advancement [%title%]: %description%*";
 
     @Path("chat")
