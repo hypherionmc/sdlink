@@ -29,6 +29,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
@@ -178,7 +179,7 @@ public final class ServerEvents {
 
                 discordMessage.sendMessage();
 
-                if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
                     RelayMessage newRelay = RelayMessage.of(
                             RelayMessage.MessageType.CHAT,
                             SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -261,7 +262,7 @@ public final class ServerEvents {
 
             discordMessage.sendMessage();
 
-            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
 
                 RelayMessage newRelay = RelayMessage.of(
                         RelayMessage.MessageType.CHAT,
@@ -384,7 +385,7 @@ public final class ServerEvents {
 
         discordMessage.sendMessage();
 
-        if (SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages) {
+        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages) {
             RelayMessage newRelay = RelayMessage.of(
                     RelayMessage.MessageType.JOIN,
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -443,7 +444,7 @@ public final class ServerEvents {
 
         message.sendMessage();
 
-        if (SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages) {
+        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages) {
             RelayMessage newRelay = RelayMessage.of(
                     RelayMessage.MessageType.LEAVE,
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -511,7 +512,7 @@ public final class ServerEvents {
 
             message.sendMessage();
 
-            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages) {
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages) {
                 RelayMessage newRelay = RelayMessage.of(
                         RelayMessage.MessageType.DEATH,
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -560,7 +561,7 @@ public final class ServerEvents {
 
                 discordMessage.sendMessage();
 
-                if (SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages) {
+                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages) {
                     RelayMessage newRelay = RelayMessage.of(
                             RelayMessage.MessageType.ADVANCEMENT,
                             SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
