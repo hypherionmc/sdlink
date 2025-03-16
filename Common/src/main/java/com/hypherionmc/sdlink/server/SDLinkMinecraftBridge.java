@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
+import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
@@ -92,7 +93,7 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
                 finalComponent = appendDiscordInfo(member, finalComponent);
             }
 
-            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayDiscordChats) {
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayDiscordChats) {
                 RelayMessage relayMessage = RelayMessage.of(
                         RelayMessage.MessageType.DISCORD,
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
