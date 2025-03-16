@@ -206,11 +206,13 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
             if (ver < 27) {
                 if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
+                    if (!(oldConfig.get(finalKey) instanceof String)) return;
                     outputConfig.set(finalKey, oldConfig.get(finalKey).toString().trim().isEmpty() ? Collections.emptyList() : Collections.singletonList(oldConfig.get(finalKey)));
                     return;
                 }
 
                 if (finalKey.equalsIgnoreCase("chat.advancementMessages") || finalKey.equalsIgnoreCase("chat.deathMessages")) {
+                    if (!(oldConfig.get(finalKey) instanceof Boolean)) return;
                     outputConfig.set(finalKey, ((boolean) oldConfig.get(finalKey)) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
                     return;
                 }
