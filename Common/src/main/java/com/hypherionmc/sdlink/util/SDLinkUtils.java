@@ -14,4 +14,8 @@ public final class SDLinkUtils {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
+    public static String getOrElse(String inString, String defaultValue) {
+        return isNullOrEmpty(inString) ? defaultValue : inString;
+    }
+
 }

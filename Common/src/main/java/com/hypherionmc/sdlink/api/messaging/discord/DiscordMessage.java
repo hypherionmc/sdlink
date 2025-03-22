@@ -8,6 +8,7 @@ import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import com.google.gson.Gson;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -16,6 +17,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
+import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
 import com.hypherionmc.sdlink.util.DestinationHolder;
 import com.hypherionmc.sdlink.util.SDLinkUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -35,6 +37,8 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.hypherionmc.sdlink.util.SDLinkUtils.getOrElse;
+import static com.hypherionmc.sdlink.util.SDLinkUtils.isNullOrEmpty;
 import static net.dv8tion.jda.api.EmbedBuilder.ZERO_WIDTH_SPACE;
 
 /**
@@ -250,14 +254,14 @@ public final class DiscordMessage {
         embedJson = embedJson
                 .replace("%author%", this.author.getDisplayName().replace("_", "\\_"))
                 .replace("%avatar%", this.author.getAvatar())
-                .replace("%message_contents%", this.message)
+                .replace("%message_contents%", this.message.replace("_", "\\"))
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
                 .replace("%player_name%", this.author.getRealPlayerName().replace("_", "\\_"))
                 .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
                 .replace("%username%", this.author.getUsername().replace("_", "\\_"));
 
-        DataObject object = DataObject.fromJson(embedJson);
-        return fromData(object);
+        DiscordEmbed embed = EmbedManager.gson.fromJson(embedJson, DiscordEmbed.class);
+        return fromData(embed);
     }
 
     /**
@@ -274,60 +278,54 @@ public final class DiscordMessage {
     }
 
     @NotNull
-    private EmbedBuilder fromData(@NotNull DataObject data) {
-        Checks.notNull(data, "DataObject");
+    private EmbedBuilder fromData(@NotNull DiscordEmbed data) {
+        Checks.notNull(data, "embed");
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setTitle(data.getString("title", null));
-        builder.setUrl(data.getString("url", null));
-        builder.setDescription(data.getString("description", ""));
+        builder.setTitle(getOrElse(data.title, null));
+        builder.setUrl(getOrElse(data.url, null));
+        builder.setDescription(getOrElse(data.description, null));
 
-        if (!data.isNull("timestamp")) {
-            if (data.getString("timestamp").equalsIgnoreCase("1")) {
-                builder.setTimestamp(Instant.now());
-            } else if (!data.getString("timestamp").equalsIgnoreCase("0")) {
-                builder.setTimestamp(OffsetDateTime.parse(data.getString("timestamp")));
+        if (data.timestamp == 1) {
+            builder.setTimestamp(Instant.now());
+        } else if (data.timestamp != 0) {
+            builder.setTimestamp(OffsetDateTime.parse(String.valueOf(data.timestamp)));
+        }
+
+        if (getOrElse(data.color, "#000000").startsWith("#")) {
+            builder.setColor(Color.decode(getOrElse(data.color, "#000000")));
+        } else {
+            builder.setColor(Integer.parseInt(getOrElse(data.color, "#000000"), 16));
+        }
+
+        if (data.thumbnail != null) {
+            builder.setThumbnail(getOrElse(data.thumbnail.url, null));
+        }
+
+        if (data.author != null) {
+            builder.setAuthor(getOrElse(data.author.name, null),
+                    getOrElse(data.author.url, null),
+                    getOrElse(data.author.icon_url, null));
+        }
+
+        if (data.footer != null) {
+            builder.setFooter(getOrElse(data.footer.text, ""),
+                    getOrElse(data.footer.icon_url, null));
+        }
+
+        if (data.image != null) {
+            builder.setImage(getOrElse(data.image.url, null));
+        }
+
+        if (data.fields != null && !data.fields.isEmpty()) {
+            for (DiscordEmbed.Field field : data.fields) {
+                builder.addField(
+                        getOrElse(field.name, ZERO_WIDTH_SPACE),
+                        getOrElse(field.value, ZERO_WIDTH_SPACE),
+                        field.inline
+                );
             }
         }
-
-        if (data.getString("color", "#000000").startsWith("#")) {
-            builder.setColor(Color.decode(data.getString("color", "#000000")));
-        } else {
-            builder.setColor(data.getInt("color", Role.DEFAULT_COLOR_RAW));
-        }
-
-        data.optObject("thumbnail").ifPresent(thumbnail ->
-                builder.setThumbnail(SDLinkUtils.isNullOrEmpty(thumbnail.getString("url")) ? null : thumbnail.getString("url"))
-        );
-
-        data.optObject("author").ifPresent(author ->
-                builder.setAuthor(
-                        author.getString("name", ""),
-                        SDLinkUtils.isNullOrEmpty(author.getString("url", null)) ? null : author.getString("url", null),
-                        SDLinkUtils.isNullOrEmpty(author.getString("icon_url", null)) ? null : author.getString("icon_url", null)
-                )
-        );
-
-        data.optObject("footer").ifPresent(footer ->
-                builder.setFooter(
-                        footer.getString("text", ""),
-                        SDLinkUtils.isNullOrEmpty(footer.getString("icon_url", null)) ? null : footer.getString("icon_url", null)
-                )
-        );
-
-        data.optObject("image").ifPresent(image ->
-                builder.setImage(SDLinkUtils.isNullOrEmpty(image.getString("url")) ? null : image.getString("url"))
-        );
-
-        data.optArray("fields").ifPresent(arr ->
-                arr.stream(DataArray::getObject).forEach(field ->
-                        builder.addField(
-                                field.getString("name", ZERO_WIDTH_SPACE),
-                                field.getString("value", ZERO_WIDTH_SPACE),
-                                field.getBoolean("inline", false)
-                        )
-                )
-        );
 
         return builder;
     }
