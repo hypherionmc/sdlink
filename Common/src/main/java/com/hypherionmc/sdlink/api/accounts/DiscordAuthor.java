@@ -59,21 +59,21 @@ public final class DiscordAuthor {
 
                 switch (i.searchMode) {
                     case MATCHES:
-                        isMatch = displayName.equalsIgnoreCase(i.search);
+                        isMatch = this.displayName.equalsIgnoreCase(i.search);
                         break;
 
                     case CONTAINS:
-                        isMatch = displayName.contains(i.search);
+                        isMatch = this.displayName.contains(i.search);
                         break;
 
                     case STARTS_WITH:
-                        isMatch = displayName.startsWith(i.search);
+                        isMatch = this.displayName.startsWith(i.search);
                         break;
 
                     case REGEX:
                         try {
                             Pattern pattern = Pattern.compile(i.search);
-                            Matcher matcher = pattern.matcher(displayName);
+                            Matcher matcher = pattern.matcher(this.displayName);
                             isMatch = matcher.find();
                         } catch (Exception e) {
                             BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
@@ -83,9 +83,9 @@ public final class DiscordAuthor {
 
                 if (isMatch && i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
                     if (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX) {
-                        this.displayName = displayName.replaceAll(i.search, i.replace);
+                        this.displayName = this.displayName.replaceAll(i.search, i.replace);
                     } else {
-                        this.displayName = displayName.replace(i.search, i.replace);
+                        this.displayName = this.displayName.replace(i.search, i.replace);
                     }
                 }
             }

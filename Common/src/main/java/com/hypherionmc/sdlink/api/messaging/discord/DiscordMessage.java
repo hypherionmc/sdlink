@@ -135,7 +135,7 @@ public final class DiscordMessage {
                 WebhookEmbed web = WebhookEmbedBuilder.fromJDA(eb.build()).build();
                 builder.addEmbeds(web);
             } else {
-                builder.setContent(message);
+                builder.setContent(message.replace("_", "\\_"));
             }
 
             channel.webhook().send(builder.build()).thenRun(this::runAfterSend);
@@ -163,7 +163,10 @@ public final class DiscordMessage {
                 builder.setEmbeds(eb.build());
             } else {
                 String content = this.messageType == MessageType.CHAT ?
-                        SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName()).replace("%message%", message)
+                        SDLinkConfig.INSTANCE.messageFormatting.chat
+                                .replace("%player%", author.getDisplayName())
+                                .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName().replace("_", "\\_"))
+                                .replace("%message%", message.replace("_", "\\_"))
                         : message;
                 builder.setContent(content);
             }
@@ -254,7 +257,7 @@ public final class DiscordMessage {
         embedJson = embedJson
                 .replace("%author%", this.author.getDisplayName().replace("_", "\\_"))
                 .replace("%avatar%", this.author.getAvatar())
-                .replace("%message_contents%", this.message.replace("_", "\\"))
+                .replace("%message_contents%", this.message.replace("_", "\\_"))
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
                 .replace("%player_name%", this.author.getRealPlayerName().replace("_", "\\_"))
                 .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
