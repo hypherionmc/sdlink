@@ -7,7 +7,7 @@ package com.hypherionmc.sdlink.util;
 public final class SDLinkUtils {
 
     public static boolean isNullOrEmpty(String inString) {
-        return inString == null || inString.isEmpty();
+        return inString == null || inString.trim().isEmpty();
     }
 
     public static int intInRange(int min, int max) {

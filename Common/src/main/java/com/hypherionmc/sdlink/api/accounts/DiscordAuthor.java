@@ -7,12 +7,9 @@ package com.hypherionmc.sdlink.api.accounts;
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author HypherionSA
@@ -49,47 +46,9 @@ public final class DiscordAuthor {
         this.displayName = displayName;
 
         this.displayName = this.displayName.replace("_", "\\_");
-
-        if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
-            for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
-                if (i.target == MessageIgnoreConfig.FilterTarget.CHAT)
-                    continue;
-
-                boolean isMatch = false;
-
-                switch (i.searchMode) {
-                    case MATCHES:
-                        isMatch = this.displayName.equalsIgnoreCase(i.search);
-                        break;
-
-                    case CONTAINS:
-                        isMatch = this.displayName.contains(i.search);
-                        break;
-
-                    case STARTS_WITH:
-                        isMatch = this.displayName.startsWith(i.search);
-                        break;
-
-                    case REGEX:
-                        try {
-                            Pattern pattern = Pattern.compile(i.search);
-                            Matcher matcher = pattern.matcher(this.displayName);
-                            isMatch = matcher.find();
-                        } catch (Exception e) {
-                            BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
-                        }
-                        break;
-                }
-
-                if (isMatch && i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
-                    if (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX) {
-                        this.displayName = this.displayName.replaceAll(i.search, i.replace);
-                    } else {
-                        this.displayName = this.displayName.replace(i.search, i.replace);
-                    }
-                }
-            }
-        }
+        this.displayName = SDLinkChatUtils.applyFiltering(
+                this.displayName,
+                (i) -> i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.USERNAME || i.target == MessageIgnoreConfig.FilterTarget.BOTH));
 
         if (this.displayName == null || this.displayName.isEmpty()) {
             this.displayName = displayName;

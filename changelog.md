@@ -25,6 +25,7 @@
 - Allow advancements and death messages to respect game rules - hypherionsa
 - Hard coded english messages and responses can now be translated into different languages (TRANSLATORS WANTED) - hypherionsa
 - Added flag to disable message filter on console messages - hypherionsa
+- Allow Message Filtering system to be used on Discord -> MC messages and usernames too - hypherionsa
 
 **Changes**:
 

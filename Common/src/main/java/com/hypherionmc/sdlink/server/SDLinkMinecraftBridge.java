@@ -9,6 +9,7 @@ import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
+import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
@@ -59,7 +60,12 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
             }
         }
 
-        String prefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", user.get()).replace("%role%", member.getRoles().isEmpty() ? "No Role" : member.getRoles().get(0).getName());
+        String mainPrefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix.replace("%user%", user.get()).replace("%role%", member.getRoles().isEmpty() ? "No Role" : member.getRoles().get(0).getName());
+        String prefix = SDLinkChatUtils.applyFiltering(mainPrefix, (i) -> (i.target == MessageIgnoreConfig.FilterTarget.USERNAME || i.target == MessageIgnoreConfig.FilterTarget.BOTH) && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
+
+        if (prefix.isEmpty())
+            prefix = mainPrefix;
+
         Component component = Component.empty();
         Style baseStyle = Style.empty();
         Matcher matcher = patternStart.matcher(prefix);
@@ -83,9 +89,18 @@ public final class SDLinkMinecraftBridge implements IMinecraftHelper {
         component = component.append(ChatUtils.format(prefix.substring(lastAppendPosition)).applyFallbackStyle(baseStyle));
 
         try {
+            s1 = SDLinkChatUtils.applyFiltering(s1, (i) -> (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
+            if (s1.isEmpty())
+                return;
+
             Component finalComponent = component.append(SDLinkChatUtils.parseChatLinks(s1));
 
             if (replyMessage != null && !replyMessage.isEmpty()) {
+                String newReply = SDLinkChatUtils.applyFiltering(replyMessage, (i) -> (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
+
+                if (newReply != null && !newReply.isEmpty()) {
+                    replyMessage = newReply;
+                }
                 finalComponent = finalComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, SDLinkChatUtils.parseChatLinks(replyMessage)));
             }
 

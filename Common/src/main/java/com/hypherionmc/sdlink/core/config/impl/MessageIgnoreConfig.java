@@ -21,7 +21,7 @@ public final class MessageIgnoreConfig {
     public List<Ignore> entries = new ArrayList<>();
 
     @Path("ignoredThreads")
-    @SpecComment("Ignore messages sent from certain threads")
+    @SpecComment("Ignore messages sent from certain threads. Enable debug logging to see what thread the message is from")
     public List<String> ignoredThread = new ArrayList<>();
 
     public enum FilterMode {
@@ -38,17 +38,27 @@ public final class MessageIgnoreConfig {
 
     public enum FilterTarget {
         CHAT,
-        USERNAME
+        USERNAME,
+        BOTH
+    }
+
+    public enum AppliesTo {
+        DISCORD,
+        MINECRAFT
     }
 
     public static class Ignore {
         @Path("target")
-        @SpecComment("Should this filter target Chat messages or Usernames")
+        @SpecComment("Should this filter target. CHAT, USERNAME or BOTH")
         public FilterTarget target = FilterTarget.CHAT;
 
         @Path("ignoreConsole")
         @SpecComment("Ignore this filter in Console Messages")
         public boolean ignoreConsole = false;
+
+        @Path("appliesTo")
+        @SpecComment("What way of relay does this filter apply to. DISCORD or MINECRAFT")
+        public AppliesTo appliesTo = AppliesTo.DISCORD;
 
         @Path("search")
         @SpecComment("The text to search for in the message")

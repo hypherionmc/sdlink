@@ -3,15 +3,16 @@ package com.hypherionmc.sdlink.util;
 import com.hypherionmc.craterlib.utils.ChatUtils;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import shadow.kyori.adventure.text.Component;
 import shadow.kyori.adventure.text.event.ClickEvent;
 import shadow.kyori.adventure.text.event.HoverEvent;
 import shadow.kyori.adventure.text.format.NamedTextColor;
 import shadow.kyori.adventure.text.format.Style;
-import shadow.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
-import java.lang.reflect.Field;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,6 +88,62 @@ public final class SDLinkChatUtils {
         component = component.append(ChatUtils.resolve(remaining, SDLinkConfig.INSTANCE.chatConfig.formatting));
 
         return component;
+    }
+
+    public static String applyFiltering(String input, Predicate<MessageIgnoreConfig.Ignore> ignoreCheck) {
+        return applyFiltering(input, ignoreCheck, (i) -> false);
+    }
+
+    public static String applyFiltering(String input, Predicate<MessageIgnoreConfig.Ignore> ignoreCheck, Predicate<MessageIgnoreConfig.Ignore> applyConsole) {
+        if (!SDLinkConfig.INSTANCE.ignoreConfig.enabled)
+            return input;
+
+        for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
+            if (!ignoreCheck.test(i))
+                continue;
+
+            boolean isMatch = false;
+
+            switch (i.searchMode) {
+                case MATCHES:
+                    isMatch = input.equalsIgnoreCase(i.search);
+                    break;
+
+                case CONTAINS:
+                    isMatch = input.contains(i.search);
+                    break;
+
+                case STARTS_WITH:
+                    isMatch = input.startsWith(i.search);
+                    break;
+
+                case REGEX:
+                    try {
+                        Pattern pattern = Pattern.compile(i.search);
+                        Matcher matcher = pattern.matcher(input);
+                        isMatch = matcher.find();
+                    } catch (Exception e) {
+                        BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
+                    }
+                    break;
+            }
+
+            if (isMatch) {
+                if (applyConsole.test(i)) {
+                    return input;
+                }
+
+                if (i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
+                    input = (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX)
+                            ? input.replaceAll(i.search, i.replace)
+                            : input.replace(i.search, i.replace);
+                } else {
+                    input = "";
+                }
+            }
+        }
+
+        return input;
     }
 
 }

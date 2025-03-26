@@ -8,7 +8,6 @@ import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import com.google.gson.Gson;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -19,15 +18,13 @@ import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
 import com.hypherionmc.sdlink.util.DestinationHolder;
-import com.hypherionmc.sdlink.util.SDLinkUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -38,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.hypherionmc.sdlink.util.SDLinkUtils.getOrElse;
-import static com.hypherionmc.sdlink.util.SDLinkUtils.isNullOrEmpty;
 import static net.dv8tion.jda.api.EmbedBuilder.ZERO_WIDTH_SPACE;
 
 /**
@@ -135,7 +131,7 @@ public final class DiscordMessage {
                 WebhookEmbed web = WebhookEmbedBuilder.fromJDA(eb.build()).build();
                 builder.addEmbeds(web);
             } else {
-                builder.setContent(message.replace("_", "\\_"));
+                builder.setContent(message);
             }
 
             channel.webhook().send(builder.build()).thenRun(this::runAfterSend);
@@ -166,7 +162,7 @@ public final class DiscordMessage {
                         SDLinkConfig.INSTANCE.messageFormatting.chat
                                 .replace("%player%", author.getDisplayName())
                                 .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName().replace("_", "\\_"))
-                                .replace("%message%", message.replace("_", "\\_"))
+                                .replace("%message%", message)
                         : message;
                 builder.setContent(content);
             }
@@ -236,6 +232,7 @@ public final class DiscordMessage {
      *
      * @param withAuthor Should the author be appended to the embed. Not used for Webhooks
      */
+    @SuppressWarnings("deprecation")
     private EmbedBuilder buildEmbed(boolean withAuthor, String key) {
         String embedJson = EmbedManager.getEmbed(key);
 
@@ -255,13 +252,13 @@ public final class DiscordMessage {
         }
 
         embedJson = embedJson
-                .replace("%author%", this.author.getDisplayName().replace("_", "\\_"))
+                .replace("%author%", StringEscapeUtils.escapeJson(this.author.getDisplayName().replace("_", "\\_")))
                 .replace("%avatar%", this.author.getAvatar())
-                .replace("%message_contents%", this.message.replace("_", "\\_"))
+                .replace("%message_contents%", StringEscapeUtils.escapeJson(this.message))
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
-                .replace("%player_name%", this.author.getRealPlayerName().replace("_", "\\_"))
+                .replace("%player_name%", StringEscapeUtils.escapeJson(this.author.getRealPlayerName().replace("_", "\\_")))
                 .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
-                .replace("%username%", this.author.getUsername().replace("_", "\\_"));
+                .replace("%username%", StringEscapeUtils.escapeJson(this.author.getUsername().replace("_", "\\_")));
 
         DiscordEmbed embed = EmbedManager.gson.fromJson(embedJson, DiscordEmbed.class);
         return fromData(embed);

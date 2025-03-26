@@ -10,11 +10,8 @@ import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author HypherionSA
@@ -63,56 +60,10 @@ public final class DiscordMessageBuilder {
      * The Actual message that will be sent
      */
     public DiscordMessageBuilder message(String message) {
-        if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
-            for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
-                if (i.target == MessageIgnoreConfig.FilterTarget.USERNAME)
-                    continue;
-
-                boolean isMatch = false;
-
-                switch (i.searchMode) {
-                    case MATCHES:
-                        isMatch = message.equalsIgnoreCase(i.search);
-                        break;
-
-                    case CONTAINS:
-                        isMatch = message.contains(i.search);
-                        break;
-
-                    case STARTS_WITH:
-                        isMatch = message.startsWith(i.search);
-                        break;
-
-                    case REGEX:
-                        try {
-                            Pattern pattern = Pattern.compile(i.search);
-                            Matcher matcher = pattern.matcher(message);
-                            isMatch = matcher.find();
-                        } catch (Exception e) {
-                            BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
-                        }
-                        break;
-                }
-
-                if (isMatch) {
-                    if (messageType == MessageType.CONSOLE && i.ignoreConsole) {
-                        this.message = message;
-                        return this;
-                    }
-
-                    if (i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
-                        message = (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX)
-                                ? message.replaceAll(i.search, i.replace)
-                                : message.replace(i.search, i.replace);
-                    } else {
-                        message = "";
-                    }
-                }
-            }
-        }
-
-
-        this.message = message;
+        this.message = SDLinkChatUtils.applyFiltering(
+                message,
+                (i) -> i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH),
+                (i) -> messageType == MessageType.CONSOLE && !i.ignoreConsole);
         return this;
     }
 
