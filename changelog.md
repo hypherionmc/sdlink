@@ -1,9 +1,11 @@
 - REQUIRES [CraterLib](https://www.curseforge.com/minecraft/mc-mods/craterlib) - [Modrinth](https://modrinth.com/mod/craterlib)
 - [Online Config Editor](https://editor.firstdark.dev)
 - [Documentation](https://sdlink.fdd-docs.com)
-- This single jar works on 1.18.2-1.21.4
+- This single jar works on 1.18.2-1.21.5
 
 *Requires CraterLib 2.1.4 or newer*
+
+### Warning: This is a config breaking update. As always, your old config file will be backed up. If you need to revert, simply rename `simple-discord-link.old` to `simple-discord-link.toml`
 
 **Bug Fixes**:
 
@@ -15,6 +17,7 @@
 - Webhook names containing `_` being formatted as `\_` - hypherionsa - [#152](https://github.com/hypherionmc/sdlink/issues/152)
 - Fixed events that happen on login (like rank sync) not running when Join messages are disabled, or the user is vanished - hypherionsa
 - Replaced Embed Parser with GSON to prevent escaped character errors caused by JACKSON..... You still suck - hypherionsa
+- Fixed messages containing `"` not being relayed to Discord when using Embeds - hypherionsa
 
 **New Features**:
 
@@ -26,6 +29,7 @@
 - Hard coded english messages and responses can now be translated into different languages (TRANSLATORS WANTED) - hypherionsa
 - Added flag to disable message filter on console messages - hypherionsa
 - Allow Message Filtering system to be used on Discord -> MC messages and usernames too - hypherionsa
+- Added Spanish Translations - ArkoSammy12
 
 **Changes**:
 
