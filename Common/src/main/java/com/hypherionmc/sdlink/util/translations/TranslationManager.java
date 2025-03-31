@@ -49,18 +49,18 @@ public final class TranslationManager {
                 return;
             }
         } else if (lang.equals("en_us")) {
-            if (createFileFromResource(f, "assets/lang/en_us.json")) {
+            if (createFileFromResource(f, "assets/sdlink/lang/en_us.json")) {
                 loadFromFile(f);
                 return;
             }
         }
 
-        if (loadFromResource("assets/lang/" + lang + ".json")) {
+        if (loadFromResource("assets/sdlink/lang/" + lang + ".json")) {
             return;
         }
 
         BotController.INSTANCE.getLogger().warn("Failed to load translation for {}. Falling back to en_us.", lang);
-        loadFromResource("assets/lang/en_us.json");
+        loadFromResource("assets/sdlink/lang/en_us.json");
     }
 
     /**

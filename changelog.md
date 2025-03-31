@@ -5,38 +5,6 @@
 
 *Requires CraterLib 2.1.4 or newer*
 
-### Warning: This is a config breaking update. As always, your old config file will be backed up. If you need to revert, simply rename `simple-discord-link.old` to `simple-discord-link.toml`
-
 **Bug Fixes**:
 
-- Fix /discordverify command permissions, so that it's usable by everyone - hypherionsa
-- Fix Database engine failing to read database files that end with 2 empty lines - hypherionsa
-- Don't relay raw Config Editor URLs to Console Relay - hypherionsa
-- Fix `%player_name%` placeholder not being usable in Chat Embeds - hypherionsa
-- Fix certain methods of bypassing the mention filter - unsigned-32-bit-integer - [#PR 151](https://github.com/hypherionmc/sdlink/pull/151)
-- Webhook names containing `_` being formatted as `\_` - hypherionsa - [#152](https://github.com/hypherionmc/sdlink/issues/152)
-- Fixed events that happen on login (like rank sync) not running when Join messages are disabled, or the user is vanished - hypherionsa
-- Replaced Embed Parser with GSON to prevent escaped character errors caused by JACKSON..... You still suck - hypherionsa
-- Fixed messages containing `"` not being relayed to Discord when using Embeds - hypherionsa
-
-**New Features**:
-
-- Added Vanish Config flag to disable fake join/leave messages - hypherionsa
-- Allow Regex matching for Message filtering - hypherionsa
-- Allow message filtering to be used on Usernames as well - hypherionsa
-- Access Control/Optional Verification can now give multiple `verifiedRole`s - hypherionsa
-- Allow advancements and death messages to respect game rules - hypherionsa
-- Hard coded english messages and responses can now be translated into different languages (TRANSLATORS WANTED) - hypherionsa
-- Added flag to disable message filter on console messages - hypherionsa
-- Allow Message Filtering system to be used on Discord -> MC messages and usernames too - hypherionsa
-- Added Spanish Translations - ArkoSammy12
-
-**Changes**:
-
-- Renamed Advancements config field from `achievements` to `advancements` - hypherionsa
-- Renamed `ignoredMessages` to `filtering` - hypherionsa
-
-**Experimental Features**:
-
-- Added new Experimental Feature System - hypherionsa
-- Added SDLink Relay System. Allowing multiple bots to relay their chats, and other things to multiple servers. Only available as an experimental flag for now - hypherionsa
+- Fix Translation system being able to grab the wrong default files from resources - hypherionsa
