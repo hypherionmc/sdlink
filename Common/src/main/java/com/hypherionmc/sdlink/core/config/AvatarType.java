@@ -9,10 +9,10 @@ package com.hypherionmc.sdlink.core.config;
  * The type of User Icon/Avatar that will be used for Discord Messages
  */
 public enum AvatarType {
-    AVATAR("https://mc-heads.net/avatar/{uuid}/512"),
-    HEAD("https://mc-heads.net/head/{uuid}/512"),
-    BODY("https://mc-heads.net/body/{uuid}"),
-    COMBO("https://mc-heads.net/combo/{uuid}/512"),
+    AVATAR("https://skinatar.firstdark.dev/avatar/{uuid}"),
+    HEAD("https://skinatar.firstdark.dev/isometric/{uuid}"),
+    BODY("https://skinatar.firstdark.dev/body/{uuid}"),
+    COMBO("https://skinatar.firstdark.dev/avatar/{uuid}"),
     CUSTOM("");
 
     private final String url;
