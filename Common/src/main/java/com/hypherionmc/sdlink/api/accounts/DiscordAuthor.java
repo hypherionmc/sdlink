@@ -10,6 +10,8 @@ import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
+import lombok.Setter;
+import net.dv8tion.jda.api.entities.Role;
 
 /**
  * @author HypherionSA
@@ -29,6 +31,7 @@ public final class DiscordAuthor {
     private BridgedGameProfile profile = null;
     String realPlayerAvatar = "";
     String realPlayerName = "";
+    @Setter private int color = Role.DEFAULT_COLOR_RAW;
 
     /**
      * Internal. Use {@link #of(String, String, String)}

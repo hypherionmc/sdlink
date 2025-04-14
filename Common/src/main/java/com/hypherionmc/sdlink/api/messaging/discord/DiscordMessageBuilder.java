@@ -50,6 +50,7 @@ public final class DiscordMessageBuilder {
 
             if (account != null && discordUser != null) {
                 this.author = DiscordAuthor.of(discordUser.getEffectiveName(), discordUser.getAvatarUrl(), author.getUsername(), false);
+                this.author.setColor(discordUser.getRoleColor());
             }
         }
 

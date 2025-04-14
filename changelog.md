@@ -14,6 +14,7 @@
 **New Features**:
 
 - Add config toggle, to silence invalid/disallowed command feedback messages for linked commands - hypherionsa
+- Add `%role_color%` placeholder for embeds, to use the user color of linked accounts - hypherionsa
 
 **Changes**:
 

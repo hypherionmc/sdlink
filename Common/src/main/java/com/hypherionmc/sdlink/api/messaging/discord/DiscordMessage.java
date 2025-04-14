@@ -256,6 +256,7 @@ public final class DiscordMessage {
                 .replace("%avatar%", this.author.getAvatar())
                 .replace("%message_contents%", StringEscapeUtils.escapeJson(this.message))
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
+                .replace("%role_color%", String.valueOf(this.author.getColor()))
                 .replace("%player_name%", StringEscapeUtils.escapeJson(this.author.getRealPlayerName().replace("_", "\\_")))
                 .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
                 .replace("%username%", StringEscapeUtils.escapeJson(this.author.getUsername().replace("_", "\\_")));
