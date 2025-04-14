@@ -45,7 +45,20 @@ public final class TranslationManager {
         f.getParentFile().mkdirs();
 
         if (f.exists()) {
-            if (loadFromFile(f)) {
+            // TODO - Remove temporary code when safe to do so
+            Map<String, String> diskMap = loadMapFromFile(f);
+            Map<String, String> resourceMap = loadMapFromFile(f);
+
+            if (diskMap != null && resourceMap != null && !diskMap.keySet().equals(resourceMap.keySet())) {
+                BotController.INSTANCE.getLogger().warn("Translation keys mismatch in {}. Regenerating from resource.", f.getName());
+                if (createFileFromResource(f, "assets/sdlink/lang/" + lang + ".json")) {
+                    loadFromFile(f);
+                    return;
+                }
+            }
+
+            if (diskMap != null) {
+                translations = diskMap;
                 return;
             }
         } else if (lang.equals("en_us")) {
@@ -130,6 +143,40 @@ public final class TranslationManager {
      */
     public String translate(String key) {
         return translations.getOrDefault(key, key);
+    }
+
+    /**
+     * Load Language keys from language file on disk
+     *
+     * @param file The file to load from
+     * @return The key map of the file
+     */
+    private Map<String, String> loadMapFromFile(File file) {
+        try (FileReader reader = new FileReader(file)) {
+            return gson.fromJson(reader, type);
+        } catch (IOException e) {
+            BotController.INSTANCE.getLogger().error("Failed to load translation file: {}", file.getAbsolutePath(), e);
+        }
+        return null;
+    }
+
+    /**
+     * Same as {@link TranslationManager#loadMapFromFile(File)}, but for resource files
+     *
+     * @param resourcePath The resource path to read from
+     * @return The key map of the file
+     */
+    private Map<String, String> loadMapFromResource(String resourcePath) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null)
+                return null;
+
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            return gson.fromJson(reader, type);
+        } catch (IOException e) {
+            BotController.INSTANCE.getLogger().error("Failed to load resource translation file: {}", resourcePath, e);
+        }
+        return null;
     }
 
 }
