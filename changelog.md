@@ -11,6 +11,10 @@
 - Possible bug fix for shutdown hang when an error occurs on shutdown - hypherionsa
 - Added temporary code to forcefully regenerate language files that are invalid, due to file loading bug - hypherionsa
 
+**New Features**:
+
+- Add config toggle, to silence invalid/disallowed command feedback messages for linked commands - hypherionsa
+
 **Changes**:
 
 - Swap to own Avatar service, due to ongoing issues with 3rd party services - hypherionsa

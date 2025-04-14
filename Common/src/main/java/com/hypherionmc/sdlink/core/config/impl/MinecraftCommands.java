@@ -28,6 +28,10 @@ public final class MinecraftCommands {
     @SpecComment("Should the original message that was sent to trigger the command be deleted automatically or not")
     public boolean keepOriginal = false;
 
+    @Path("outputInvalid")
+    @SpecComment("Should error messages be sent for invalid, or disallowed commands")
+    public boolean outputInvalid = false;
+
     @Path("allowedChannels")
     @SpecComment("You can leave this empty, or enter the channel ID's (surrounded by \"\") of channels where linked commands can be used")
     public List<String> allowedChannels = new ArrayList<>();
