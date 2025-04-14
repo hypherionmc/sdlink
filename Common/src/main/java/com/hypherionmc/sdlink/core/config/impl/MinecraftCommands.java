@@ -30,7 +30,7 @@ public final class MinecraftCommands {
 
     @Path("outputInvalid")
     @SpecComment("Should error messages be sent for invalid, or disallowed commands")
-    public boolean outputInvalid = false;
+    public boolean outputInvalid = true;
 
     @Path("allowedChannels")
     @SpecComment("You can leave this empty, or enter the channel ID's (surrounded by \"\") of channels where linked commands can be used")
