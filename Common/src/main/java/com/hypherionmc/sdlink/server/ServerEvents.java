@@ -149,7 +149,12 @@ public final class ServerEvents {
         if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
             return;
 
+        // FTB Essentials
         if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && ModloaderEnvironment.INSTANCE.isModLoaded("ftbessentials") && FTBEssentials.isPlayerMuted(event.getPlayer()))
+            return;
+
+        // Advanced Chat
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("advanced-chat") && CompatUtils.INSTANCE.isPrivateMessage(event.getPlayer()))
             return;
 
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
