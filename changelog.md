@@ -3,7 +3,7 @@
 - [Documentation](https://sdlink.fdd-docs.com)
 - This single jar works on 1.18.2-1.21.5
 
-*Requires CraterLib 2.1.4 or newer*
+*Requires CraterLib 2.1.5 or newer*
 
 **Bug Fixes**:
 
@@ -17,6 +17,8 @@
 
 - Add config toggle, to silence invalid/disallowed command feedback messages for linked commands - hypherionsa
 - Add `%role_color%` placeholder for embeds, to use the user color of linked accounts - hypherionsa
+- Integration with Advanced Chat, to prevent private chats from being relayed to discord - hypherionsa
+- Added better replied to message indications in game - hypherionsa
 
 **Changes**:
 
