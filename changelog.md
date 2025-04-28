@@ -10,7 +10,8 @@
 - Fix Translation system being able to grab the wrong default files from resources - hypherionsa
 - Possible bug fix for shutdown hang when an error occurs on shutdown - hypherionsa
 - Added temporary code to forcefully regenerate language files that are invalid, due to file loading bug - hypherionsa
-- Fixed channel IDs being set to "" causing a startup failure
+- Fixed channel IDs being set to "" causing a startup failure - hypherionsa
+- Fix config migrator crash when migrating configs older than version 21 (3.2.0 and older) - hypherionsa
 
 **New Features**:
 

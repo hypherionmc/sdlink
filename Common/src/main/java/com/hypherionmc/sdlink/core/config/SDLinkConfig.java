@@ -13,6 +13,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.translations.TranslationManager;
+import net.dv8tion.jda.api.entities.Activity;
 import org.apache.commons.io.FileUtils;
 import shadow.hypherionmc.moonconfig.core.CommentedConfig;
 import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
@@ -199,7 +200,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
             if (ver < 21) {
                 if (finalKey.equalsIgnoreCase("botConfig.botStatus")) {
-                    outputConfig.set(finalKey, RandomArrayList.of(oldConfig.get(finalKey)));
+                    outputConfig.set(finalKey, Collections.singletonList(oldConfig.get(finalKey)));
                     return;
                 }
             }
