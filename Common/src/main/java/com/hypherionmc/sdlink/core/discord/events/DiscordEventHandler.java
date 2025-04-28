@@ -103,7 +103,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
      */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        if (event.getJDA().getStatus() == JDA.Status.LOADING_SUBSYSTEMS) {
+        if (event.getJDA().getStatus() != JDA.Status.CONNECTED && event.getJDA().getStatus() != JDA.Status.DISCONNECTED) {
             isStuckInNotReady = true;
             startReadyDetection(event.getJDA());
         }
