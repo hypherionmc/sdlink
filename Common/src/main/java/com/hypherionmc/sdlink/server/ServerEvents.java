@@ -310,6 +310,44 @@ public final class ServerEvents {
             return;
         }
 
+        if (cmdName.equalsIgnoreCase("ftbteams") && command.split(" ")[1].startsWith("chat") && SDLinkCompatConfig.INSTANCE.common.ftbteams_chat) {
+            String msg = ChatUtils.strip(command, "ftbteams chat");
+            msg = ChatUtils.resolve(Component.text(msg), SDLinkConfig.INSTANCE.chatConfig.formatting);
+
+            DiscordAuthor author = DiscordAuthor.of(
+                    username,
+                    uuid == null ? "" : uuid,
+                    profile != null ? profile.getName() : (player != null ? ChatUtils.resolve(player.getName(), false) : "server")
+            );
+
+            if (profile != null)
+                author.setGameProfile(profile);
+
+            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
+                    .author(author)
+                    .message(msg)
+                    .build();
+
+            discordMessage.sendMessage();
+
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+                RelayMessage newRelay = RelayMessage.of(
+                        RelayMessage.MessageType.CHAT,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        DataMessage.of(
+                                event.getPlayer() == null ? Component.text("Server") : event.getPlayer().getDisplayName(),
+                                event.getPlayer() == null ? "server" : event.getPlayer().getGameProfile().getName(),
+                                Component.text(msg),
+                                event.getPlayer() == null ? UUID.randomUUID() : event.getPlayer().getUUID(),
+                                event.getPlayer() == null
+                        )
+                );
+
+                SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+            }
+            return;
+        }
+
         if (SDLinkConfig.INSTANCE.chatConfig.ignoredCommands.contains(cmdName))
             return;
 

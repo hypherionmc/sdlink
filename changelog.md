@@ -19,6 +19,7 @@
 - Add `%role_color%` placeholder for embeds, to use the user color of linked accounts - hypherionsa
 - Integration with Advanced Chat, to prevent private chats from being relayed to discord - hypherionsa
 - Added better replied to message indications in game - hypherionsa
+- Add support for FTB Teams `chat` command - hypherionsa
 
 **Changes**:
 
