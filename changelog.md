@@ -22,6 +22,7 @@
 - Added better replied to message indications in game - hypherionsa
 - Add support for FTB Teams `chat` command - hypherionsa
 - Allow mentioning users, channels and roles from chat without client side install - hypherionsa
+- Config Editor command now sends link to user that executed the command - hypherionsa
 
 **Changes**:
 

@@ -2,25 +2,28 @@ package com.hypherionmc.sdlink.core.editor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.hypherionmc.craterlib.nojang.commands.BridgedCommandSourceStack;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.configeditor.SocketResponse;
 import com.neovisionaries.ws.client.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
+import shadow.kyori.adventure.text.Component;
+import shadow.kyori.adventure.text.event.ClickEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ConfigEditorWSEvents implements WebSocketListener {
 
     private final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final String identifier;
-
-    public ConfigEditorWSEvents(String identifier) {
-        this.identifier = identifier;
-    }
+    private final BridgedCommandSourceStack sourceStack;
 
     @Override
     public void onConnected(WebSocket webSocket, Map<String, List<String>> map) throws Exception {
@@ -32,6 +35,10 @@ public final class ConfigEditorWSEvents implements WebSocketListener {
         SocketResponse response = GSON.fromJson(webSocketFrame.getPayloadText(), SocketResponse.class);
 
         if (response.getSocketCode().equalsIgnoreCase("WS_WAITING")) {
+            sourceStack.sendMessage(
+                    Component.text(String.format("Editor Connection Ready. Visit https://editor.firstdark.dev/%s to get started", identifier))
+                            .clickEvent(ClickEvent.openUrl(String.format("https://editor.firstdark.dev/%s", identifier)))
+            );
             BotController.INSTANCE.getLogger().info("Editor Connection Ready. Visit https://editor.firstdark.dev/{} to get started", identifier);
         }
 
