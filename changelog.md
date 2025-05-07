@@ -21,6 +21,7 @@
 - Integration with Advanced Chat, to prevent private chats from being relayed to discord - hypherionsa
 - Added better replied to message indications in game - hypherionsa
 - Add support for FTB Teams `chat` command - hypherionsa
+- Allow mentioning users, channels and roles from chat without client side install - hypherionsa
 
 **Changes**:
 
