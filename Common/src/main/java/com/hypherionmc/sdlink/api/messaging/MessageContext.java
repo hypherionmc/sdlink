@@ -39,12 +39,13 @@ import java.util.regex.Pattern;
 @Getter
 public final class MessageContext {
 
-    private final Member sender;
+    private final Member originalSender;
     private final Message originalMessage;
 
     @Nullable private String formattedMessage;
     @Nullable private String formattedReply;
     @Nullable private Member replyMember;
+    private Member sender;
 
     final Pattern patternStart = Pattern.compile("%(.*?)(?:\\|(.*?))?%", Pattern.CASE_INSENSITIVE);
 
@@ -53,8 +54,8 @@ public final class MessageContext {
      */
     private void parseMessage() {
         // Sender
-        final Member member = originalMessage.isWebhookMessage()
-                ? SDLWebhookServerMember.of(originalMessage.getAuthor(), originalMessage.getGuild(), originalMessage.getJDA()) : sender;
+        sender = originalMessage.isWebhookMessage()
+                ? SDLWebhookServerMember.of(originalMessage.getAuthor(), originalMessage.getGuild(), originalMessage.getJDA()) : originalSender;
 
         // Message Content
         String message = originalMessage.getContentDisplay();
@@ -110,7 +111,7 @@ public final class MessageContext {
         try {
             if (SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
                 List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-                accounts.stream().filter(a -> a.getDiscordID().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
+                accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

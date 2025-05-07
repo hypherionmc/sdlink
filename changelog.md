@@ -12,6 +12,7 @@
 - Added temporary code to forcefully regenerate language files that are invalid, due to file loading bug - hypherionsa
 - Fixed channel IDs being set to "" causing a startup failure - hypherionsa
 - Fix config migrator crash when migrating configs older than version 21 (3.2.0 and older) - hypherionsa
+- Fix LinkedNames breaking in chat messages, when there is an unlinked account in the database - hypherionsa
 
 **New Features**:
 
