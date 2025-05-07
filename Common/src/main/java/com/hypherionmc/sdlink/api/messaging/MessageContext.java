@@ -5,6 +5,7 @@ import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
+import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
@@ -83,10 +84,16 @@ public final class MessageContext {
                         ? SDLWebhookServerMember.of(replyReference.getAuthor(), replyReference.getGuild(), replyReference.getJDA()) : replyReference.getMember();
 
                 formattedReply = replyReference.getContentDisplay();
+
+                if (!replyReference.getAttachments().isEmpty()) {
+                    String attachmentText = String.valueOf(Text.translate("message.attachments", (long) replyReference.getAttachments().size()));
+                    formattedReply = formattedReply.isEmpty() ? String.format("%s attachments", replyReference.getAttachments().size()) : String.format("%s %s", formattedReply, attachmentText);
+                }
+
                 formattedReply = EmojiManager.replaceAllEmojis(formattedReply, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
             } catch (Exception e) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    e.printStackTrace();
+                    BotController.INSTANCE.getLogger().error("Failed to process reply formatting: {}", e.getMessage());
                 }
             }
         }
