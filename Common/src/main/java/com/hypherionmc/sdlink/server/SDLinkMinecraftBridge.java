@@ -68,7 +68,9 @@ public final class SDLinkMinecraftBridge {
 
     public Pair<Integer, Integer> getPlayerCounts() {
         BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
-        return Pair.of(server.getPlayerCount(), server.getMaxPlayers());
+
+        int playerCount = server.getPlayers().stream().filter(SDLinkMCPlatform.INSTANCE::playerIsActive).toList().size();
+        return Pair.of(playerCount, server.getMaxPlayers());
     }
 
     public List<MinecraftAccount> getOnlinePlayers() {
