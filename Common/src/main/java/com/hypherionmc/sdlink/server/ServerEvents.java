@@ -799,6 +799,24 @@ public final class ServerEvents {
             }
         }
 
+        return parseChatEmojis(input);
+    }
+
+    private String parseChatEmojis(String input) {
+        Pattern pattern = Pattern.compile(":[a-zA-Z0-9_]+:");
+        Matcher matcher = pattern.matcher(input);
+
+        if (CacheManager.getCustomEmotes().isEmpty())
+            return input;
+
+        while (matcher.find()) {
+            String emoji = matcher.group(0);
+
+            if (CacheManager.getCustomEmotes().containsKey(emoji)) {
+                input = input.replace(matcher.group(0), CacheManager.getCustomEmotes().get(emoji).getAsMention());
+            }
+        }
+
         return input;
     }
 
