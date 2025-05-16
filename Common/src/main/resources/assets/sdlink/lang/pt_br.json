@@ -1,0 +1,91 @@
+{
+  "account.unlinked": "Desvinculado",
+  "account.notfound": "Não conseguimos encontrar sua conta do Minecraft. Por favor, peça ajuda à equipe",
+  "account.verify_success": "Sua conta foi verificada",
+  "account.unverify_success": "Sua conta foi desverificada",
+  "account.load_failed": "Falha ao carregar sua conta",
+  "account.not_in_database": "Conta não encontrada no banco de dados do servidor",
+
+  "error.no_discord_server": "Desculpe, não consigo encontrar um servidor Discord vinculado a este bot. Por favor, informe o operador do servidor",
+  "error.empty_cache": "O cache de membros do Discord deste servidor está vazio. Peça ao proprietário do servidor para executar o comando reloadcache no Discord",
+  "error.no_roles": "O servidor tem cargos obrigatórios configurados, mas nenhum cargo do Discord foi carregada. Por favor, notifique o proprietário do servidor",
+  "error.command_failed": "Falha ao executar o comando. Consulte o log do seu servidor",
+  "error.no_message_perms": "Não tenho permissão para enviar mensagens em %s",
+  "error.no_db_accounts": "Desculpe, mas este servidor não contém jogadores armazenados em seu banco de dados",
+  "error.not_a_member": "%s não é membro deste servidor Discord",
+  "error.not_a_member_of": "Desculpe, você não parece ser membro de %s. Por favor, tente novamente",
+  "error.no_match_found": "Nenhuma conta encontrada que corresponda a %s",
+  "error.code_length": "Desculpe, só posso lidar com mensagens de código de verificação de 4 dígitos. Por favor, tente novamente",
+  "error.mc_command_failed": "Falha ao executar comando: %s",
+  "error.verify.only_by_players": "Este comando só pode ser usado por jogadores",
+  "error.verify.not_enabled": "A verificação não está ativada para este servidor",
+  "error.hiding.no_account_provided": "Você precisa fornecer um jogador para ocultar",
+  "error.hiding.unhide_no_account_provided": "Você precisa fornecer um jogador para desocultar",
+  "error.unknown": "Desconhecido",
+
+  "feedback.bot_reloaded": "Bot foi recarregado",
+
+  "command.help.help": "Comandos do bot e Ajuda",
+  "command.help.title": "Comandos do Bot",
+
+  "command.playerlist.help": "Listar jogadores atualmente online no servidor",
+  "command.playerlist.title": "Jogadores Online",
+  "command.playerlist.no_online": "Atualmente, não há jogadores online",
+  "command.playerlist.title_page": "Jogadores Online - Página %s/%s",
+  "command.playerlist.footer": "%s/%s jogadores online",
+
+  "command.hiddenplayers.help": "Listar todos os jogadores ocultos no seu servidor",
+  "command.hiddenplayers.title": "Jogadores Ocultos",
+  "command.hiddenplayers.no_players": "Atualmente, não há jogadores ocultos",
+  "command.hiddenplayers.title_page": "Jogadores Ocultos - Página %s/%s",
+
+  "command.hideplayer.help": "Tornar um usuário do Discord invisível",
+  "command.hideplayer.access_control": "A opção do Minecraft não pode ser usada quando o controle de acesso e a verificação opcional estão desativados",
+  "command.hideplayer.account_not_found": "Não é possível encontrar a conta do Minecraft vinculada ao usuário %s",
+
+  "command.unhideplayer.help": "Tornar um usuário do Discord visível",
+
+  "command.reloadcache.help": "Forçar o recarregamento do cache do bot",
+  "command.reloadcache.reloaded": "Cache foi recarregado",
+  "command.reloadcache.not_reloaded": "Falha ao recarregar o cache. Verifique o log do seu servidor",
+
+  "command.setchannel.help": "Configurar um canal para o bot usar",
+  "command.setchannel.saved": "Canal salvo na configuração. Reinicie seu servidor para o canal se tornar ativo",
+  "command.setchannel.webhook_saved": "Webhook salvo na configuração. Reinicie seu servidor para o webhook se tornar ativo",
+  "command.setchannel.failed": "Falha ao salvar a configuração: %s",
+
+  "command.staffunverify.help": "Desverificar a conta do Minecraft de outro jogador",
+  "command.staffverify.help": "Permitir que membros da equipe verifiquem jogadores de Minecraft, sem verificação",
+
+  "command.unverify.help": "Desverificar sua conta do Minecraft anteriormente verificada",
+  "command.unverify.failed": "Desculpe, não foi possível desverificar sua conta do Minecraft. Por favor, tente novamente",
+
+  "command.verify.help": "Verificar sua conta do Minecraft para acessar o servidor",
+  "command.verify.missing_code": "Você precisa fornecer um código de verificação",
+  "command.verify.already_verified": "Desculpe, você já tem uma conta verificada e este servidor não permite várias contas",
+  "command.verify.failed": "Desculpe, não foi possível verificar sua conta do Minecraft. Por favor, tente novamente",
+
+  "command.verifiedaccounts.help": "Ver uma lista de Contas Verificadas do Minecraft",
+  "command.verifiedaccounts.title": "Contas Verificadas",
+  "command.verifiedaccounts.no_accounts": "Não há contas verificadas para este Discord",
+  "command.verifiedaccounts.title_page": "Contas Verificadas - Página %s/%s",
+
+  "message.attachments": "(%s anexos)",
+  "message.replied_to": "Respondeu a %s: %s",
+
+  "commands.not_allowed": "Desculpe, comandos do Minecraft não são permitidos neste canal",
+  "commands.permission_denied": "Desculpe, você não tem permissão para executar esse comando",
+  "commands.command_not_allowed": "Desculpe, mas você não tem permissão para executar esse comando",
+
+  "hiding.now_hidden": "%s agora está oculto",
+  "hiding.failed": "Falha ao ocultar jogador. Erro: %s",
+  "hiding.not_hidden": "O jogador não está oculto",
+  "hiding.unhidden": "Jogador %s não está mais oculto",
+  "hiding.unhide_failed": "Falha ao desocultar jogador. Erro: %s",
+
+  "mc.sdconfigeditor.opening": "Inicializando conexão com o Editor de Configuração. Verifique seu log para o link",
+
+  "tooltip.display_name": "Nome de Exibição",
+  "tooltip.username": "Nome de Usuário",
+  "tooltip.roles": "Cargos"
+}
