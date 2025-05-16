@@ -64,7 +64,7 @@ public final class DiscordMessageBuilder {
         this.message = SDLinkChatUtils.applyFiltering(
                 message,
                 (i) -> i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH),
-                (i) -> messageType == MessageType.CONSOLE && !i.ignoreConsole);
+                (i) -> messageType == MessageType.CONSOLE && i.ignoreConsole);
         return this;
     }
 

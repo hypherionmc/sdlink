@@ -14,6 +14,7 @@
 - Fix config migrator crash when migrating configs older than version 21 (3.2.0 and older) - hypherionsa
 - Fix LinkedNames breaking in chat messages, when there is an unlinked account in the database - hypherionsa
 - Fix Player Counts not excluding vanished players - hypherionsa
+- Fix ignoreConsole flag on message filtering being reversed - hypherionsa
 
 **New Features**:
 
@@ -25,6 +26,7 @@
 - Allow mentioning users, channels and roles from chat without client side install - hypherionsa
 - Config Editor command now sends link to user that executed the command - hypherionsa
 - Implement basic support for custom emotes sent in Minecraft Chat - hypherionsa
+- Portuguese Translations by Lucasmiel0406
 
 **Changes**:
 
