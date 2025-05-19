@@ -427,7 +427,7 @@ public final class ServerEvents {
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                 .message(msg)
                 .author(DiscordAuthor.SERVER
-                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
+                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false)).setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                 .build();
 
@@ -486,7 +486,7 @@ public final class ServerEvents {
         DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
                 .message(msg)
                 .author(DiscordAuthor.SERVER
-                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
+                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false)).setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
                 .build();
 
@@ -554,6 +554,7 @@ public final class ServerEvents {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                     .message(finalMessage)
                     .author(DiscordAuthor.SERVER
+                            .setGameProfile(event.getPlayer().getGameProfile())
                             .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
                             .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                     .build();
@@ -603,6 +604,7 @@ public final class ServerEvents {
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
                         .message(msg)
                         .author(DiscordAuthor.SERVER
+                                .setGameProfile(event.getPlayer().getGameProfile())
                                 .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
                                 .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                         .build();
@@ -739,6 +741,7 @@ public final class ServerEvents {
         DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                 .message(finalMessage.replace("%player%", name))
                 .author(DiscordAuthor.SERVER
+                        .setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
                         .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                 .build();
@@ -753,7 +756,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistAdded.replace("%player%", event.getProfile().getName()))
-                .author(DiscordAuthor.SERVER)
+                .author(DiscordAuthor.SERVER.setGameProfile(event.getProfile()))
                 .build();
 
         message.sendMessage();
@@ -766,7 +769,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistRemoved.replace("%player%", event.getProfile().getName()))
-                .author(DiscordAuthor.SERVER)
+                .author(DiscordAuthor.SERVER.setGameProfile(event.getProfile()))
                 .build();
 
         message.sendMessage();
