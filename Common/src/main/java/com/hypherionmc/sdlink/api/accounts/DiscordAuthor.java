@@ -12,6 +12,7 @@ import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author HypherionSA
@@ -21,7 +22,13 @@ import net.dv8tion.jda.api.entities.Role;
 public final class DiscordAuthor {
 
     // User used for Server Messages
-    public static final DiscordAuthor SERVER = new DiscordAuthor(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName, SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar, "server", true, "");
+    public static final DiscordAuthor SERVER = new DiscordAuthor(
+            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar,
+            "server",
+            true,
+            ""
+    ).setGameProfile(null).setPlayerName(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName);
 
     private String displayName;
     private final String avatar;
@@ -96,10 +103,12 @@ public final class DiscordAuthor {
         return this;
     }
 
-    public DiscordAuthor setGameProfile(BridgedGameProfile profile) {
+    public DiscordAuthor setGameProfile(@Nullable BridgedGameProfile profile) {
         this.profile = profile;
-        this.username = profile.getName();
-        this.uuid = profile.getId().toString();
+        if (profile != null) {
+            this.username = profile.getName();
+            this.uuid = profile.getId().toString();
+        }
         return this;
     }
 }
