@@ -54,6 +54,14 @@ public final class DiscordMessageBuilder {
             }
         }
 
+        if (this.messageType == MessageType.CHAT
+                && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.useServerForChat
+                && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled
+                && !SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.chatWebhook.trim().isEmpty()
+        ) {
+            this.author = DiscordAuthor.SERVER;
+        }
+
         return this;
     }
 

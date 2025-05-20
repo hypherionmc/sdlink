@@ -9,3 +9,7 @@
 
 - Add Missing Player Data to Server Embeds (Embeds that are usually sent as the server) - hypherionsa
 - Fix mcPrefix (Player names) in Minecraft Chat not showing - hypherionsa
+
+**New Features**:
+
+- Add config option to use the server author for Chat Webhook messages (because it was requested) - hypherionsa

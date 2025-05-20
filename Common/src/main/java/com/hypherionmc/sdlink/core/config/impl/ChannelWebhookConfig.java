@@ -53,6 +53,10 @@ public final class ChannelWebhookConfig {
         @SpecComment("Change how the webhook name is displayed in discord. Available placeholders: %display_name%, %mc_name%")
         public String webhookNameFormat = "%display_name%";
 
+        @Path("useServerForChat")
+        @SpecComment("Use Server Author for chat messages, instead of the real author information")
+        public boolean useServerForChat = false;
+
         @Path("chatWebhook")
         @SpecComment("The URL of the channel webhook to use for Chat Messages. Will be encrypted on first run")
         public String chatWebhook = "";
