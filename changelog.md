@@ -8,3 +8,4 @@
 **Bug Fixes**:
 
 - Add Missing Player Data to Server Embeds (Embeds that are usually sent as the server) - hypherionsa
+- Fix mcPrefix (Player names) in Minecraft Chat not showing - hypherionsa

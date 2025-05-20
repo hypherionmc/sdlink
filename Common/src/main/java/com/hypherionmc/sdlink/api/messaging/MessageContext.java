@@ -139,7 +139,7 @@ public final class MessageContext {
             prefix = mainPrefix;
 
         Style baseStyle = Style.empty();
-        Component component = parsePlaceholders(ChatUtils.format(prefix), baseStyle, sender);
+        Component component = parsePlaceholders(SDLinkChatUtils.format(prefix), baseStyle, sender);
 
         // Apply messaging filters
         formattedMessage = SDLinkChatUtils.applyFiltering(formattedMessage, (i) -> (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
@@ -157,7 +157,7 @@ public final class MessageContext {
             }
 
             finalComponent = parsePlaceholders(
-                    ChatUtils.format(SDLinkConfig.INSTANCE.messageFormatting.mcReplyFormatting),
+                    SDLinkChatUtils.format(SDLinkConfig.INSTANCE.messageFormatting.mcReplyFormatting),
                     Style.style().build(),
                     replyMember,
                     formattedReply

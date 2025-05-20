@@ -11,6 +11,7 @@ import shadow.kyori.adventure.text.event.ClickEvent;
 import shadow.kyori.adventure.text.event.HoverEvent;
 import shadow.kyori.adventure.text.format.NamedTextColor;
 import shadow.kyori.adventure.text.format.Style;
+import shadow.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -144,6 +145,20 @@ public final class SDLinkChatUtils {
         }
 
         return input;
+    }
+
+    public static shadow.kyori.adventure.text.Component format(String value) {
+        value = convertFormattingCodes(value);
+
+        try {
+            return MiniMessage.miniMessage().deserializeOr(value, shadow.kyori.adventure.text.Component.text(value));
+        } catch (Exception var2) {
+            return shadow.kyori.adventure.text.Component.text(value);
+        }
+    }
+
+    private static String convertFormattingCodes(String input) {
+        return input.replaceAll("§([0-9a-fklmnor])", "§$1");
     }
 
 }
