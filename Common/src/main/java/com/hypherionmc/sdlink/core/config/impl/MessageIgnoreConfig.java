@@ -39,7 +39,8 @@ public final class MessageIgnoreConfig {
     public enum FilterTarget {
         CHAT,
         USERNAME,
-        BOTH
+        BOTH,
+        CONSOLE
     }
 
     public enum AppliesTo {
@@ -49,7 +50,7 @@ public final class MessageIgnoreConfig {
 
     public static class Ignore {
         @Path("target")
-        @SpecComment("Should this filter target. CHAT, USERNAME or BOTH")
+        @SpecComment("Should this filter target CHAT, USERNAME, BOTH, or CONSOLE.")
         public FilterTarget target = FilterTarget.CHAT;
 
         @Path("ignoreConsole")

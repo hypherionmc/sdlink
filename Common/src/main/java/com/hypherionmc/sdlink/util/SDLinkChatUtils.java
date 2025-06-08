@@ -95,7 +95,7 @@ public final class SDLinkChatUtils {
         return applyFiltering(input, ignoreCheck, (i) -> false);
     }
 
-    public static String applyFiltering(String input, Predicate<MessageIgnoreConfig.Ignore> ignoreCheck, Predicate<MessageIgnoreConfig.Ignore> applyConsole) {
+    public static String applyFiltering(String input, Predicate<MessageIgnoreConfig.Ignore> ignoreCheck, Predicate<MessageIgnoreConfig.Ignore> applyIgnoreIfConsole) {
         if (!SDLinkConfig.INSTANCE.ignoreConfig.enabled)
             return input;
 
@@ -130,7 +130,7 @@ public final class SDLinkChatUtils {
             }
 
             if (isMatch) {
-                if (applyConsole.test(i)) {
+                if (applyIgnoreIfConsole.test(i)) {
                     return input;
                 }
 
