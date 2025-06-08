@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.core.discord.hooks;
 
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.MessageDestination;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -68,46 +69,8 @@ public final class DiscordMessageHooks {
             if (SDLinkConfig.INSTANCE.linkedCommands.enabled && !SDLinkConfig.INSTANCE.linkedCommands.permissions.isEmpty() && event.getMessage().getContentRaw().startsWith(SDLinkConfig.INSTANCE.linkedCommands.prefix))
                 return;
 
-            String message = event.getMessage().getContentDisplay();
 
-            MessageReference messageReference = event.getMessage().getMessageReference();
-            if (messageReference != null && messageReference.getType() == MessageReference.MessageReferenceType.FORWARD) {
-                MessageSnapshot snapshot = event.getMessage().getMessageSnapshots().get(0);
-                message = snapshot.getContentRaw();
-            }
-
-            String reply = null;
-            if (message.isEmpty() && !event.getMessage().getAttachments().isEmpty()) {
-                message = (long) event.getMessage().getAttachments().size() + " attachments";
-            }
-
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                BotController.INSTANCE.getLogger().info("Sending Message from {}: {}", event.getAuthor().getName(), message);
-            }
-
-            if (!message.isEmpty() && !event.getMessage().getAttachments().isEmpty()) {
-                message = message + " " + Text.translate("message.attachments", (long) event.getMessage().getAttachments().size());
-            }
-
-            if (message.isEmpty())
-                return;
-
-            if (event.getMessage().getReferencedMessage() != null) {
-                try {
-                    Member replyMember = event.getMessage().getReferencedMessage().isWebhookMessage() ? SDLWebhookServerMember.of(event.getMessage().getReferencedMessage().getAuthor(), event.getGuild(), event.getJDA()) : event.getMessage().getReferencedMessage().getMember();
-                    message = Text.translate("message.replied_to", replyMember.getEffectiveName(), message).toString();
-                    reply = event.getMessage().getReferencedMessage().getContentDisplay();
-                    reply = EmojiManager.replaceAllEmojis(reply, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
-                } catch (Exception e) {
-                    if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            message = EmojiManager.replaceAllEmojis(message, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
-
-            SDLinkPlatform.minecraftHelper.discordMessageReceived(member, message, reply);
+            SDLinkPlatform.minecraftHelper.discordMessageReceived(MessageContext.of(member, event.getMessage()));
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to process discord message", e);
         }

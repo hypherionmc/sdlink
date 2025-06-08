@@ -16,16 +16,15 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
+import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
 import com.hypherionmc.sdlink.util.DestinationHolder;
-import com.hypherionmc.sdlink.util.SDLinkUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -35,6 +34,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.hypherionmc.sdlink.util.SDLinkUtils.getOrElse;
 import static net.dv8tion.jda.api.EmbedBuilder.ZERO_WIDTH_SPACE;
 
 /**
@@ -159,7 +159,10 @@ public final class DiscordMessage {
                 builder.setEmbeds(eb.build());
             } else {
                 String content = this.messageType == MessageType.CHAT ?
-                        SDLinkConfig.INSTANCE.messageFormatting.chat.replace("%player%", author.getDisplayName()).replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName()).replace("%message%", message)
+                        SDLinkConfig.INSTANCE.messageFormatting.chat
+                                .replace("%player%", author.getDisplayName())
+                                .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName().replace("_", "\\_"))
+                                .replace("%message%", message)
                         : message;
                 builder.setContent(content);
             }
@@ -229,6 +232,7 @@ public final class DiscordMessage {
      *
      * @param withAuthor Should the author be appended to the embed. Not used for Webhooks
      */
+    @SuppressWarnings("deprecation")
     private EmbedBuilder buildEmbed(boolean withAuthor, String key) {
         String embedJson = EmbedManager.getEmbed(key);
 
@@ -248,16 +252,17 @@ public final class DiscordMessage {
         }
 
         embedJson = embedJson
-                .replace("%author%", this.author.getDisplayName().replace("_", "\\_"))
+                .replace("%author%", StringEscapeUtils.escapeJson(this.author.getDisplayName().replace("_", "\\_")))
                 .replace("%avatar%", this.author.getAvatar())
-                .replace("%message_contents%", this.message)
+                .replace("%message_contents%", StringEscapeUtils.escapeJson(this.message))
                 .replace("%player_avatar%", this.author.getRealPlayerAvatar())
-                .replace("%player_name%", this.author.getRealPlayerName().replace("_", "\\_"))
+                .replace("%role_color%", String.valueOf(this.author.getColor()))
+                .replace("%player_name%", StringEscapeUtils.escapeJson(this.author.getRealPlayerName().replace("_", "\\_")))
                 .replace("%current_time%", String.valueOf(Instant.now().getEpochSecond()))
-                .replace("%username%", this.author.getUsername().replace("_", "\\_"));
+                .replace("%username%", StringEscapeUtils.escapeJson(this.author.getUsername().replace("_", "\\_")));
 
-        DataObject object = DataObject.fromJson(embedJson);
-        return fromData(object);
+        DiscordEmbed embed = EmbedManager.gson.fromJson(embedJson, DiscordEmbed.class);
+        return fromData(embed);
     }
 
     /**
@@ -274,60 +279,54 @@ public final class DiscordMessage {
     }
 
     @NotNull
-    private EmbedBuilder fromData(@NotNull DataObject data) {
-        Checks.notNull(data, "DataObject");
+    private EmbedBuilder fromData(@NotNull DiscordEmbed data) {
+        Checks.notNull(data, "embed");
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setTitle(data.getString("title", null));
-        builder.setUrl(data.getString("url", null));
-        builder.setDescription(data.getString("description", ""));
+        builder.setTitle(getOrElse(data.title, null));
+        builder.setUrl(getOrElse(data.url, null));
+        builder.setDescription(getOrElse(data.description, null));
 
-        if (!data.isNull("timestamp")) {
-            if (data.getString("timestamp").equalsIgnoreCase("1")) {
-                builder.setTimestamp(Instant.now());
-            } else if (!data.getString("timestamp").equalsIgnoreCase("0")) {
-                builder.setTimestamp(OffsetDateTime.parse(data.getString("timestamp")));
+        if (data.timestamp == 1) {
+            builder.setTimestamp(Instant.now());
+        } else if (data.timestamp != 0) {
+            builder.setTimestamp(OffsetDateTime.parse(String.valueOf(data.timestamp)));
+        }
+
+        if (getOrElse(data.color, "#000000").startsWith("#")) {
+            builder.setColor(Color.decode(getOrElse(data.color, "#000000")));
+        } else {
+            builder.setColor(Integer.parseInt(getOrElse(data.color, "#000000"), 16));
+        }
+
+        if (data.thumbnail != null) {
+            builder.setThumbnail(getOrElse(data.thumbnail.url, null));
+        }
+
+        if (data.author != null) {
+            builder.setAuthor(getOrElse(data.author.name, null),
+                    getOrElse(data.author.url, null),
+                    getOrElse(data.author.icon_url, null));
+        }
+
+        if (data.footer != null) {
+            builder.setFooter(getOrElse(data.footer.text, ""),
+                    getOrElse(data.footer.icon_url, null));
+        }
+
+        if (data.image != null) {
+            builder.setImage(getOrElse(data.image.url, null));
+        }
+
+        if (data.fields != null && !data.fields.isEmpty()) {
+            for (DiscordEmbed.Field field : data.fields) {
+                builder.addField(
+                        getOrElse(field.name, ZERO_WIDTH_SPACE),
+                        getOrElse(field.value, ZERO_WIDTH_SPACE),
+                        field.inline
+                );
             }
         }
-
-        if (data.getString("color", "#000000").startsWith("#")) {
-            builder.setColor(Color.decode(data.getString("color", "#000000")));
-        } else {
-            builder.setColor(data.getInt("color", Role.DEFAULT_COLOR_RAW));
-        }
-
-        data.optObject("thumbnail").ifPresent(thumbnail ->
-                builder.setThumbnail(SDLinkUtils.isNullOrEmpty(thumbnail.getString("url")) ? null : thumbnail.getString("url"))
-        );
-
-        data.optObject("author").ifPresent(author ->
-                builder.setAuthor(
-                        author.getString("name", ""),
-                        SDLinkUtils.isNullOrEmpty(author.getString("url", null)) ? null : author.getString("url", null),
-                        SDLinkUtils.isNullOrEmpty(author.getString("icon_url", null)) ? null : author.getString("icon_url", null)
-                )
-        );
-
-        data.optObject("footer").ifPresent(footer ->
-                builder.setFooter(
-                        footer.getString("text", ""),
-                        SDLinkUtils.isNullOrEmpty(footer.getString("icon_url", null)) ? null : footer.getString("icon_url", null)
-                )
-        );
-
-        data.optObject("image").ifPresent(image ->
-                builder.setImage(SDLinkUtils.isNullOrEmpty(image.getString("url")) ? null : image.getString("url"))
-        );
-
-        data.optArray("fields").ifPresent(arr ->
-                arr.stream(DataArray::getObject).forEach(field ->
-                        builder.addField(
-                                field.getString("name", ZERO_WIDTH_SPACE),
-                                field.getString("value", ZERO_WIDTH_SPACE),
-                                field.getBoolean("inline", false)
-                        )
-                )
-        );
 
         return builder;
     }

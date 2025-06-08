@@ -17,5 +17,6 @@ public final class DiscordUser {
     private String avatarUrl;
     private long userId;
     private String asMention;
+    private int roleColor;
 
 }

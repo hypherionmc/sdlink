@@ -7,12 +7,12 @@ package com.hypherionmc.sdlink.api.accounts;
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import lombok.Setter;
+import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author HypherionSA
@@ -22,7 +22,13 @@ import java.util.regex.Pattern;
 public final class DiscordAuthor {
 
     // User used for Server Messages
-    public static final DiscordAuthor SERVER = new DiscordAuthor(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName, SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar, "server", true, "");
+    public static final DiscordAuthor SERVER = new DiscordAuthor(
+            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar,
+            "server",
+            true,
+            ""
+    ).setGameProfile(null).setPlayerName(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName);
 
     private String displayName;
     private final String avatar;
@@ -32,6 +38,7 @@ public final class DiscordAuthor {
     private BridgedGameProfile profile = null;
     String realPlayerAvatar = "";
     String realPlayerName = "";
+    @Setter private int color = Role.DEFAULT_COLOR_RAW;
 
     /**
      * Internal. Use {@link #of(String, String, String)}
@@ -49,47 +56,9 @@ public final class DiscordAuthor {
         this.displayName = displayName;
 
         this.displayName = this.displayName.replace("_", "\\_");
-
-        if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
-            for (MessageIgnoreConfig.Ignore i : SDLinkConfig.INSTANCE.ignoreConfig.entries) {
-                if (i.target == MessageIgnoreConfig.FilterTarget.CHAT)
-                    continue;
-
-                boolean isMatch = false;
-
-                switch (i.searchMode) {
-                    case MATCHES:
-                        isMatch = displayName.equalsIgnoreCase(i.search);
-                        break;
-
-                    case CONTAINS:
-                        isMatch = displayName.contains(i.search);
-                        break;
-
-                    case STARTS_WITH:
-                        isMatch = displayName.startsWith(i.search);
-                        break;
-
-                    case REGEX:
-                        try {
-                            Pattern pattern = Pattern.compile(i.search);
-                            Matcher matcher = pattern.matcher(displayName);
-                            isMatch = matcher.find();
-                        } catch (Exception e) {
-                            BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
-                        }
-                        break;
-                }
-
-                if (isMatch && i.action == MessageIgnoreConfig.ActionMode.REPLACE) {
-                    if (i.searchMode == MessageIgnoreConfig.FilterMode.REGEX) {
-                        this.displayName = displayName.replaceAll(i.search, i.replace);
-                    } else {
-                        this.displayName = displayName.replace(i.search, i.replace);
-                    }
-                }
-            }
-        }
+        this.displayName = SDLinkChatUtils.applyFiltering(
+                this.displayName,
+                (i) -> i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.USERNAME || i.target == MessageIgnoreConfig.FilterTarget.BOTH));
 
         if (this.displayName == null || this.displayName.isEmpty()) {
             this.displayName = displayName;
@@ -134,10 +103,12 @@ public final class DiscordAuthor {
         return this;
     }
 
-    public DiscordAuthor setGameProfile(BridgedGameProfile profile) {
+    public DiscordAuthor setGameProfile(@Nullable BridgedGameProfile profile) {
         this.profile = profile;
-        this.username = profile.getName();
-        this.uuid = profile.getId().toString();
+        if (profile != null) {
+            this.username = profile.getName();
+            this.uuid = profile.getId().toString();
+        }
         return this;
     }
 }

@@ -29,6 +29,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
@@ -42,9 +43,13 @@ import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.Text;
 import lombok.Getter;
+import net.dv8tion.jda.api.entities.Member;
 import shadow.kyori.adventure.text.Component;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 @SuppressWarnings("unused")
@@ -148,7 +153,12 @@ public final class ServerEvents {
         if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
             return;
 
+        // FTB Essentials
         if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && ModloaderEnvironment.INSTANCE.isModLoaded("ftbessentials") && FTBEssentials.isPlayerMuted(event.getPlayer()))
+            return;
+
+        // Advanced Chat
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("advanced-chat") && CompatUtils.INSTANCE.isPrivateMessage(event.getPlayer()))
             return;
 
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
@@ -168,6 +178,7 @@ public final class ServerEvents {
 
                 if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
                     msg = SDLinkChatUtils.parse(msg);
+                    msg = parseChatMentions(msg);
                 }
 
                 DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile).setPlayerName(gameProfile.getName());
@@ -178,7 +189,7 @@ public final class ServerEvents {
 
                 discordMessage.sendMessage();
 
-                if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
                     RelayMessage newRelay = RelayMessage.of(
                             RelayMessage.MessageType.CHAT,
                             SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -261,7 +272,7 @@ public final class ServerEvents {
 
             discordMessage.sendMessage();
 
-            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
 
                 RelayMessage newRelay = RelayMessage.of(
                         RelayMessage.MessageType.CHAT,
@@ -301,6 +312,44 @@ public final class ServerEvents {
                     .build();
 
             discordMessage.sendMessage();
+            return;
+        }
+
+        if (cmdName.equalsIgnoreCase("ftbteams") && command.split(" ")[1].startsWith("chat") && SDLinkCompatConfig.INSTANCE.common.ftbteams_chat) {
+            String msg = ChatUtils.strip(command, "ftbteams chat");
+            msg = ChatUtils.resolve(Component.text(msg), SDLinkConfig.INSTANCE.chatConfig.formatting);
+
+            DiscordAuthor author = DiscordAuthor.of(
+                    username,
+                    uuid == null ? "" : uuid,
+                    profile != null ? profile.getName() : (player != null ? ChatUtils.resolve(player.getName(), false) : "server")
+            );
+
+            if (profile != null)
+                author.setGameProfile(profile);
+
+            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
+                    .author(author)
+                    .message(msg)
+                    .build();
+
+            discordMessage.sendMessage();
+
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+                RelayMessage newRelay = RelayMessage.of(
+                        RelayMessage.MessageType.CHAT,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        DataMessage.of(
+                                event.getPlayer() == null ? Component.text("Server") : event.getPlayer().getDisplayName(),
+                                event.getPlayer() == null ? "server" : event.getPlayer().getGameProfile().getName(),
+                                Component.text(msg),
+                                event.getPlayer() == null ? UUID.randomUUID() : event.getPlayer().getUUID(),
+                                event.getPlayer() == null
+                        )
+                );
+
+                SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
+            }
             return;
         }
 
@@ -378,13 +427,13 @@ public final class ServerEvents {
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                 .message(msg)
                 .author(DiscordAuthor.SERVER
-                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
+                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false)).setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                 .build();
 
         discordMessage.sendMessage();
 
-        if (SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages) {
+        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages) {
             RelayMessage newRelay = RelayMessage.of(
                     RelayMessage.MessageType.JOIN,
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -437,13 +486,13 @@ public final class ServerEvents {
         DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
                 .message(msg)
                 .author(DiscordAuthor.SERVER
-                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
+                        .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false)).setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
                 .build();
 
         message.sendMessage();
 
-        if (SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages) {
+        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages) {
             RelayMessage newRelay = RelayMessage.of(
                     RelayMessage.MessageType.LEAVE,
                     SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -505,13 +554,14 @@ public final class ServerEvents {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                     .message(finalMessage)
                     .author(DiscordAuthor.SERVER
+                            .setGameProfile(event.getPlayer().getGameProfile())
                             .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
                             .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                     .build();
 
             message.sendMessage();
 
-            if (SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages) {
+            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages) {
                 RelayMessage newRelay = RelayMessage.of(
                         RelayMessage.MessageType.DEATH,
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -554,13 +604,14 @@ public final class ServerEvents {
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
                         .message(msg)
                         .author(DiscordAuthor.SERVER
+                                .setGameProfile(event.getPlayer().getGameProfile())
                                 .setPlayerName(ChatUtils.resolve(event.getPlayer().getDisplayName(), false))
                                 .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
                         .build();
 
                 discordMessage.sendMessage();
 
-                if (SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages) {
+                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages) {
                     RelayMessage newRelay = RelayMessage.of(
                             RelayMessage.MessageType.ADVANCEMENT,
                             SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -690,6 +741,7 @@ public final class ServerEvents {
         DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                 .message(finalMessage.replace("%player%", name))
                 .author(DiscordAuthor.SERVER
+                        .setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerName(ChatUtils.resolve(player.getDisplayName(), false))
                         .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
                 .build();
@@ -704,7 +756,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistAdded.replace("%player%", event.getProfile().getName()))
-                .author(DiscordAuthor.SERVER)
+                .author(DiscordAuthor.SERVER.setGameProfile(event.getProfile()))
                 .build();
 
         message.sendMessage();
@@ -717,10 +769,58 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistRemoved.replace("%player%", event.getProfile().getName()))
-                .author(DiscordAuthor.SERVER)
+                .author(DiscordAuthor.SERVER.setGameProfile(event.getProfile()))
                 .build();
 
         message.sendMessage();
+    }
+
+    private String parseChatMentions(String input) {
+        Pattern pattern = Pattern.compile("([@#])([A-Za-z0-9_]+)");
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            String type = matcher.group(1);
+            String group = matcher.group(2);
+
+            if (type.equals("@")) {
+                Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getEffectiveName().equalsIgnoreCase(group) || m.getUser().getName().equalsIgnoreCase(group)).findFirst();
+
+                if (member.isPresent()) {
+                    input = input.replace(matcher.group(0), member.get().getAsMention());
+                } else {
+                    if (CacheManager.getServerRoles().containsKey(matcher.group(0))) {
+                        input = input.replace(matcher.group(0), CacheManager.getServerRoles().get(matcher.group(0)));
+                    }
+                }
+            }
+
+            if (type.equals("#")) {
+                if (CacheManager.getServerChannels().containsKey(matcher.group(0))) {
+                    input = input.replace(matcher.group(0), CacheManager.getServerChannels().get(matcher.group(0)));
+                }
+            }
+        }
+
+        return parseChatEmojis(input);
+    }
+
+    private String parseChatEmojis(String input) {
+        Pattern pattern = Pattern.compile(":[a-zA-Z0-9_]+:");
+        Matcher matcher = pattern.matcher(input);
+
+        if (CacheManager.getCustomEmotes().isEmpty())
+            return input;
+
+        while (matcher.find()) {
+            String emoji = matcher.group(0);
+
+            if (CacheManager.getCustomEmotes().containsKey(emoji)) {
+                input = input.replace(matcher.group(0), CacheManager.getCustomEmotes().get(emoji).getAsMention());
+            }
+        }
+
+        return input;
     }
 
 }

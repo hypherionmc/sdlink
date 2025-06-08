@@ -15,8 +15,12 @@ import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 public final class MessageFormatting {
 
     @Path("mcPrefix")
-    @SpecComment("Prefix to add to Minecraft when a message is relayed from Discord. Supports MC formatting. Use %user% for the Discord Username")
-    public String mcPrefix = "\u00A7e[Discord]\u00A7r %user%: ";
+    @SpecComment("Prefix to add to Minecraft when a message is relayed from Discord. Supports MiniMessage formatting. Use %user% for the Discord Username")
+    public String mcPrefix = "<yellow>[Discord]<reset> %user%: ";
+
+    @Path("mcReplyFormatting")
+    @SpecComment("How messages relayed from discord that are replies to other messages are formatted. Supports MiniMessage formatting")
+    public String mcReplyFormatting = "    <b>┌────<reset> %color%@%replier_name%%end_color% <gray>%message_summary%<newline><reset>";
 
     @Path("serverStarting")
     @SpecComment("Server Starting Message")

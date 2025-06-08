@@ -25,6 +25,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
+import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent;
+import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent;
+import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateNameEvent;
+import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateRolesEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -103,7 +107,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
      */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        if (event.getJDA().getStatus() == JDA.Status.LOADING_SUBSYSTEMS) {
+        if (event.getJDA().getStatus() != JDA.Status.CONNECTED && event.getJDA().getStatus() != JDA.Status.DISCONNECTED) {
             isStuckInNotReady = true;
             startReadyDetection(event.getJDA());
         }
@@ -240,6 +244,26 @@ public final class DiscordEventHandler extends ListenerAdapter {
         event.getRoles().forEach(role -> {
             RoleSync.INSTANCE.roleRemovedFromMember(event.getMember(), role, event.getGuild(), null);
         });
+    }
+
+    @Override
+    public void onEmojiAdded(EmojiAddedEvent event) {
+        CacheManager.loadEmoteCache();
+    }
+
+    @Override
+    public void onEmojiRemoved(EmojiRemovedEvent event) {
+        CacheManager.loadEmoteCache();
+    }
+
+    @Override
+    public void onEmojiUpdateName(EmojiUpdateNameEvent event) {
+        CacheManager.loadEmoteCache();
+    }
+
+    @Override
+    public void onEmojiUpdateRoles(EmojiUpdateRolesEvent event) {
+        CacheManager.loadEmoteCache();
     }
 
     private void startReadyDetection(JDA jda) {

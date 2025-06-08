@@ -142,7 +142,7 @@ public final class MinecraftAccount {
             return null;
 
         Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getId().equalsIgnoreCase(storedAccount.getDiscordID())).findFirst();
-        return member.map(value -> DiscordUser.of(value.getEffectiveName(), value.getEffectiveAvatarUrl(), value.getIdLong(), value.getAsMention())).orElse(null);
+        return member.map(value -> DiscordUser.of(value.getEffectiveName(), value.getEffectiveAvatarUrl(), value.getIdLong(), value.getAsMention(), value.getColorRaw())).orElse(null);
     }
 
     public Result verifyAccount(Member member, Guild guild) {

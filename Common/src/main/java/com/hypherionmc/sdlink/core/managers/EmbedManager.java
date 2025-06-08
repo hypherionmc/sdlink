@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class EmbedManager {
 
     private static final File embedDir = new File("./config/simple-discord-link/embeds");
-    private static final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+    public static final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
     private static final ConcurrentHashMap<String, String> embeds = new ConcurrentHashMap<>();
 
     public static void init() {

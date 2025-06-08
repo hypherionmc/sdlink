@@ -4,7 +4,6 @@
  */
 package com.hypherionmc.sdlink.core.services;
 
-import com.hypherionmc.sdlink.core.services.helpers.IMinecraftHelper;
 import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 
 /**
@@ -13,6 +12,6 @@ import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
  */
 public final class SDLinkPlatform {
 
-    public static IMinecraftHelper minecraftHelper = new SDLinkMinecraftBridge();
+    public static SDLinkMinecraftBridge minecraftHelper = new SDLinkMinecraftBridge();
 
 }

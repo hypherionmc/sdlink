@@ -13,6 +13,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.translations.TranslationManager;
+import net.dv8tion.jda.api.entities.Activity;
 import org.apache.commons.io.FileUtils;
 import shadow.hypherionmc.moonconfig.core.CommentedConfig;
 import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
@@ -38,7 +39,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 28;
+    public transient static int configVer = 33;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
@@ -199,18 +200,20 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
             if (ver < 21) {
                 if (finalKey.equalsIgnoreCase("botConfig.botStatus")) {
-                    outputConfig.set(finalKey, RandomArrayList.of(oldConfig.get(finalKey)));
+                    outputConfig.set(finalKey, Collections.singletonList(oldConfig.get(finalKey)));
                     return;
                 }
             }
 
             if (ver < 27) {
                 if (finalKey.equalsIgnoreCase("accessControl.verifiedRole")) {
+                    if (!(oldConfig.get(finalKey) instanceof String)) return;
                     outputConfig.set(finalKey, oldConfig.get(finalKey).toString().trim().isEmpty() ? Collections.emptyList() : Collections.singletonList(oldConfig.get(finalKey)));
                     return;
                 }
 
                 if (finalKey.equalsIgnoreCase("chat.advancementMessages") || finalKey.equalsIgnoreCase("chat.deathMessages")) {
+                    if (!(oldConfig.get(finalKey) instanceof Boolean)) return;
                     outputConfig.set(finalKey, ((boolean) oldConfig.get(finalKey)) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
                     return;
                 }

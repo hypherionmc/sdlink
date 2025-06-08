@@ -12,6 +12,7 @@ import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,8 @@ public final class CacheManager {
     private static final HashMap<String, String> userCache = new HashMap<>();
     @Getter
     private static final Set<Member> discordMembers = new HashSet<>();
+    @Getter
+    private static final HashMap<String, RichCustomEmoji> customEmotes = new HashMap<>();
 
     @Getter
     public static final HashMap<MessageType, MessageChannelConfig.DestinationObject> messageDestinations = new HashMap<>();
@@ -35,6 +38,7 @@ public final class CacheManager {
         loadChannelCache();
         loadRoleCache();
         loadUserCache();
+        loadEmoteCache();
     }
 
     public static void loadChannelCache() {
@@ -81,6 +85,17 @@ public final class CacheManager {
             userCache.put("@" + r.getEffectiveName(), r.getAsMention());
             discordMembers.add(r);
         });
+    }
+
+    public static void loadEmoteCache() {
+        customEmotes.clear();
+
+        JDA jda = BotController.INSTANCE.getJDA();
+
+        if (jda.getGuilds().isEmpty())
+            return;
+
+        jda.getGuilds().get(0).getEmojis().forEach(e -> customEmotes.put(":" + e.getName() + ":", e));
     }
 
     public static void reloadChannelConfigCache() {

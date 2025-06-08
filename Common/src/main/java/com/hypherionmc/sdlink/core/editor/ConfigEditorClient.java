@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlink.core.editor;
 
+import com.hypherionmc.craterlib.nojang.commands.BridgedCommandSourceStack;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.neovisionaries.ws.client.WebSocket;
@@ -14,14 +15,14 @@ public final class ConfigEditorClient {
 
     private WebSocket webSocket;
 
-    public void openConnection() {
+    public void openConnection(BridgedCommandSourceStack sourceStack) {
         String identifier = EncryptionUtil.getSaltString();
 
         try {
             closeServer();
             webSocket = new WebSocketFactory().createSocket("wss://editor.firstdark.dev/ws/config?identifier=" + identifier);
             webSocket.setPingInterval(10000);
-            webSocket.addListener(new ConfigEditorWSEvents(identifier));
+            webSocket.addListener(new ConfigEditorWSEvents(identifier, sourceStack));
             webSocket.connect();
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to open connection to Config Editor", e);

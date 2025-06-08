@@ -13,7 +13,7 @@ public final class ConfigEditorCommand {
                 .requiresPermission(4)
                 .withNode("sdlink.configeditor")
                 .execute(ctx -> {
-                    ConfigEditorClient.INSTANCE.openConnection();
+                    ConfigEditorClient.INSTANCE.openConnection(ctx);
                     ctx.sendSuccess(() -> Component.text(Text.translate("mc.sdconfigeditor.opening").toString()), false);
                     return 1;
                 });
