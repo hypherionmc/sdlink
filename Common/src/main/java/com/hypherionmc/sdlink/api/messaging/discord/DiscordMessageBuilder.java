@@ -71,7 +71,7 @@ public final class DiscordMessageBuilder {
     public DiscordMessageBuilder message(String message) {
         this.message = SDLinkChatUtils.applyFiltering(
                 message,
-                (i) -> (i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) || (i.target == MessageIgnoreConfig.FilterTarget.CONSOLE)),
+                (i) -> (i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) || (messageType == MessageType.CONSOLE && i.target == MessageIgnoreConfig.FilterTarget.CONSOLE)),
                 (i) -> (i.target != MessageIgnoreConfig.FilterTarget.CONSOLE) && (messageType == MessageType.CONSOLE && i.ignoreConsole));
         return this;
     }
