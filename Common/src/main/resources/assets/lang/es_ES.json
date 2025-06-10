@@ -1,0 +1,91 @@
+{
+    "account.unlinked": "Desvinculado",
+    "account.notfound": "No fue posible encontrar tu cuenta de Minecraft. Porfavor contacta el personal para obtener ayuda.",
+    "account.verify_success": "Tu cuenta ha sido verificada",
+    "account.unverify_success": "Tu cuenta ya no es verificada",
+    "account.load_failed": "No se pudo cargar tu cuenta",
+    "account.not_in_database": "Cuenta no encontrada en la base de datos del servidor",
+  
+    "error.no_discord_server": "Lo siento, no puedo encontrar un servidor de discord enlazado a este bot. Porfavor reportar al operador del servidor",
+    "error.empty_cache": "La memoria caché de los miembros del servidor de discord esta vacía. Porfavor solicite al dueño del servidor que corra el comando de discord reloadcache",
+    "error.no_roles": "El servidor de discord tiene los roles configurados, pero no fueron cargados. Porfavor notificar al dueño del servidor",
+    "error.command_failed": "No se pudo ejecutar ese comando. Porfavor verifique los registros de tu servidor",
+    "error.no_message_perms": "No tengo permiso para enviar mensajes en %s",
+    "error.no_db_accounts": "Lo siento, pero este servidor no tiene jugadores almacenados en la base de datos",
+    "error.not_a_member": "%s no es un miembro de este servidor de discord",
+    "error.not_a_member_of": "Lo siento, parece que no eres miembro de %s. Porfavor intente de nuevo",
+    "error.no_match_found": "No hay cuenta que coincida con %s",
+    "error.code_length": "Lo siento, solo puedo trabajar con 4 mensajes de códigos de verificación a la vez. Porfavor intente de nuevo",
+    "error.mc_command_failed": "No se pudo ejecutar el comando: %s",
+    "error.verify.only_by_players": "Este comando solo puede ser usado por jugadores",
+    "error.verify.not_enabled": "La verificación no esta habilitada para este servidor",
+    "error.hiding.no_account_provided": "Debes especificar un jugador para ocultar",
+    "error.hiding.unhide_no_account_provided": "Debes especificar un jugador para revelar",
+    "error.unknown": "Desconocido",
+  
+    "feedback.bot_reloaded": "El bot ha sido recargado",
+  
+    "command.help.help": "Comandos del bot y ayuda",
+    "command.help.title": "Comandos del Bot",
+  
+    "command.playerlist.help": "Muestra todos los jugadores en línea en el servidor",
+    "command.playerlist.title": "Jugdores en línea",
+    "command.playerlist.no_online": "No hay jugadores en línea en este momento",
+    "command.playerlist.title_page": "Jugadores en línea - Página %s/%s",
+    "command.playerlist.footer": "%s/%s jugadores en línea",
+  
+    "command.hiddenplayers.help": "Muestra todos los jugadores ocultados en tu servidor",
+    "command.hiddenplayers.title": "Jugadores ocultados",
+    "command.hiddenplayers.no_players": "No hay jugadores ocultados en este momento",
+    "command.hiddenplayers.title_page": "Jugadores ocultados - Página %s/%s",
+  
+    "command.hideplayer.help": "Hace un usuario de discord invisible",
+    "command.hideplayer.access_control": "La opción de Minecraft no puede ser usado cuando las opciones de control de acceso (access control) y optionalVerification estan deshabilitadas",
+    "command.hideplayer.account_not_found": "No se pudo encontrar una cuenta de Minecraft enlazada para el usuario %s",
+  
+    "command.unhideplayer.help": "Hace un usuario de discord visible",
+  
+    "command.reloadcache.help": "Recarga forzosamente la memoria caché del bot",
+    "command.reloadcache.reloaded": "La memoria caché ha sido recargada",
+    "command.reloadcache.not_reloaded": "No se pudo recargar la memoria caché. Porfavor verifique los registros de tu servidor.",
+  
+    "command.setchannel.help": "Configura un canal para uso del mod",
+    "command.setchannel.saved": "Se ha guardado el Canal en la configuración. Reinicia tu servidor para que el canal se active",
+    "command.setchannel.webhook_saved": "Se ha guardado el Webhook en la configuración. Reinicia tu servidor para que el webhook se active",
+    "command.setchannel.failed": "No se pudo guardar la configuración: %s",
+  
+    "command.staffunverify.help": "Remueve la verificación de la cuenta de Minecraft de otro jugador",
+    "command.staffverify.help": "Permitir a los administradores del servidor verificar jugadores de Minecraft, sin verificación",
+  
+    "command.unverify.help": "Remueve la verificación de tu cuenta de Minecraft previamente verificada",
+    "command.unverify.failed": "Lo siento, no pudimos remover la verificación de tu cuenta de Minecraft. Porfavor intente de nuevo",
+  
+    "command.verify.help": "Verifica tu cuenta de Minecraft para acceder este servidor",
+    "command.verify.missing_code": "Tienes que suministrar un código de verificación",
+    "command.verify.already_verified": "Lo siento, ya tienes una cuenta verificada y este servidor no permite multiples cuentas",
+    "command.verify.failed": "Lo siento, no pudimos verificar tu cuenta de Minecraft. Porfavor intente de nuevo",
+  
+    "command.verifiedaccounts.help": "Muestra una lista de las Cuentas de Minecraft verificadas",
+    "command.verifiedaccounts.title": "Cuentas Verificadas",
+    "command.verifiedaccounts.no_accounts": "No hay cuentas verificadas para este servidor de discord",
+    "command.verifiedaccounts.title_page": "Cuentas Verificadas - Página %s/%s",
+  
+    "message.attachments": "(%s archivos adjuntos)",
+    "message.replied_to": "Respondiendo a %s: %s",
+  
+    "commands.not_allowed": "Lo siento, no esta permitido usar los comandos de minecraft en este canal",
+    "commands.permission_denied": "Lo siento, no tienes permiso para ejecutar ese comando",
+    "commands.command_not_allowed": "Lo siento, pero no tienes permiso para ejecutar ese comando",
+  
+    "hiding.now_hidden": "%s ahora esta oculto",
+    "hiding.failed": "No se pudo ocultar el jugador. Error: %s",
+    "hiding.not_hidden": "El jugador no esta oculto",
+    "hiding.unhidden": "El jugador %s ya no esta oculto",
+    "hiding.unhide_failed": "No se pudo revelar el jugador. Error: %s",
+  
+    "mc.sdconfigeditor.opening": "Conexión al Editor de la Configuración iniciando. Verifica tus registros para el enlace web",
+  
+    "tooltip.display_name": "Nombre a mostrar",
+    "tooltip.username": "Nombre de Usuario",
+    "tooltip.roles": "Roles"
+  }
