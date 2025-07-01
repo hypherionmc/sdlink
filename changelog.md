@@ -9,6 +9,7 @@
 
 - Add Missing Player Data to Server Embeds (Embeds that are usually sent as the server) - hypherionsa
 - Fix mcPrefix (Player names) in Minecraft Chat not showing - hypherionsa
+- Fix Events Channel messages going to chat channel, even when event channel is defined - hypherionsa
 
 **New Features**:
 

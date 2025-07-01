@@ -40,7 +40,7 @@ public final class ChannelManager {
         JDA jda = BotController.INSTANCE.getJDA();
 
         GuildMessageChannel chatChannel = jda.getChannelById(GuildMessageChannel.class, SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID.isBlank() ? "0" : SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID);
-        GuildMessageChannel eventChannel = jda.getChannelById(GuildMessageChannel.class, SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID.isBlank() ? "0" : SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID);
+        GuildMessageChannel eventChannel = jda.getChannelById(GuildMessageChannel.class, SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID.isBlank() ? "0" : SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID);
         consoleChannel = jda.getChannelById(GuildMessageChannel.class, SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.consoleChannelID.isBlank() ? "0" : SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.consoleChannelID);
 
         if (chatChannel != null) {
