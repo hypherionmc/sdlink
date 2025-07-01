@@ -5,6 +5,7 @@
 package com.hypherionmc.sdlink.api.accounts;
 
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
+import com.hypherionmc.sdlink.core.config.AppliesTo;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
@@ -58,7 +59,7 @@ public final class DiscordAuthor {
         this.displayName = this.displayName.replace("_", "\\_");
         this.displayName = SDLinkChatUtils.applyFiltering(
                 this.displayName,
-                (i) -> i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.USERNAME || i.target == MessageIgnoreConfig.FilterTarget.BOTH));
+                (i) -> i.appliesTo.appliesToUsername(i));
 
         if (this.displayName == null || this.displayName.isEmpty()) {
             this.displayName = displayName;

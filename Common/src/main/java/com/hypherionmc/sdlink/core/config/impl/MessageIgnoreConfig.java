@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.core.config.impl;
 
+import com.hypherionmc.sdlink.core.config.AppliesTo;
 import shadow.hypherionmc.moonconfig.core.conversion.Path;
 import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
 
@@ -40,12 +41,19 @@ public final class MessageIgnoreConfig {
         CHAT,
         USERNAME,
         BOTH,
-        CONSOLE
-    }
+        CONSOLE;
 
-    public enum AppliesTo {
-        DISCORD,
-        MINECRAFT
+        public boolean isChat() {
+            return this == FilterTarget.CHAT || this == FilterTarget.BOTH;
+        }
+
+        public boolean isUsername() {
+            return this == FilterTarget.USERNAME || this == FilterTarget.BOTH;
+        }
+
+        public boolean isConsole() {
+            return this == FilterTarget.CONSOLE || this == FilterTarget.BOTH;
+        }
     }
 
     public static class Ignore {

@@ -131,9 +131,7 @@ public final class MessageContext {
                 .replace("%user%", user.get()).replace("%role%", sender.getRoles().isEmpty()
                         ? "No Role" : sender.getRoles().get(0).getName());
 
-        String prefix = SDLinkChatUtils.applyFiltering(mainPrefix,
-                (i) -> (i.target == MessageIgnoreConfig.FilterTarget.USERNAME || i.target == MessageIgnoreConfig.FilterTarget.BOTH)
-                        && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
+        String prefix = SDLinkChatUtils.applyFiltering(mainPrefix, (i) -> i.appliesTo.isMinecraft() && i.appliesTo.appliesToUsername(i));
 
         if (prefix.isEmpty())
             prefix = mainPrefix;
@@ -142,7 +140,7 @@ public final class MessageContext {
         Component component = parsePlaceholders(SDLinkChatUtils.format(prefix), baseStyle, sender);
 
         // Apply messaging filters
-        formattedMessage = SDLinkChatUtils.applyFiltering(formattedMessage, (i) -> (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
+        formattedMessage = SDLinkChatUtils.applyFiltering(formattedMessage, (i) -> i.appliesTo.isMinecraft() && i.appliesTo.appliesToChat(i));
         if (formattedMessage.isEmpty())
             return null;
 
@@ -150,7 +148,7 @@ public final class MessageContext {
 
         // Handle Replies
         if (formattedReply != null && !formattedReply.isEmpty() && replyMember != null) {
-            String newReply = SDLinkChatUtils.applyFiltering(formattedReply, (i) -> (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) && i.appliesTo == MessageIgnoreConfig.AppliesTo.MINECRAFT);
+            String newReply = SDLinkChatUtils.applyFiltering(formattedReply, (i) -> i.appliesTo.isMinecraft() && i.appliesTo.appliesToChat(i));
 
             if (newReply != null && !newReply.isEmpty()) {
                 formattedReply = newReply;

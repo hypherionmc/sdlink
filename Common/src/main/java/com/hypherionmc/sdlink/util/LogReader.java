@@ -91,8 +91,6 @@ public final class LogReader extends AbstractAppender {
         if (messageScheduler == null || !messageScheduler.isAlive()) {
             messageScheduler = new Thread(() -> {
                 while (true) {
-                    if (!BotController.INSTANCE.isBotReady())
-                        return;
                     if (System.currentTimeMillis() - time > 250) {
                         logs = logs.replaceAll("\\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\\b", "[REDACTED]");
                         logs = logs.replaceAll("https:\\/\\/editor\\.firstdark\\.dev\\/[a-zA-Z0-9]+", "[REDACTED]");
@@ -100,6 +98,9 @@ public final class LogReader extends AbstractAppender {
                         if (logs.length() > 2000) {
                             logs = logs.substring(0, 1999);
                         }
+
+                        if (!BotController.INSTANCE.isBotReady())
+                            return;
 
                         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CONSOLE)
                                 .message(logs)

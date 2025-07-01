@@ -8,6 +8,7 @@ import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.api.accounts.DiscordUser;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
+import com.hypherionmc.sdlink.core.config.AppliesTo;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
@@ -69,10 +70,7 @@ public final class DiscordMessageBuilder {
      * The Actual message that will be sent
      */
     public DiscordMessageBuilder message(String message) {
-        this.message = SDLinkChatUtils.applyFiltering(
-                message,
-                (i) -> (i.appliesTo == MessageIgnoreConfig.AppliesTo.DISCORD && (i.target == MessageIgnoreConfig.FilterTarget.CHAT || i.target == MessageIgnoreConfig.FilterTarget.BOTH) || (messageType == MessageType.CONSOLE && i.target == MessageIgnoreConfig.FilterTarget.CONSOLE)),
-                (i) -> (i.target != MessageIgnoreConfig.FilterTarget.CONSOLE) && (messageType == MessageType.CONSOLE && i.ignoreConsole));
+        this.message = SDLinkChatUtils.applyFiltering(message, (i) -> this.messageType == MessageType.CONSOLE ? i.appliesTo.appliesToConsole(i) : i.appliesTo.appliesToChat(i));
         return this;
     }
 
