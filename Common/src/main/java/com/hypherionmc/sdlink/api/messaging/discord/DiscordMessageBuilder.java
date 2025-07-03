@@ -14,6 +14,8 @@ import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * @author HypherionSA
  * Used to construct a {@link DiscordMessage} to be sent back to discord
@@ -42,15 +44,15 @@ public final class DiscordMessageBuilder {
         this.author = author;
 
         if (author.getUsername().equalsIgnoreCase("server")) {
-            this.author = DiscordAuthor.SERVER;
+            this.author = DiscordAuthor.getServer();
         }
 
-        if (SDLinkConfig.INSTANCE.chatConfig.useLinkedNames && this.author != DiscordAuthor.SERVER && author.getProfile() != null) {
+        if (SDLinkConfig.INSTANCE.chatConfig.useLinkedNames && !Objects.equals(this.author, DiscordAuthor.getServer()) && author.getProfile() != null) {
             MinecraftAccount account = MinecraftAccount.of(author.getProfile());
             DiscordUser discordUser = account.getDiscordUser();
 
             if (account != null && discordUser != null) {
-                this.author = DiscordAuthor.of(discordUser.getEffectiveName(), discordUser.getAvatarUrl(), author.getUsername(), false);
+                this.author.overrideData(discordUser.getEffectiveName(), discordUser.getAvatarUrl());
                 this.author.setColor(discordUser.getRoleColor());
             }
         }
@@ -60,7 +62,7 @@ public final class DiscordMessageBuilder {
                 && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled
                 && !SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.chatWebhook.trim().isEmpty()
         ) {
-            this.author = DiscordAuthor.SERVER;
+            this.author = DiscordAuthor.getServer();
         }
 
         return this;
@@ -84,7 +86,7 @@ public final class DiscordMessageBuilder {
      */
     public DiscordMessage build() {
         if (this.author == null) {
-            this.author = DiscordAuthor.SERVER;
+            this.author = DiscordAuthor.getServer();
         }
 
         if (this.message == null) {

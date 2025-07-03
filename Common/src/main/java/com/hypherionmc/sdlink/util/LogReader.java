@@ -38,6 +38,7 @@ public final class LogReader extends AbstractAppender {
     private static boolean isDevEnv = false;
     private long time;
     private Thread messageScheduler;
+    private static LogReader da;
 
     private LogReader(String name, Filter filter) {
         super(name, filter, null, true, new Property[0]);
@@ -52,9 +53,15 @@ public final class LogReader extends AbstractAppender {
 
     public static void init(boolean isDev) {
         isDevEnv = isDev;
-        LogReader da = LogReader.createAppender("SDLinkLogging", null);
+        da = LogReader.createAppender("SDLinkLogging", null);
         ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addAppender(da);
         da.start();
+    }
+
+    public static void destroy() {
+        da.stop();
+        ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).removeAppender(da);
+        da.messageScheduler.stop();
     }
 
     @Override
@@ -90,7 +97,7 @@ public final class LogReader extends AbstractAppender {
         time = System.currentTimeMillis();
         if (messageScheduler == null || !messageScheduler.isAlive()) {
             messageScheduler = new Thread(() -> {
-                while (true) {
+                while (BotController.INSTANCE.isBotReady()) {
                     if (System.currentTimeMillis() - time > 250) {
                         logs = logs.replaceAll("\\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\\b", "[REDACTED]");
                         logs = logs.replaceAll("https:\\/\\/editor\\.firstdark\\.dev\\/[a-zA-Z0-9]+", "[REDACTED]");
@@ -99,12 +106,9 @@ public final class LogReader extends AbstractAppender {
                             logs = logs.substring(0, 1999);
                         }
 
-                        if (!BotController.INSTANCE.isBotReady())
-                            return;
-
                         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CONSOLE)
                                 .message(logs)
-                                .author(DiscordAuthor.SERVER)
+                                .author(DiscordAuthor.getServer())
                                 .build();
 
                         if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages) {

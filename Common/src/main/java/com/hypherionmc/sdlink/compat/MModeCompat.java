@@ -27,7 +27,7 @@ public final class MModeCompat {
 
         if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled && SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.sendMaintenanceStart) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.CUSTOM)
-                    .author(DiscordAuthor.SERVER)
+                    .author(DiscordAuthor.getServer())
                     .message(SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.maintenanceStartMessage)
                     .build();
 
@@ -45,7 +45,7 @@ public final class MModeCompat {
 
         if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled && SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.sendMaintenanceEnd) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.CUSTOM)
-                    .author(DiscordAuthor.SERVER)
+                    .author(DiscordAuthor.getServer())
                     .message(SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.maintenanceEndMessage)
                     .build();
 

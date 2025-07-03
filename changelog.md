@@ -10,6 +10,11 @@
 - Add Missing Player Data to Server Embeds (Embeds that are usually sent as the server) - hypherionsa
 - Fix mcPrefix with old mc formatting (Player names) in Minecraft Chat not showing - hypherionsa
 - Fix Events Channel messages going to chat channel, even when event channel is defined - hypherionsa
+- Fix Linked Names in chat formatting showing up as Unknown - hypherionsa
+- Fix Username filters not applying - hypherionsa
+- Fix Console relay causing an error on server shutdown - hypherionsa
+- Fix profile data persisting on Server messages - hypherionsa
+- Fix Linked Names feature using incorrect UUID for players - hypherionsa
 
 **New Features**:
 

@@ -5,9 +5,7 @@
 package com.hypherionmc.sdlink.api.accounts;
 
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
-import com.hypherionmc.sdlink.core.config.AppliesTo;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
@@ -22,21 +20,12 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 public final class DiscordAuthor {
 
-    // User used for Server Messages
-    public static final DiscordAuthor SERVER = new DiscordAuthor(
-            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar,
-            "server",
-            true,
-            ""
-    ).setGameProfile(null).setPlayerName(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName);
-
     private String displayName;
-    private final String avatar;
+    private String avatar;
     private final boolean isServer;
     private String username;
     private String uuid;
-    private BridgedGameProfile profile = null;
+    private BridgedGameProfile profile;
     String realPlayerAvatar = "";
     String realPlayerName = "";
     @Setter private int color = Role.DEFAULT_COLOR_RAW;
@@ -55,7 +44,12 @@ public final class DiscordAuthor {
         this.isServer = isServer;
         this.uuid = uuid;
         this.displayName = displayName;
+        this.profile = null;
 
+        fixDisplayName(displayName);
+    }
+
+    private void fixDisplayName(String displayName) {
         this.displayName = this.displayName.replace("_", "\\_");
         this.displayName = SDLinkChatUtils.applyFiltering(
                 this.displayName,
@@ -84,6 +78,16 @@ public final class DiscordAuthor {
         );
     }
 
+    public static DiscordAuthor getServer() {
+        return new DiscordAuthor(
+                SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar,
+                "server",
+                true,
+                ""
+        ).setPlayerName(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName);
+    }
+
     public static DiscordAuthor of(String displayName, String avatar, String username, boolean server) {
         return new DiscordAuthor(
                 displayName,
@@ -102,6 +106,13 @@ public final class DiscordAuthor {
     public DiscordAuthor setPlayerName(String name) {
         this.realPlayerName = name;
         return this;
+    }
+
+    public void overrideData(String name, String avatar) {
+        this.displayName = name;
+        this.avatar = avatar;
+        this.realPlayerAvatar = avatar;
+        fixDisplayName(name);
     }
 
     public DiscordAuthor setGameProfile(@Nullable BridgedGameProfile profile) {
