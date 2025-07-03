@@ -15,6 +15,7 @@
 - Fix Console relay causing an error on server shutdown - hypherionsa
 - Fix profile data persisting on Server messages - hypherionsa
 - Fix Linked Names feature using incorrect UUID for players - hypherionsa
+- Fix CustomEmotes not loading and CustomEmotes not being usable when mentions are disabled - hypherionsa
 
 **New Features**:
 

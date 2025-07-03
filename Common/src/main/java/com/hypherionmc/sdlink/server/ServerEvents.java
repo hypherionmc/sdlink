@@ -184,8 +184,9 @@ public final class ServerEvents {
 
                 if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
                     msg = SDLinkChatUtils.parse(msg);
-                    msg = parseChatMentions(msg);
                 }
+
+                msg = parseChatMentions(msg);
 
                 DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile).setPlayerName(gameProfile.getName());
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
@@ -785,25 +786,27 @@ public final class ServerEvents {
         Pattern pattern = Pattern.compile("([@#])([A-Za-z0-9_]+)");
         Matcher matcher = pattern.matcher(input);
 
-        while (matcher.find()) {
-            String type = matcher.group(1);
-            String group = matcher.group(2);
+        if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+            while (matcher.find()) {
+                String type = matcher.group(1);
+                String group = matcher.group(2);
 
-            if (type.equals("@")) {
-                Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getEffectiveName().equalsIgnoreCase(group) || m.getUser().getName().equalsIgnoreCase(group)).findFirst();
+                if (type.equals("@")) {
+                    Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getEffectiveName().equalsIgnoreCase(group) || m.getUser().getName().equalsIgnoreCase(group)).findFirst();
 
-                if (member.isPresent()) {
-                    input = input.replace(matcher.group(0), member.get().getAsMention());
-                } else {
-                    if (CacheManager.getServerRoles().containsKey(matcher.group(0))) {
-                        input = input.replace(matcher.group(0), CacheManager.getServerRoles().get(matcher.group(0)));
+                    if (member.isPresent()) {
+                        input = input.replace(matcher.group(0), member.get().getAsMention());
+                    } else {
+                        if (CacheManager.getServerRoles().containsKey(matcher.group(0))) {
+                            input = input.replace(matcher.group(0), CacheManager.getServerRoles().get(matcher.group(0)));
+                        }
                     }
                 }
-            }
 
-            if (type.equals("#")) {
-                if (CacheManager.getServerChannels().containsKey(matcher.group(0))) {
-                    input = input.replace(matcher.group(0), CacheManager.getServerChannels().get(matcher.group(0)));
+                if (type.equals("#")) {
+                    if (CacheManager.getServerChannels().containsKey(matcher.group(0))) {
+                        input = input.replace(matcher.group(0), CacheManager.getServerChannels().get(matcher.group(0)));
+                    }
                 }
             }
         }

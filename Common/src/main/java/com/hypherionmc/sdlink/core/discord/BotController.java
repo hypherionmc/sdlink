@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -153,10 +154,12 @@ public final class BotController {
                             GatewayIntent.GUILD_MESSAGES,
                             GatewayIntent.MESSAGE_CONTENT,
                             GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                            GatewayIntent.DIRECT_MESSAGES
+                            GatewayIntent.DIRECT_MESSAGES,
+                            GatewayIntent.GUILD_EXPRESSIONS
                     )
                     .addEventListeners(commandClient, eventWaiter, new DiscordEventHandler())
                     .setAutoReconnect(true)
+                    .enableCache(CacheFlag.EMOJI)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .setBulkDeleteSplittingEnabled(true)
