@@ -163,7 +163,7 @@ public final class DiscordMessage {
                                 .replace("%player%", author.getDisplayName())
                                 .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName())
                                 .replace("%message%", message)
-                        : message;
+                        : message.replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName());
                 builder.setContent(content);
             }
             channel.channel().sendMessage(builder.build()).queue(success -> runAfterSend());

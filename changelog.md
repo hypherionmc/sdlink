@@ -20,3 +20,4 @@
 
 - Add config option to use the server author for Chat Webhook messages (because it was requested) - hypherionsa
 - Add new `CONSOLE` target option for filter entries - ArkoSammy12
+- Add %mcname% placeholder for other message types going to discord - hypherionsa
