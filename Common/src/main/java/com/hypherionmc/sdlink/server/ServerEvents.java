@@ -115,6 +115,10 @@ public final class ServerEvents {
 
         if (BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && CacheManager.getDiscordMembers().isEmpty())
             CacheManager.loadCache();
+
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("utilitarian")) {
+            BotController.INSTANCE.getLogger().warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
+        }
     }
 
     @CraterEventListener
