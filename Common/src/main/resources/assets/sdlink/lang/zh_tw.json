@@ -1,0 +1,91 @@
+{
+  "account.unlinked": "未連結",
+  "account.notfound": "我們找不到您的 Minecraft 帳戶。請向工作人員尋求協助",
+  "account.verify_success": "您的帳戶已驗證",
+  "account.unverify_success": "您的帳戶尚未驗證",
+  "account.load_failed": "無法載入您的帳戶",
+  "account.not_in_database": "伺服器資料庫中未找到帳戶",
+
+  "error.no_discord_server": "抱歉，我找不到連接到此機器人的 Discord 伺服器。請向伺服器管理員報告此情況",
+  "error.empty_cache": "此伺服器的 Discord 成員快取為空。請要求伺服器擁有者執行 reloadcache discord 指令",
+  "error.no_roles": "伺服器已配置所需角色，但未載入不和諧角色。請通知伺服器擁有者",
+  "error.command_failed": "無法執行命令。請查看您的伺服器日誌",
+  "error.no_message_perms": "我沒有權限在 %s 中發送訊息",
+  "error.no_db_accounts": "抱歉，此伺服器的資料庫中不包含任何已儲存的玩家",
+  "error.not_a_member": "%s 不是此 Discord 伺服器的成員",
+  "error.not_a_member_of": "抱歉，您似乎不是 %s 的成員。請重試",
+  "error.no_match_found": "未找到符合 %s 的帳戶",
+  "error.code_length": "抱歉，我只能處理4位數字的驗證碼訊息。請重試",
+  "error.mc_command_failed": "無法執行指令：%s",
+  "error.verify.only_by_players": "此指令僅玩家可使用",
+  "error.verify.not_enabled": "此伺服器未啟用驗證",
+  "error.hiding.no_account_provided": "你需要提供一個玩家來隱藏",
+  "error.hiding.unhide_no_account_provided": "您需要提供一個玩家來取消隱藏",
+  "error.unknown": "Unknown",
+
+  "feedback.bot_reloaded": "機器人已重新加載",
+
+  "command.help.help": "機器人命令和幫助",
+  "command.help.title": "機器人命令",
+
+  "command.playerlist.help": "列出伺服器上目前在線的玩家",
+  "command.playerlist.title": "線上玩家",
+  "command.playerlist.no_online": "目前沒有玩家在線",
+  "command.playerlist.title_page": "線上玩家 - 頁面 %s/%s",
+  "command.playerlist.footer": "%s/%s 位玩家在線",
+
+  "command.hiddenplayers.help": "列出伺服器上所有隱藏的玩家",
+  "command.hiddenplayers.title": "隱藏玩家",
+  "command.hiddenplayers.no_players": "目前沒有隱藏玩家",
+  "command.hiddenplayers.title_page": "隱藏玩家 - 頁面 %s/%s",
+
+  "command.hideplayer.help": "讓 Discord 用戶不可見",
+  "command.hideplayer.access_control": "當存取控制和可選驗證均已停用時，無法使用 minecraft 選項",
+  "command.hideplayer.account_not_found": "無法找到用戶 %s 關聯的 Minecraft 帳戶",
+
+  "command.unhideplayer.help": "使 Discord 使用者可見",
+
+  "command.reloadcache.help": "強制重新載入機器人緩存",
+  "command.reloadcache.reloaded": "快取已重新載入",
+  "command.reloadcache.not_reloaded": "無法重新載入快取。請檢查您的伺服器日誌",
+
+  "command.setchannel.help": "配置一個供 mod 使用的頻道",
+  "command.setchannel.saved": "已儲存頻道至配置。重新啟動伺服器以使頻道生效",
+  "command.setchannel.webhook_saved": "已將 Webhook 儲存到設定。重啟伺服器以使 webhook 生效",
+  "command.setchannel.failed": "儲存配置失敗：%s",
+
+  "command.staffunverify.help": "取消驗證其他玩家的 Minecraft 帳戶",
+  "command.staffverify.help": "允許工作人員驗證我的世界玩家，無需驗證",
+
+  "command.unverify.help": "取消驗證您先前已驗證的 Minecraft 帳戶",
+  "command.unverify.failed": "抱歉，我們無法取消驗證您的 Minecraft 帳戶。請重試",
+
+  "command.verify.help": "驗證您的 Minecraft 帳戶以存取伺服器",
+  "command.verify.missing_code": "您需要提供驗證碼",
+  "command.verify.already_verified": "抱歉，您已經有一個已驗證的帳戶，並且此伺服器不允許多個帳戶",
+  "command.verify.failed": "抱歉，我們無法驗證您的 Minecraft 帳戶。請重試",
+
+  "command.verifiedaccounts.help": "查看已驗證的 Minecraft 帳戶列表",
+  "command.verifiedaccounts.title": "已驗證帳戶",
+  "command.verifiedaccounts.no_accounts": "此 Discord 暫無已驗證帳戶",
+  "command.verifiedaccounts.title_page": "已驗證帳戶 - 頁面 %s/%s",
+
+  "message.attachments": "（%s 個附件）",
+  "message.replied_to": "回覆 %s：%s",
+
+  "commands.not_allowed": "抱歉，此頻道不允許使用 minecraft 指令",
+  "commands.permission_denied": "抱歉，您沒有權限執行該命令",
+  "commands.command_not_allowed": "抱歉，您無權執行該命令",
+
+  "hiding.now_hidden": "%s 現已隱藏",
+  "hiding.failed": "隱藏玩家失敗。錯誤：%s",
+  "hiding.not_hidden": "玩家未隱藏",
+  "hiding.unhidden": "玩家 %s 不再隱藏",
+  "hiding.unhide_failed": "無法取消隱藏玩家。錯誤：%s",
+
+  "mc.sdconfigeditor.opening": "配置編輯器連線正在初始化。檢查你的日誌中的鏈接",
+
+  "tooltip.display_name": "顯示名稱",
+  "tooltip.username": "使用者名稱",
+  "tooltip.roles": "角色"
+}
