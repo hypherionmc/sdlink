@@ -17,14 +17,12 @@ import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.PKUtil;
 import com.hypherionmc.sdlink.util.translations.Text;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.fellbaum.jemoji.EmojiManager;
 
 import java.util.List;
 
@@ -63,8 +61,17 @@ public final class DiscordMessageHooks {
             if (WebhookManager.isAppWebhook(event.getMessage().getAuthor().getIdLong()))
                 return;
 
-            if ((event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.ignoreBots)
+            if (event.isWebhookMessage() || event.getAuthor().isBot()) {
+                if (!(SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event.getMessageId())) &&
+                        SDLinkConfig.INSTANCE.chatConfig.ignoreBots
+                ) {
+                    return;
+                }
+            }
+
+            if (!(event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event.getMessageId()))
                 return;
+
 
             if (SDLinkConfig.INSTANCE.linkedCommands.enabled && !SDLinkConfig.INSTANCE.linkedCommands.permissions.isEmpty() && event.getMessage().getContentRaw().startsWith(SDLinkConfig.INSTANCE.linkedCommands.prefix))
                 return;

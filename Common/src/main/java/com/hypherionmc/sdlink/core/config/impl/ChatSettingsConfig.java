@@ -54,6 +54,15 @@ public final class ChatSettingsConfig {
     @SpecComment("Should messages from bots be relayed")
     public boolean ignoreBots = true;
 
+    @Path("pluralKitCompat")
+    @SpecComment("Compatibility with PluralKit (can introduce a very slight delay in messages being sent from Discord to Minecraft)")
+    public boolean pluralKitCompat = false;
+
+
+    @Path("pluralKitCompatMessageDelay")
+    @SpecComment("Amount of time to delay messages by before sending them to Minecraft in milliseconds. Too low may make unproxied messages visible and too high will cause noticeable delay.")
+    public int pluralKitCompatMessageDelay = 500;
+
     @Path("serverStarting")
     @SpecComment("Should SERVER STARTING messages be shown")
     public boolean serverStarting = true;

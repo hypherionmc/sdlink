@@ -99,7 +99,19 @@ public final class DiscordEventHandler extends ListenerAdapter {
             MinecraftCommandHook.discordMessageEvent(event);
         }
 
-        DiscordMessageHooks.discordMessageEvent(event);
+        if (SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(SDLinkConfig.INSTANCE.chatConfig.pluralKitCompatMessageDelay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                DiscordMessageHooks.discordMessageEvent(event);
+            }).start();
+        } else
+            DiscordMessageHooks.discordMessageEvent(event);
+
     }
 
     /**
