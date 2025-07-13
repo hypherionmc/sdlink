@@ -9,3 +9,4 @@
 
 - French Translations - DylanDelobel
 - Added notice for modpacks potentially (unintentionally) blocking discord messages with Utilitarian Mod - HypherionSA
+- Added compatibility with the PluralKit Discord bot with two new config options (`pluralKitCompat` and `pluralKitCompatMessageDelay`)
