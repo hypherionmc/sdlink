@@ -62,14 +62,14 @@ public final class DiscordMessageHooks {
                 return;
 
             if (event.isWebhookMessage() || event.getAuthor().isBot()) {
-                if (!(SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event.getMessageId())) &&
-                        SDLinkConfig.INSTANCE.chatConfig.ignoreBots
-                ) {
+                boolean pluralKitHandled = SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event);
+                if (!pluralKitHandled && SDLinkConfig.INSTANCE.chatConfig.ignoreBots) {
                     return;
                 }
             }
 
-            if (!(event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event.getMessageId()))
+
+            if (!(event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event))
                 return;
 
 
