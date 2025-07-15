@@ -12,12 +12,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class PKUtil {
     public static final String PK_APP_ID = "466378653216014359";
-    public static final HashSet<String> PK_USERS = new HashSet<>();
+    public static final Set<String> PK_USERS = Collections.synchronizedSet(new HashSet<>());
 
     public static boolean isPK(MessageReceivedEvent event) {
         if (event.isWebhookMessage()) {
