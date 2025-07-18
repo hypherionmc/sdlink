@@ -23,11 +23,14 @@ public class PKUtil {
 
     public static boolean isPK(MessageReceivedEvent event) {
         if (event.isWebhookMessage()) {
-            new Thread(() -> {
-                String sender = PKUtil.getSender(event.getMessageId());
-                if (sender != null) PK_USERS.add(sender);
-            }).start();
-            return Objects.equals(event.getMessage().getApplicationId(), PK_APP_ID);
+            if (Objects.equals(event.getMessage().getApplicationId(), PK_APP_ID)){
+                new Thread(() -> {
+                    String sender = PKUtil.getSender(event.getMessageId());
+                    if (sender != null) PK_USERS.add(sender);
+                }).start();
+                return true;
+            }
+            return false;
         }
         if (PK_USERS.contains(event.getAuthor().getId())) {
             return getSender(event.getMessageId()) != null;
