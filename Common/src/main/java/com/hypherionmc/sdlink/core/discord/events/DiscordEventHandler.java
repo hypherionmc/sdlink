@@ -21,6 +21,7 @@ import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.PermissionChecker;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.PKUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
@@ -99,7 +100,19 @@ public final class DiscordEventHandler extends ListenerAdapter {
             MinecraftCommandHook.discordMessageEvent(event);
         }
 
-        DiscordMessageHooks.discordMessageEvent(event);
+        if (SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.PK_USERS.contains(event.getAuthor().getId())) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(SDLinkConfig.INSTANCE.chatConfig.pluralKitCompatMessageDelay);
+                } catch (InterruptedException e) {
+                    BotController.INSTANCE.getLogger().error("Unexpected InterruptedException", e);
+                }
+
+                DiscordMessageHooks.discordMessageEvent(event);
+            }).start();
+        } else
+            DiscordMessageHooks.discordMessageEvent(event);
+
     }
 
     /**
