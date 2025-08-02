@@ -34,10 +34,6 @@ public final class MinecraftCommandHook {
             return;
 
         if (!SDLinkConfig.INSTANCE.linkedCommands.allowedChannels.isEmpty() && SDLinkConfig.INSTANCE.linkedCommands.allowedChannels.stream().noneMatch(c -> c.equals(event.getChannel().getId()))) {
-            if (SDLinkConfig.INSTANCE.linkedCommands.outputInvalid) {
-                event.getMessage().reply(Text.translate("commands.not_allowed")).mentionRepliedUser(false).queue(s -> s.delete().queueAfter(5, TimeUnit.SECONDS));
-                event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
-            }
             return;
         }
 

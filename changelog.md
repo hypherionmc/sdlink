@@ -10,3 +10,8 @@
 - French Translations - DylanDelobel
 - Added notice for modpacks potentially (unintentionally) blocking discord messages with Utilitarian Mod - HypherionSA
 - Added compatibility with the PluralKit Discord bot with two new config options (`pluralKitCompat` and `pluralKitCompatMessageDelay`) - mg95
+- Traditional Chinese Translations - JamesHAc
+
+**Changes**:
+
+- Linked Commands will no longer send "command not allowed" output in invalid channels when allowedChannels are configured - [#187](https://github.com/hypherionmc/sdlink/issues/187) - HypherionSA
