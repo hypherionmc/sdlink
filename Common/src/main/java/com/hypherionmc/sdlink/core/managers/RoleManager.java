@@ -35,6 +35,9 @@ public final class RoleManager {
     @Getter
     private static final Set<Role> ftbRanksRoles = new HashSet<>();
 
+    @Getter
+    private static final Set<Role> playerRoleRoles = new HashSet<>();
+
     /**
      * Check and load the roles required by the bot
      */
@@ -43,6 +46,7 @@ public final class RoleManager {
         deniedRoles.clear();
         luckPermsRoles.clear();
         ftbRanksRoles.clear();
+        playerRoleRoles.clear();
         verifiedRole.clear();
 
         if (SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
@@ -85,6 +89,15 @@ public final class RoleManager {
 
                 if (role != null)
                     luckPermsRoles.add(role);
+            });
+        }
+
+        if (SDLinkCompatConfig.INSTANCE.common.playerroles) {
+            SDLinkCompatConfig.INSTANCE.playerroles.syncs.forEach(s -> {
+                Role role = getRole(errCount, builder, "PlayerRoles Sync", s.role);
+
+                if (role != null)
+                    playerRoleRoles.add(role);
             });
         }
     }

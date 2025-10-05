@@ -251,7 +251,7 @@ public final class ServerEvents {
             username = "Server";
         }
 
-        if (username.equalsIgnoreCase("sdlinktriggersystem"))
+        if (username.equalsIgnoreCase("sdlinktriggersystem") || username.equalsIgnoreCase(""))
             return;
 
         if ((cmdName.equalsIgnoreCase("say") || cmdName.equalsIgnoreCase("me")) && SDLinkConfig.INSTANCE.chatConfig.sendSayCommand) {

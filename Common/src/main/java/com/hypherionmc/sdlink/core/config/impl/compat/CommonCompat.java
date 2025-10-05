@@ -21,6 +21,10 @@ public final class CommonCompat {
     @SpecComment("Should SDLink integrate with Luckperms (Group Syncing only)")
     public boolean luckperms = true;
 
+    @Path("playerroles")
+    @SpecComment("Should SDLink integrate with Player Roles")
+    public boolean playerroles = true;
+
     @Path("ftbteams_chat")
     @SpecComment("Should chats from the /ftbteams chat command be relayed to discord")
     public boolean ftbteams_chat = false;
