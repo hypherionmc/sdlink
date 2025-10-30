@@ -15,4 +15,4 @@
 **Changes**:
 
 - Linked Commands will no longer send "command not allowed" output in invalid channels when allowedChannels are configured - [#187](https://github.com/hypherionmc/sdlink/issues/187) - HypherionSA
-- LuckPerms integration will now correctly remove ranks from users - u32
+- LuckPerms integration will now correctly remove ranks from players - u32
