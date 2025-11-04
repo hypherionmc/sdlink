@@ -21,7 +21,7 @@ public final class SDLinkCompatConfig extends AbstractConfig<SDLinkCompatConfig>
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkCompatConfig INSTANCE;
-    public transient static int configVer = 6;
+    public transient static int configVer = 7;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 

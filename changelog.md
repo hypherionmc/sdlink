@@ -8,3 +8,4 @@
 **New Features**:
 
 - Added support for PlayerRoles Syncing (https://modrinth.com/mod/player-roles)
+- Added support for CobblemonGuilds

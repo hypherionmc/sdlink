@@ -42,6 +42,7 @@ import com.hypherionmc.sdlink.server.commands.*;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.Text;
+import io.github.joagar21.guilds.api.GuildsAPI;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
 import shadow.kyori.adventure.text.Component;
@@ -162,6 +163,11 @@ public final class ServerEvents {
 
         if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
             return;
+
+        // Cobblemon Guilds
+        if (SDLinkCompatConfig.INSTANCE.common.cobblemonguilds && ModloaderEnvironment.INSTANCE.isModLoaded("guilds")) {
+            if (GuildsAPI.getEnabledGuildChat().contains(event.getPlayer().getUUID())) return;
+        }
 
         // FTB Essentials
         if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && ModloaderEnvironment.INSTANCE.isModLoaded("ftbessentials") && FTBEssentials.isPlayerMuted(event.getPlayer()))
