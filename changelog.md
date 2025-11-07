@@ -9,4 +9,4 @@
 
 - Added support for PlayerRoles Syncing (https://modrinth.com/mod/player-roles)
 - Added support for CobblemonGuilds
-- LuckPerms integration will now correctly remove ranks from players - u32
+- LuckPerms integration will now correctly remove ranks from players - #202 - u32
