@@ -39,7 +39,7 @@ subprojects {
 
     repositories {
         mavenCentral()
-        //mavenLocal()
+        mavenLocal()
 
         maven {
             url = "https://api.nightbloom.cc/maven"
@@ -72,6 +72,7 @@ subprojects {
 
         implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20.4:${craterlib}:dev"
         implementation "nightbloom:mmode:${maintenance_mode}"
+        implementation("io.github.joagar21:GuildsCobblemon:1.0.2:api")
     }
 
 

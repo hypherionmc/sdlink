@@ -52,6 +52,14 @@ public final class RoleSync {
                 e.printStackTrace();
             }
         }
+
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("player_roles") && SDLinkCompatConfig.INSTANCE.common.playerroles) {
+            try {
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void roleAddedToMember(Member member, Role role, Guild guild) {

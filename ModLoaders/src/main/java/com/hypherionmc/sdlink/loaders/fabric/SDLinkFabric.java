@@ -6,6 +6,7 @@ import com.hypherionmc.sdlink.compat.MModeCompat;
 import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
 import com.hypherionmc.sdlink.compat.rolesync.impl.FTBRankSync;
 import com.hypherionmc.sdlink.compat.rolesync.impl.LuckPermsSync;
+import com.hypherionmc.sdlink.compat.rolesync.impl.PlayerRolesSync;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -28,6 +29,10 @@ public final class SDLinkFabric implements DedicatedServerModInitializer {
 
         if (ModloaderEnvironment.INSTANCE.isModLoaded("luckperms")) {
             CraterEventBus.INSTANCE.registerEventListener(LuckPermsSync.INSTANCE);
+        }
+
+        if (ModloaderEnvironment.INSTANCE.isModLoaded("player_roles")) {
+            CraterEventBus.INSTANCE.registerEventListener(PlayerRolesSync.INSTANCE);
         }
     }
 }

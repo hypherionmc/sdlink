@@ -21,7 +21,7 @@ public final class SDLinkCompatConfig extends AbstractConfig<SDLinkCompatConfig>
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkCompatConfig INSTANCE;
-    public transient static int configVer = 5;
+    public transient static int configVer = 7;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
@@ -48,6 +48,10 @@ public final class SDLinkCompatConfig extends AbstractConfig<SDLinkCompatConfig>
     @Path("ftbranks")
     @SpecComment("FTB Ranks Rank syncing")
     public RoleSyncCompat ftbRanksCompat = new RoleSyncCompat();
+
+    @Path("playerroles")
+    @SpecComment("Player Roles syncing")
+    public RoleSyncCompat playerroles = new RoleSyncCompat();
 
     @Path("vanish")
     public VanishCompat vanishCompat = new VanishCompat();
