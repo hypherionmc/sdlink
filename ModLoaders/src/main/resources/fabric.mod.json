@@ -7,6 +7,15 @@
   "authors": [
     "${mod_author}"
   ],
+  "contributors": [
+    {
+      "name": "zonary123",
+      "contact": {
+        "role": "contributor",
+        "homepage": "https://github.com/zonary123"
+      }
+    }
+  ],
   "contact": {
     "homepage": "https://github.com/firstdarkdev/sdlink",
     "issues": "https://github.com/firstdarkdev/sdlink/issues",
