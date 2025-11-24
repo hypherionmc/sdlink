@@ -4,6 +4,8 @@
  */
 package com.hypherionmc.sdlink.api.accounts;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
 import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.sdlink.api.events.VerificationEvent;
@@ -46,8 +48,8 @@ public final class MinecraftAccount {
     /**
      * Internal.
      *
-     * @param username  The Username of the Player
-     * @param uuid      The UUID of the player
+     * @param username The Username of the Player
+     * @param uuid     The UUID of the player
      */
     private MinecraftAccount(String username, UUID uuid) {
         this.username = username;
@@ -56,6 +58,7 @@ public final class MinecraftAccount {
 
     /**
      * Convert a database account into a Minecraft Account
+     *
      * @param account The database entry
      */
     public static MinecraftAccount of(SDLinkAccount account) {
@@ -78,12 +81,12 @@ public final class MinecraftAccount {
     @Nullable
     public static MinecraftAccount fromDiscordId(String discordId) {
         SDLinkAccount account = DatabaseManager
-                .INSTANCE
-                .getCollection(SDLinkAccount.class)
-                .stream()
-                .filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(discordId))
-                .findFirst()
-                .orElse(null);
+            .INSTANCE
+            .getCollection(SDLinkAccount.class)
+            .stream()
+            .filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(discordId))
+            .findFirst()
+            .orElse(null);
 
         if (account == null) {
             return null;
@@ -101,9 +104,26 @@ public final class MinecraftAccount {
         return !SDLinkUtils.isNullOrEmpty(account.getDiscordID());
     }
 
+    /**
+     * Cache for Minecraft Accounts to reduce database load
+     */
+    private static final Cache<UUID, SDLinkAccount> ACCOUNT_CACHE = Caffeine.newBuilder()
+        .expireAfterAccess(5, TimeUnit.SECONDS)
+        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .build();
+
     public SDLinkAccount getStoredAccount() {
-        SDLinkAccount account = DatabaseManager.INSTANCE.findById(this.uuid.toString(), SDLinkAccount.class);
-        return account == null ? newDBEntry() : account;
+        // Check Cache first
+        SDLinkAccount account = ACCOUNT_CACHE.getIfPresent(this.uuid);
+        if (account == null) {
+            // Load from Database
+            account = DatabaseManager.INSTANCE.findById(this.uuid.toString(), SDLinkAccount.class);
+            // If not found, create new entry
+            if (account == null) account = newDBEntry();
+            // Store in Cache
+            ACCOUNT_CACHE.put(this.uuid, account);
+        }
+        return account;
     }
 
     @NotNull
@@ -225,7 +245,8 @@ public final class MinecraftAccount {
             for (Role role : roles) {
                 RoleSync.INSTANCE.roleRemovedFromMember(member, role, guild, oldAccount);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         CraterEventBus.INSTANCE.postEvent(new VerificationEvent.PlayerUnverified(this));
 
@@ -276,10 +297,10 @@ public final class MinecraftAccount {
                 }
                 case "rolesNotFound" -> {
                     return Result.error(SDLinkConfig.INSTANCE
-                            .accessControl
-                            .verificationMessages
-                            .requireRoles
-                            .replace("{roles}", ArrayUtils.toString(RoleManager.getVerificationRoles().stream().map(Role::getName).toList())));
+                        .accessControl
+                        .verificationMessages
+                        .requireRoles
+                        .replace("{roles}", ArrayUtils.toString(RoleManager.getVerificationRoles().stream().map(Role::getName).toList())));
                 }
             }
         }

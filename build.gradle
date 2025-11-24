@@ -69,6 +69,7 @@ subprojects {
         shade("com.github.oshi:oshi-core:${oshi}")
         shade("org.jasypt:jasypt:${jasypt}:lite")
         shade("net.fellbaum:jemoji:1.6.0")
+        shade("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
         implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20.4:${craterlib}:dev"
         implementation "nightbloom:mmode:${maintenance_mode}"
