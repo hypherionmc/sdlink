@@ -2,7 +2,6 @@ package com.hypherionmc.sdlink.core.config;
 
 import com.hypherionmc.craterlib.core.config.AbstractConfig;
 import com.hypherionmc.craterlib.core.config.ConfigController;
-import com.hypherionmc.craterlib.core.config.annotations.NoConfigScreen;
 import com.hypherionmc.craterlib.core.config.formats.TomlConfigFormat;
 import com.hypherionmc.sdlink.core.config.impl.compat.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
@@ -15,7 +14,6 @@ import shadow.hypherionmc.moonconfig.core.file.CommentedFileConfig;
 import java.io.File;
 import java.io.IOException;
 
-@NoConfigScreen
 public final class SDLinkCompatConfig extends AbstractConfig<SDLinkCompatConfig> {
 
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
