@@ -198,7 +198,10 @@ public final class ServerEvents {
 
                 msg = parseChatMentions(msg);
 
-                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName()).setGameProfile(gameProfile).setPlayerName(gameProfile.getName());
+                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName())
+                        .setGameProfile(gameProfile).setPlayerName(gameProfile.getName())
+                        .setPlayerAvatar(gameProfile.getName(), uuid);
+
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                         .message(msg)
                         .author(!fromServer ? author : DiscordAuthor.getServer())

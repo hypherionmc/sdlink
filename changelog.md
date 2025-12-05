@@ -7,8 +7,11 @@
 
 **New Features**:
 
-- Added support for PlayerRoles Syncing (https://modrinth.com/mod/player-roles)
-- Added support for CobblemonGuilds
+- Added support for PlayerRoles Syncing (https://modrinth.com/mod/player-roles) - HypherionSA
+- Added support for CobblemonGuilds - HypherionSA
+- Allow disabling verification via DMs - HypherionSA
 
 **Bug Fixes**:
+
 - LuckPerms integration will now correctly remove ranks from players - #202 - u32
+- Fixed %player_avatar% placeholder returning incorrect avatar with LinkedNames enabled in embeds - HypherionSA - #199
