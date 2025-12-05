@@ -33,6 +33,10 @@ public final class VerifyAccountCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
+        if (!SDLinkConfig.INSTANCE.accessControl.allowVerifyInDm && !event.isFromGuild()) {
+            return;
+        }
+
         event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         int mcCode = event.getOption("code") != null ? event.getOption("code").getAsInt() : 0;

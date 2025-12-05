@@ -28,6 +28,10 @@ public final class UnverifyAccountSlashCommand extends SDLinkSlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
+        if (!SDLinkConfig.INSTANCE.accessControl.allowVerifyInDm && !event.isFromGuild()) {
+            return;
+        }
+
         event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);

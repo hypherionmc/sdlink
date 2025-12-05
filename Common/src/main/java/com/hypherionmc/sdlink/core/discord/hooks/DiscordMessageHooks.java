@@ -84,6 +84,9 @@ public final class DiscordMessageHooks {
     }
 
     public static void checkVerification(MessageReceivedEvent event) {
+        if (!SDLinkConfig.INSTANCE.accessControl.allowVerifyInDm)
+            return;
+
         String message = event.getMessage().getContentStripped();
 
         if (message.length() != 4) {
