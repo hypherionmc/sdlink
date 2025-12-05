@@ -20,6 +20,10 @@ public final class AccessControl {
     @SpecComment("Allow users to verify their accounts without access control. This setting is ignored if the above setting is set to true")
     public boolean optionalVerification = false;
 
+    @Path("allowVerifyInDm")
+    @SpecComment("Allows verification and un-verification via DM")
+    public boolean allowVerifyInDm = true;
+
     @Path("requireDiscordMembership")
     @SpecComment("Does the player need to be a member of your discord to join")
     public boolean requireDiscordMembership = false;

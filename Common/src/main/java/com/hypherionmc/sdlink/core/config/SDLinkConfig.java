@@ -6,7 +6,6 @@ package com.hypherionmc.sdlink.core.config;
 
 import com.hypherionmc.craterlib.core.config.AbstractConfig;
 import com.hypherionmc.craterlib.core.config.ConfigController;
-import com.hypherionmc.craterlib.core.config.annotations.NoConfigScreen;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.impl.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
@@ -33,13 +32,12 @@ import static com.hypherionmc.sdlink.core.managers.CacheManager.reloadChannelCon
  * @author HypherionSA
  * The main mod config Structure
  */
-@NoConfigScreen
 public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 34;
+    public transient static int configVer = 35;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
