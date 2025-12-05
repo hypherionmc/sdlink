@@ -9,8 +9,6 @@
 
 - Added support for PlayerRoles Syncing (https://modrinth.com/mod/player-roles)
 - Added support for CobblemonGuilds
-- Allow disabling verification via DMs
 
-**Changes**:
-
-- Bump CraterLib to 3.0.0
+**Bug Fixes**:
+- LuckPerms integration will now correctly remove ranks from players - #202 - u32

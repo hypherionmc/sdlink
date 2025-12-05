@@ -56,7 +56,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
                 sync.ifPresent(s -> {
                     if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && LuckPermsCompat.INSTANCE.hasGroup(p.getUUID(), s.rank)) {
                         ignoreEvent = true;
-                        LuckPermsCompat.INSTANCE.addGroupToUser(p.getUUID(), s.rank);
+                        LuckPermsCompat.INSTANCE.removeGroupFromUser(p.getUUID(), s.rank);
                         ignoreEvent = false;
                     }
                 });
