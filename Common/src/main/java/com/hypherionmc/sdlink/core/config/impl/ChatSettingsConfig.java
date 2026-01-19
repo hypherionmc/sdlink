@@ -22,6 +22,10 @@ public final class ChatSettingsConfig {
     @SpecComment("Use linked account names in Discord/Minecraft messages, instead of the default ones")
     public boolean useLinkedNames = true;
 
+    @Path("useLinkedAvatar")
+    @SpecComment("Use linked account avatar in Discord messages, instead of custom avatar")
+    public boolean useLinkedAvatar = true;
+
     @Path("showDiscordInfo")
     @SpecComment("Show the discord name, username and role of the user that sent a message in Minecraft when the message is hovered")
     public boolean showDiscordInfo = false;

@@ -115,6 +115,11 @@ public final class DiscordAuthor {
         fixDisplayName(name);
     }
 
+    public void overrideData(String name) {
+        this.displayName = name;
+        fixDisplayName(name);
+    }
+
     public DiscordAuthor setGameProfile(@Nullable BridgedGameProfile profile) {
         this.profile = profile;
         if (profile != null) {
