@@ -39,7 +39,6 @@ import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.*;
-import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.Text;
 import io.github.joagar21.guilds.api.GuildsAPI;
@@ -118,7 +117,7 @@ public final class ServerEvents {
             CacheManager.loadCache();
 
         if (ModloaderEnvironment.INSTANCE.isModLoaded("utilitarian")) {
-            BotController.INSTANCE.getLogger().warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
+            BotController.INSTANCE.getLogger().info("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
         }
     }
 
@@ -131,7 +130,7 @@ public final class ServerEvents {
                     .afterSend(() -> {
                         // Stop Log Relay
                         try {
-                            LogReader.destroy();
+                            //LogReader.destroy();
                         } catch (Exception ignored) {}
                     })
                     .build();
@@ -708,8 +707,8 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void sdlinkReadyEvent(SDLinkReadyEvent event) {
-        if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
-            LogReader.init(ModloaderEnvironment.INSTANCE.isDevEnv());
+        /*if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
+            LogReader.init(ModloaderEnvironment.INSTANCE.isDevEnv());*/
     }
 
     @CraterEventListener

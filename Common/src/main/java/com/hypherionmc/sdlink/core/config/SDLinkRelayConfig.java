@@ -81,7 +81,7 @@ public final class SDLinkRelayConfig extends AbstractConfig<SDLinkRelayConfig> {
         try {
             FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", ".old")));
         } catch (IOException e) {
-            BotController.INSTANCE.getLogger().warn("Failed to create config backup.", e);
+            BotController.INSTANCE.getLogger().info("Failed to create config backup.", e);
         }
 
         newConfig.save();

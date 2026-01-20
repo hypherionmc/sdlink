@@ -1,5 +1,5 @@
 jar.enabled = false
-shadowJar.enabled = false
+//shadowJar.enabled = false
 publishMod.enabled = false
 publishCurseforge.enabled = false
 publishModrinth.enabled = false

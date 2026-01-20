@@ -1,0 +1,20 @@
+{
+  "Group": "HypherionSA",
+  "Name": "SDLink",
+  "Version": "1.0.0",
+  "Description": "Test ze plugin",
+  "Authors": [
+    {
+      "Name": "HypherionSA"
+    }
+  ],
+  "Website": "https://hypherionmc.com",
+  "ServerVersion": "*",
+  "Dependencies": {
+    "HypherionSA:CraterLib": "*"
+  },
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "Main": "com.hypherionmc.sdlink.loaders.hytale.SDLinkHytale",
+  "IncludesAssetPack": false
+}

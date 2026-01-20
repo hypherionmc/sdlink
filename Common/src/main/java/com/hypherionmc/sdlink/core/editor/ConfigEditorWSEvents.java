@@ -64,12 +64,12 @@ public final class ConfigEditorWSEvents implements WebSocketListener {
 
     @Override
     public void onDisconnected(WebSocket webSocket, WebSocketFrame webSocketFrame, WebSocketFrame webSocketFrame1, boolean b) throws Exception {
-        BotController.INSTANCE.getLogger().warn("Disconnected from Editor Websocket with code {}: {}", webSocketFrame.getCloseCode(), webSocketFrame.getCloseReason());
+        BotController.INSTANCE.getLogger().info("Disconnected from Editor Websocket with code {}: {}", webSocketFrame.getCloseCode(), webSocketFrame.getCloseReason());
     }
 
     @Override
     public void onCloseFrame(WebSocket webSocket, WebSocketFrame webSocketFrame) throws Exception {
-        BotController.INSTANCE.getLogger().warn("Connection from Editor Terminated with code {}: {}", webSocketFrame.getCloseCode(), webSocketFrame.getCloseReason());
+        BotController.INSTANCE.getLogger().info("Connection from Editor Terminated with code {}: {}", webSocketFrame.getCloseCode(), webSocketFrame.getCloseReason());
     }
 
 

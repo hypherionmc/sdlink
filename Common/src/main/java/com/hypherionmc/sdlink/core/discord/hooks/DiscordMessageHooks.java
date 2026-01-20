@@ -46,7 +46,7 @@ public final class DiscordMessageHooks {
             GuildMessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
 
             if (channel == null) {
-                BotController.INSTANCE.getLogger().warn("Tried to relay discord message before bot is ready. Aborting");
+                BotController.INSTANCE.getLogger().info("Tried to relay discord message before bot is ready. Aborting");
                 return;
             }
 

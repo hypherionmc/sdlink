@@ -1,5 +1,5 @@
 import com.hypherionmc.modpublisher.properties.ReleaseType
-archivesBaseName = "${mod_name.replace(" ", "")}-Paper"
+//archivesBaseName = "${mod_name.replace(" ", "")}-Paper"
 
 dependencies {
     // Do not edit or remove
@@ -12,7 +12,7 @@ shadowJar {
     }
 }
 
-publisher {
+/*publisher {
     apiKeys {
         nightbloom(System.getenv("PLATFORM_KEY"))
     }
@@ -29,7 +29,7 @@ publisher {
     nightbloomDepends {
         required("craterlib")
     }
-}
+}*/
 
 publishing {
     publications {
@@ -37,9 +37,9 @@ publishing {
             group "com.hypherionmc.sdlink"
             artifactId project.archivesBaseName
 
-            artifact(shadowJar) {
+            /*artifact(shadowJar) {
                 builtBy shadowJar
-            }
+            }*/
             artifact sourcesJar
             artifact javadocJar
         }

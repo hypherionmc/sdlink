@@ -1,42 +1,46 @@
 import com.hypherionmc.modpublisher.properties.ReleaseType
-archivesBaseName = "${mod_name.replace(" ", "")}-Universal"
+//archivesBaseName = "${mod_name.replace(" ", "")}-Universal"
+
+base {
+    archivesName = "${mod_name.replace(" ", "")}-Universal"
+}
 
 dependencies {
     // Do not edit or remove
     implementation project(":Common")
 }
 
-publisher {
-    apiKeys {
-        modrinth(System.getenv("MODRINTH_TOKEN"))
-        curseforge(System.getenv("CURSE_TOKEN"))
-        nightbloom(System.getenv("PLATFORM_KEY"))
-    }
-
-    setCurseID(curse_id)
-    setModrinthID(modrinth_id)
-    setNightbloomID("sdlink")
-    setProjectVersion(project.version.toString())
-    setChangelog(project.rootProject.file("changelog.md"))
-    setReleaseType(ReleaseType.RELEASE)
-    setDisplayName("[1.18.2 - 1.21.10] Simple Discord Link Universal - ${project.version}")
-    setGameVersions("1.18.2", "1.19.2", "1.20", "1.20.1", "1.21", "1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10")
-    setLoaders("forge", "fabric", "quilt", "neoforge")
-    setCurseEnvironment("both")
-    setArtifact(shadowJar)
-
-    modrinthDepends {
-        required("Nn8Wasaq")
-    }
-
-    curseDepends {
-        required("craterlib")
-    }
-
-    nightbloomDepends {
-        required("craterlib")
-    }
-}
+//publisher {
+//    apiKeys {
+//        modrinth(System.getenv("MODRINTH_TOKEN"))
+//        curseforge(System.getenv("CURSE_TOKEN"))
+//        nightbloom(System.getenv("PLATFORM_KEY"))
+//    }
+//
+//    setCurseID(curse_id)
+//    setModrinthID(modrinth_id)
+//    setNightbloomID("sdlink")
+//    setProjectVersion(project.version.toString())
+//    setChangelog(project.rootProject.file("changelog.md"))
+//    setReleaseType(ReleaseType.RELEASE)
+//    setDisplayName("[1.18.2 - 1.21.10] Simple Discord Link Universal - ${project.version}")
+//    setGameVersions("1.18.2", "1.19.2", "1.20", "1.20.1", "1.21", "1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10")
+//    setLoaders("forge", "fabric", "quilt", "neoforge")
+//    setCurseEnvironment("both")
+//    setArtifact(shadowJar)
+//
+//    modrinthDepends {
+//        required("Nn8Wasaq")
+//    }
+//
+//    curseDepends {
+//        required("craterlib")
+//    }
+//
+//    nightbloomDepends {
+//        required("craterlib")
+//    }
+//}
 
 publishing {
     publications {
@@ -44,9 +48,9 @@ publishing {
             group "com.hypherionmc.sdlink"
             artifactId "sdlink"
 
-            artifact(shadowJar) {
+            /*artifact(shadowJar) {
                 builtBy shadowJar
-            }
+            }*/
             artifact sourcesJar
             artifact javadocJar
         }

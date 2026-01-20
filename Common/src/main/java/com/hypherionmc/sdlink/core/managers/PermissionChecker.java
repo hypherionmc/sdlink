@@ -160,7 +160,7 @@ public final class PermissionChecker {
         }
 
         if (channelID.equalsIgnoreCase("0")) {
-            BotController.INSTANCE.getLogger().warn("Channel ID for {} is set to 0. Falling back to chatChannel", channelName);
+            BotController.INSTANCE.getLogger().info("Channel ID for {} is set to 0. Falling back to chatChannel", channelName);
             return;
         }
 

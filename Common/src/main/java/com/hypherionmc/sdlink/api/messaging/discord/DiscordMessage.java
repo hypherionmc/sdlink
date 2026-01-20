@@ -66,14 +66,16 @@ public final class DiscordMessage {
         if (!BotController.INSTANCE.isBotReady())
             return;
 
-        if (message.isEmpty())
+        if (message.isEmpty()) {
+            System.out.println("Message is empty");
             return;
+        }
 
         BotController.INSTANCE.getSpamManager().receiveMessage(String.format("%s:%s", this.author.getUsername(), this.message));
 
         if (BotController.INSTANCE.getSpamManager().isBlocked(String.format("%s:%s", this.author.getUsername(), this.message))) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                BotController.INSTANCE.getLogger().warn("Blocked message {} due to spam", message);
+                BotController.INSTANCE.getLogger().info("Blocked message {} due to spam", message);
 
             return;
         }
@@ -139,7 +141,7 @@ public final class DiscordMessage {
             } else {
                 if (channel.channel() == null) {
                     if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                        BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
+                        BotController.INSTANCE.getLogger().info("Expected to get Channel for {}, but got null", messageType.name());
                     runAfterSend();
                     return;
                 }

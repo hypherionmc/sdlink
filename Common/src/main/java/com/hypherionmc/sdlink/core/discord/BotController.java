@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.core.discord;
 
+import com.hypherionmc.craterlib.utils.CraterLibLogger;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
@@ -25,7 +26,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
@@ -49,7 +49,7 @@ public final class BotController {
     @Getter
     private final EventWaiter eventWaiter = new EventWaiter();
     @Getter
-    private final Logger logger;
+    private final CraterLibLogger logger;
 
     @Getter
     private final SpamManager spamManager;
@@ -63,7 +63,7 @@ public final class BotController {
      *
      * @param logger A constructed {@link Logger} that the bot will use
      */
-    private BotController(Logger logger, boolean wasReload) {
+    private BotController(CraterLibLogger logger, boolean wasReload) {
         INSTANCE = this;
         this.logger = logger;
 
@@ -103,7 +103,7 @@ public final class BotController {
      *
      * @param logger A constructed {@link Logger} that the bot will use
      */
-    public static void newInstance(Logger logger) {
+    public static void newInstance(CraterLibLogger logger) {
         new BotController(logger, false);
     }
 
@@ -130,7 +130,7 @@ public final class BotController {
         }
 
         if (!SDLinkConfig.INSTANCE.generalConfig.enabled) {
-            logger.warn("Simple Discord Link is disabled. Not continuing");
+            logger.info("Simple Discord Link is disabled. Not continuing");
             return;
         }
 

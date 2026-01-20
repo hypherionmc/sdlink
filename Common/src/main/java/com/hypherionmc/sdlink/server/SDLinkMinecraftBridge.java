@@ -56,6 +56,7 @@ public final class SDLinkMinecraftBridge {
 
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+                e.printStackTrace();
                 SDLinkConstants.LOGGER.error("Failed to send message: {}", e.getMessage());
             }
         }

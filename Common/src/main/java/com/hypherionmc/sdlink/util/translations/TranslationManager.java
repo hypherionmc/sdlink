@@ -50,7 +50,7 @@ public final class TranslationManager {
             Map<String, String> resourceMap = loadMapFromFile(f);
 
             if (diskMap != null && resourceMap != null && !diskMap.keySet().equals(resourceMap.keySet())) {
-                BotController.INSTANCE.getLogger().warn("Translation keys mismatch in {}. Regenerating from resource.", f.getName());
+                BotController.INSTANCE.getLogger().info("Translation keys mismatch in {}. Regenerating from resource.", f.getName());
                 if (createFileFromResource(f, "assets/sdlink/lang/" + lang + ".json")) {
                     loadFromFile(f);
                     return;
@@ -72,7 +72,7 @@ public final class TranslationManager {
             return;
         }
 
-        BotController.INSTANCE.getLogger().warn("Failed to load translation for {}. Falling back to en_us.", lang);
+        BotController.INSTANCE.getLogger().info("Failed to load translation for {}. Falling back to en_us.", lang);
         loadFromResource("assets/sdlink/lang/en_us.json");
     }
 

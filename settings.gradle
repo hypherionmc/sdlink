@@ -14,5 +14,5 @@ pluginManagement {
 }
 
 rootProject.name = 'sdlink'
-include('Common', 'ModLoaders', 'PluginVersion')
+include('Common', 'ModLoaders')
 
