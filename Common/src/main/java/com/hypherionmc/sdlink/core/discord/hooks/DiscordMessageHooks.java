@@ -18,7 +18,7 @@ import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.PKUtil;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -90,26 +90,26 @@ public final class DiscordMessageHooks {
         String message = event.getMessage().getContentStripped();
 
         if (message.length() != 4) {
-            event.getMessage().reply(Text.translate("error.code_length")).queue();
+            event.getMessage().reply(SDText.translate("error.code_length")).queue();
             return;
         }
 
         Guild guild = event.getJDA().getGuilds().isEmpty() ? null : event.getJDA().getGuilds().get(0);
         if (guild == null) {
-            event.getMessage().reply(Text.translate("error.no_discord_server")).queue();
+            event.getMessage().reply(SDText.translate("error.no_discord_server")).queue();
             return;
         }
 
         Member m = guild.getMemberById(event.getAuthor().getIdLong());
         if (m == null) {
-            event.getMessage().reply(Text.translate("error.not_a_member_of", event.getGuild().getName())).queue();
+            event.getMessage().reply(SDText.translate("error.not_a_member_of", event.getGuild().getName())).queue();
             return;
         }
 
         List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);
 
         if (accounts.isEmpty()) {
-            event.getMessage().reply(Text.translate("error.no_db_accounts")).queue();
+            event.getMessage().reply(SDText.translate("error.no_db_accounts")).queue();
             return;
         }
 
@@ -120,7 +120,7 @@ public final class DiscordMessageHooks {
                 continue;
 
             if (accounts.stream().anyMatch(a -> a.getDiscordID() != null && a.getDiscordID().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
-                event.getMessage().reply(Text.translate("command.verify.already_verified")).queue();
+                event.getMessage().reply(SDText.translate("command.verify.already_verified")).queue();
                 return;
             }
 
@@ -134,6 +134,6 @@ public final class DiscordMessageHooks {
         }
 
         if (!didVerify)
-            event.getMessage().reply(Text.translate("command.verify.failed")).queue();
+            event.getMessage().reply(SDText.translate("command.verify.failed")).queue();
     }
 }

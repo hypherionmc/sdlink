@@ -4,7 +4,7 @@
  */
 package com.hypherionmc.sdlink.core.discord.hooks;
 
-import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
+import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.sdlink.api.messaging.MessageDestination;
 import com.hypherionmc.sdlink.compat.MModeCompat;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
@@ -40,7 +40,7 @@ public final class BotReadyHooks {
                 try {
                     if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
                         if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled
-                                && ModloaderEnvironment.INSTANCE.isModLoaded("mmode")
+                                && CraterLoader.isModLoaded("mmode")
                                 && MModeCompat.getMotd() != null
                                 && !MModeCompat.getMotd().isEmpty()
                                 && MModeCompat.maintenanceActive
@@ -73,7 +73,7 @@ public final class BotReadyHooks {
                     }
                 }
 
-                if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled && ModloaderEnvironment.INSTANCE.isModLoaded("mmode")) {
+                if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled && CraterLoader.isModLoaded("mmode")) {
                     event.getJDA().getPresence().setStatus(MModeCompat.maintenanceActive ? SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.onlineStatus : OnlineStatus.ONLINE);
                 }
             }, SDLinkConfig.INSTANCE.botConfig.statusUpdateInterval, SDLinkConfig.INSTANCE.botConfig.statusUpdateInterval, TimeUnit.SECONDS);
@@ -93,7 +93,7 @@ public final class BotReadyHooks {
                     MessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
                     if (channel instanceof StandardGuildMessageChannel mc) {
                         if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled
-                                && ModloaderEnvironment.INSTANCE.isModLoaded("mmode")
+                                && CraterLoader.isModLoaded("mmode")
                                 && MModeCompat.getMotd() != null
                                 && !MModeCompat.getMotd().isEmpty()
                                 && MModeCompat.maintenanceActive

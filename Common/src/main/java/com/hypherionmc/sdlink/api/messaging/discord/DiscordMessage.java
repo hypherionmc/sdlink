@@ -135,7 +135,15 @@ public final class DiscordMessage {
                     builder.setContent(message);
                 }
 
-                channel.webhook().send(builder.build()).thenRun(this::runAfterSend);
+                var sender = channel.webhook().send(builder.build());
+
+                if (messageType == MessageType.STOP) {
+                    sender.complete(null);
+                    runAfterSend();
+                } else {
+                    sender.thenRun(this::runAfterSend);
+                }
+
             } else {
                 if (channel.channel() == null) {
                     if (SDLinkConfig.INSTANCE.generalConfig.debugging)
@@ -167,7 +175,15 @@ public final class DiscordMessage {
                             : message.replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName());
                     builder.setContent(content);
                 }
-                channel.channel().sendMessage(builder.build()).queue(success -> runAfterSend());
+
+                var sender = channel.channel().sendMessage(builder.build());
+
+                if (messageType == MessageType.STOP) {
+                    sender.complete();
+                    runAfterSend();
+                } else {
+                    sender.queue(success -> runAfterSend());
+                }
             }
         } catch (Exception e) {
             runAfterSend();

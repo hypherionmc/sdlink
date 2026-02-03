@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
  * @author HypherionSA
  * Extended Helper Class to help resolve translation keys into Strings
  */
-public final class Text implements CharSequence {
+public final class SDText implements CharSequence {
 
     private final String translatedText;
 
-    private Text(String key, @Nullable Object... args) {
+    private SDText(String key, @Nullable Object... args) {
         this.translatedText = (args == null || args.length == 0) ?
                 TranslationManager.INSTANCE.translate(key)
                 : String.format(TranslationManager.INSTANCE.translate(key), args);
@@ -23,8 +23,8 @@ public final class Text implements CharSequence {
      * @param key The Translation key to load
      * @return The final text, or the translation key if the text does not exist
      */
-    public static Text translate(@NotNull String key) {
-        return new Text(key);
+    public static SDText translate(@NotNull String key) {
+        return new SDText(key);
     }
 
     /**
@@ -34,8 +34,8 @@ public final class Text implements CharSequence {
      * @param args List of objects that will replace placeholders in translated text
      * @return The final text, or the translation key if the text does not exist
      */
-    public static Text translate(@NotNull String key, @NotNull Object... args) {
-        return new Text(key, args);
+    public static SDText translate(@NotNull String key, @NotNull Object... args) {
+        return new SDText(key, args);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.hypherionmc.sdlink.core.discord.hooks;
 
-import com.hypherionmc.craterlib.nojang.server.BridgedMinecraftServer;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -9,7 +8,6 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
-import com.hypherionmc.sdlink.server.ServerEvents;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Role;

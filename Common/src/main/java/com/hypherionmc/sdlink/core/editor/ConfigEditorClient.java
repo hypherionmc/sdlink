@@ -1,6 +1,6 @@
 package com.hypherionmc.sdlink.core.editor;
 
-import com.hypherionmc.craterlib.nojang.commands.BridgedCommandSourceStack;
+import com.hypherionmc.craterlib.api.game.commands.CraterCommandSourceStack;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.neovisionaries.ws.client.WebSocket;
@@ -15,7 +15,7 @@ public final class ConfigEditorClient {
 
     private WebSocket webSocket;
 
-    public void openConnection(BridgedCommandSourceStack sourceStack) {
+    public void openConnection(CraterCommandSourceStack sourceStack) {
         String identifier = EncryptionUtil.getSaltString();
 
         try {

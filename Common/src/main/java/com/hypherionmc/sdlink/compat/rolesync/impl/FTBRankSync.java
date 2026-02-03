@@ -1,11 +1,11 @@
 package com.hypherionmc.sdlink.compat.rolesync.impl;
 
+import com.hypherionmc.craterlib.api.compat.ftbranks.CraterFTBRank;
+import com.hypherionmc.craterlib.api.compat.ftbranks.FTBRanks;
 import com.hypherionmc.craterlib.api.events.compat.FTBRankEvents;
-import com.hypherionmc.craterlib.compat.ftbranks.BridgedRank;
-import com.hypherionmc.craterlib.compat.ftbranks.FTBRanks;
+import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
+import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
-import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
-import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
 import com.hypherionmc.sdlink.api.accounts.DiscordUser;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
@@ -29,7 +29,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
     }
 
     @Override
-    public void sync(BridgedPlayer p, List<Role> roles, Guild guild, Member member) {
+    public void sync(CraterPlayer p, List<Role> roles, Guild guild, Member member) {
         // Discord to Minecraft Sync
         if (SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncToMinecraft) {
             // Add Ranks To Users
@@ -37,23 +37,23 @@ public final class FTBRankSync extends AbstractRoleSyncer {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
                 sync.ifPresent(s -> {
-                    if (!FTBRanks.INSTANCE.hasRank(p.getGameProfile(), s.rank)) {
+                    if (!FTBRanks.getInstance().hasRank(p.getGameProfile(), s.rank)) {
                         ignoreEvent = true;
-                        FTBRanks.INSTANCE.addRank(p.getGameProfile(), s.rank);
+                        FTBRanks.getInstance().addRank(p.getGameProfile(), s.rank);
                         ignoreEvent = false;
                     }
                 });
             }
 
             // Remove Ranks from Users
-            List<BridgedRank> ranks = FTBRanks.INSTANCE.getPlayerRanks(p.getGameProfile());
-            for (BridgedRank rank : ranks) {
+            List<? extends CraterFTBRank> ranks = FTBRanks.getInstance().getPlayerRanks(p.getGameProfile());
+            for (CraterFTBRank rank : ranks) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.rank.equalsIgnoreCase(rank.name()) || s.rank.equalsIgnoreCase(rank.id())).findFirst();
 
                 sync.ifPresent(s -> {
-                    if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && FTBRanks.INSTANCE.hasRank(p.getGameProfile(), s.rank)) {
+                    if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && FTBRanks.getInstance().hasRank(p.getGameProfile(), s.rank)) {
                         ignoreEvent = true;
-                        FTBRanks.INSTANCE.removeRank(p.getGameProfile(), s.rank);
+                        FTBRanks.getInstance().removeRank(p.getGameProfile(), s.rank);
                         ignoreEvent = false;
                     }
                 });
@@ -62,10 +62,10 @@ public final class FTBRankSync extends AbstractRoleSyncer {
 
         // Minecraft to Discord Sync
         if (SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncToDiscord) {
-            List<BridgedRank> ranks = FTBRanks.INSTANCE.getPlayerRanks(p.getGameProfile());
+            List<? extends CraterFTBRank> ranks = FTBRanks.getInstance().getPlayerRanks(p.getGameProfile());
 
             // Add Roles to Users
-            for (BridgedRank rank : ranks) {
+            for (CraterFTBRank rank : ranks) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.rank.equalsIgnoreCase(rank.name()) || s.rank.equalsIgnoreCase(rank.id())).findFirst();
 
                 sync.ifPresent(s -> {
@@ -84,7 +84,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
             for (Role role : roles) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
-                if (sync.isPresent() && !FTBRanks.INSTANCE.hasRank(p.getGameProfile(), sync.get().rank)) {
+                if (sync.isPresent() && !FTBRanks.getInstance().hasRank(p.getGameProfile(), sync.get().rank)) {
                     Optional<Role> r = RoleManager.getFtbRanksRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(sync.get().role)).findFirst();
                     if (r.isEmpty())
                         return;
@@ -118,7 +118,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
         updateFtbRank(event.getGameProfile(), event.getRank(), false);
     }
 
-    private void updateFtbRank(BridgedGameProfile profile, BridgedRank rank, boolean add) {
+    private void updateFtbRank(CraterGameProfile profile, CraterFTBRank rank, boolean add) {
         MinecraftAccount account = MinecraftAccount.of(profile);
         DiscordUser user = account.getDiscordUser();
         if (user == null)
@@ -158,15 +158,15 @@ public final class FTBRankSync extends AbstractRoleSyncer {
         if (sync == null) return;
 
         if (add) {
-            if (!FTBRanks.INSTANCE.hasRank(account.toGameProfile(), sync.rank)) {
+            if (!FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
                 ignoreEvent = true;
-                FTBRanks.INSTANCE.addRank(account.toGameProfile(), sync.rank);
+                FTBRanks.getInstance().addRank(account.toGameProfile(), sync.rank);
                 ignoreEvent = false;
             }
         } else {
-            if (FTBRanks.INSTANCE.hasRank(account.toGameProfile(), sync.rank)) {
+            if (FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
                 ignoreEvent = true;
-                FTBRanks.INSTANCE.removeRank(account.toGameProfile(), sync.rank);
+                FTBRanks.getInstance().removeRank(account.toGameProfile(), sync.rank);
                 if (oldAccount != null) {
                     try {
                         guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();

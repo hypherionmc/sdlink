@@ -2,7 +2,8 @@ package com.hypherionmc.sdlink.core.editor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.hypherionmc.craterlib.nojang.commands.BridgedCommandSourceStack;
+import com.hypherionmc.craterlib.api.game.commands.CraterCommandSourceStack;
+import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
@@ -10,9 +11,8 @@ import com.hypherionmc.sdlink.util.configeditor.SocketResponse;
 import com.neovisionaries.ws.client.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.apache.commons.io.FileUtils;
-import shadow.kyori.adventure.text.Component;
-import shadow.kyori.adventure.text.event.ClickEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -23,7 +23,7 @@ public final class ConfigEditorWSEvents implements WebSocketListener {
 
     private final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final String identifier;
-    private final BridgedCommandSourceStack sourceStack;
+    private final CraterCommandSourceStack sourceStack;
 
     @Override
     public void onConnected(WebSocket webSocket, Map<String, List<String>> map) throws Exception {
@@ -36,7 +36,7 @@ public final class ConfigEditorWSEvents implements WebSocketListener {
 
         if (response.getSocketCode().equalsIgnoreCase("WS_WAITING")) {
             sourceStack.sendMessage(
-                    Component.text(String.format("Editor Connection Ready. Visit https://editor.firstdark.dev/%s to get started", identifier))
+                    Text.literal(String.format("Editor Connection Ready. Visit https://editor.firstdark.dev/%s to get started", identifier))
                             .clickEvent(ClickEvent.openUrl(String.format("https://editor.firstdark.dev/%s", identifier)))
             );
             BotController.INSTANCE.getLogger().info("Editor Connection Ready. Visit https://editor.firstdark.dev/{} to get started", identifier);

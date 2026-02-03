@@ -7,8 +7,8 @@ package com.hypherionmc.sdlink.core.config.impl;
 import com.hypherionmc.sdlink.api.messaging.MessageDestination;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.util.DestinationHolder;
-import shadow.hypherionmc.moonconfig.core.conversion.Path;
-import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 
 /**
  * @author HypherionSA

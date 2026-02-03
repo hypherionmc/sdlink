@@ -4,7 +4,7 @@
  */
 package com.hypherionmc.sdlink.api.messaging;
 
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import lombok.Getter;
 
 /**
@@ -21,7 +21,7 @@ public final class Result {
         this.message = message;
     }
 
-    public static Result success(Text text) {
+    public static Result success(SDText text) {
         return Result.success(text.toString());
     }
 
@@ -29,7 +29,7 @@ public final class Result {
         return new Result(Type.SUCCESS, message);
     }
 
-    public static Result error(Text text) {
+    public static Result error(SDText text) {
         return Result.error(text.toString());
     }
 

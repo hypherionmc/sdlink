@@ -1,11 +1,11 @@
 package com.hypherionmc.sdlink.compat.rolesync.impl;
 
+import com.hypherionmc.craterlib.api.compat.playerroles.BridgedPlayerRoles;
+import com.hypherionmc.craterlib.api.compat.playerroles.PlayerRolesCompat;
 import com.hypherionmc.craterlib.api.events.compat.PlayerRolesEvents;
-import com.hypherionmc.craterlib.compat.playerroles.BridgedPlayerRoles;
-import com.hypherionmc.craterlib.compat.playerroles.PlayerRolesCompat;
+import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
+import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
-import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
-import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
 import com.hypherionmc.sdlink.api.accounts.DiscordUser;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
@@ -29,7 +29,7 @@ public final class PlayerRolesSync extends AbstractRoleSyncer {
     }
 
     @Override
-    public void sync(BridgedPlayer p, List<Role> roles, Guild guild, Member member) {
+    public void sync(CraterPlayer p, List<Role> roles, Guild guild, Member member) {
         // Discord to Minecraft Sync
         if (SDLinkCompatConfig.INSTANCE.playerroles.syncToMinecraft) {
             // Add Ranks To Users
@@ -146,7 +146,7 @@ public final class PlayerRolesSync extends AbstractRoleSyncer {
         updatePlayerRole(event.getProfile(), event.getRole(), false);
     }
 
-    private void updatePlayerRole(BridgedGameProfile profile, BridgedPlayerRoles rank, boolean add) {
+    private void updatePlayerRole(CraterGameProfile profile, BridgedPlayerRoles rank, boolean add) {
         MinecraftAccount account = MinecraftAccount.of(profile);
         DiscordUser user = account.getDiscordUser();
         if (user == null)

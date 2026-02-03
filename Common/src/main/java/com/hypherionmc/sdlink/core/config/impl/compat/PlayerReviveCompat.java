@@ -1,7 +1,7 @@
 package com.hypherionmc.sdlink.core.config.impl.compat;
 
-import shadow.hypherionmc.moonconfig.core.conversion.Path;
-import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 
 public final class PlayerReviveCompat {
 

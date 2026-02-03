@@ -14,19 +14,12 @@
   },
   "license": "MIT",
   "environment": "*",
-  "entrypoints": {
-    "server": [
-      "com.hypherionmc.sdlink.loaders.fabric.SDLinkFabric"
-    ],
-    "client": [
-      "com.hypherionmc.sdlink.loaders.fabric.SDLinkFabricClient"
-    ]
-  },
+  "entrypoints": {},
   "depends": {
     "fabricloader": ">=0.15",
     "fabric": "*",
     "minecraft": ">=1.18.2",
-    "craterlib": ">=3.0.0",
+    "craterlib": ">=3.1.0",
     "java": ">=17"
   }
 }

@@ -70,7 +70,8 @@ subprojects {
         shade("org.jasypt:jasypt:${jasypt}:lite")
         shade("net.fellbaum:jemoji:1.6.0")
 
-        implementation "com.hypherionmc.craterlib:CraterLib-Common-1.20:${craterlib}"
+        shade("com.hypherionmc.deblogger:deblogger:1.0-SNAPSHOT")
+        implementation "com.hypherionmc.craterlib:CraterLib-API:${craterlib}"
         implementation "nightbloom:mmode:${maintenance_mode}"
         implementation("io.github.joagar21:GuildsCobblemon:1.0.2:api")
     }
