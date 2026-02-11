@@ -13,7 +13,6 @@ import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.craterlib.api.loader.LoaderType;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
 import com.hypherionmc.craterlib.core.networking.CraterPacketNetwork;
-import com.hypherionmc.deblogger.Deblogger;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.api.accounts.DiscordUser;
@@ -58,7 +57,6 @@ public final class ServerEvents {
 
     private CraterGameServer minecraftServer;
     private final long uptime = System.currentTimeMillis();
-    public static final Deblogger DEBUGGER = new Deblogger(Path.of("logs", "sdl", "debug.log"), () -> true);
 
     private static ServerEvents events;
 
