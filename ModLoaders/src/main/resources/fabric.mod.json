@@ -17,7 +17,7 @@
   "entrypoints": {},
   "depends": {
     "fabricloader": ">=0.15",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": ">=1.18.2",
     "craterlib": ">=3.1.0",
     "java": ">=17"
