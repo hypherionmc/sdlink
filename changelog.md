@@ -1,17 +1,17 @@
 - REQUIRES [CraterLib](https://www.curseforge.com/minecraft/mc-mods/craterlib) - [Modrinth](https://modrinth.com/mod/craterlib)
 - [Online Config Editor](https://editor.firstdark.dev)
 - [Documentation](https://sdlink.fdd-docs.com)
-- This single jar works on 1.18.2-1.21.10
+- This single jar works on 1.18.2-26.1
 
-*Requires CraterLib 3.0.0 or newer*
+*Requires CraterLib 3.1.0 or newer*
 
 **New Features**:
 
-- Added support for PlayerRoles Syncing (https://modrinth.com/mod/player-roles) - HypherionSA
-- Added support for CobblemonGuilds - HypherionSA
-- Allow disabling verification via DMs - HypherionSA
+- Added `useLinkedAvatar` to allow using either discord avatars or minecraft skins when using linkedNames - stackpan
 
 **Bug Fixes**:
 
-- LuckPerms integration will now correctly remove ranks from players - #202 - u32
-- Fixed %player_avatar% placeholder returning incorrect avatar with LinkedNames enabled in embeds - HypherionSA - #199
+- Fix for Slash Commands in fr_fr lang - flyzar73 
+- Fixed Linked Commands not working on 1.21.11+ - HypherionSA
+- Fixed chat messages and events not being relayed when vanish is installed on 1.20.1 - HypherionSA
+- Strip out `§k` symbol from messages - #210 - HypherionSA

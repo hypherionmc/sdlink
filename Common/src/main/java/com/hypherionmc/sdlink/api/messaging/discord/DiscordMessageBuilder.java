@@ -81,6 +81,10 @@ public final class DiscordMessageBuilder {
      */
     public DiscordMessageBuilder message(String message) {
         this.message = SDLinkChatUtils.applyFiltering(message, (i) -> this.messageType == MessageType.CONSOLE ? i.appliesTo.appliesToConsole(i) : i.appliesTo.appliesToChat(i));
+
+        // Strip out Obfuscation formatting symbol to prevent abuse
+        this.message = this.message.replace("§k", "#k");
+
         return this;
     }
 
