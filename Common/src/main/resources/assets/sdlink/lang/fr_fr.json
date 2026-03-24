@@ -55,7 +55,7 @@
   "command.setchannel.failed": "Échec de l'enregistrement de la configuration : %s",
 
   "command.staffunverify.help": "Retire la vérification du compte Minecraft d’un autre joueur",
-  "command.staffverify.help": "Permet aux membres du staff de vérifier les comptes Minecraft sans passer par la vérification classique",
+  "command.staffverify.help": "Permet aux membres du staff de vérifier les comptes Minecraft",
 
   "command.unverify.help": "Retire la vérification de votre compte Minecraft précédemment vérifié",
   "command.unverify.failed": "Désolé, nous n'avons pas pu dé-vérifier votre compte Minecraft. Veuillez réessayer",
