@@ -52,7 +52,15 @@ public final class DiscordMessageBuilder {
             DiscordUser discordUser = account.getDiscordUser();
 
             if (account != null && discordUser != null) {
-                this.author.overrideData(discordUser.getEffectiveName(), discordUser.getAvatarUrl());
+                String name = discordUser.getEffectiveName();
+                String avatar = discordUser.getAvatarUrl();
+
+                if (SDLinkConfig.INSTANCE.chatConfig.useLinkedAvatar) {
+                    this.author.overrideData(name, avatar);
+                } else {
+                    this.author.overrideData(name);
+                }
+
                 this.author.setColor(discordUser.getRoleColor());
             }
         }
