@@ -1,11 +1,11 @@
 package com.hypherionmc.sdlink.core.relay;
 
-import com.hypherionmc.craterlib.utils.ChatUtils;
+import com.hypherionmc.craterlib.api.game.text.Text;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
-import shadow.kyori.adventure.text.Component;
 
 import java.util.UUID;
 
@@ -20,24 +20,24 @@ public class DataMessage {
     private String additional;
     @Getter private boolean isFromServer;
 
-    public static DataMessage of(Component displayName, String username, @Nullable Component message, UUID uuid, boolean isFromServer) {
+    public static DataMessage of(Text displayName, String username, @Nullable Text message, UUID uuid, boolean isFromServer) {
         return of (displayName, username, message, uuid, null, isFromServer);
     }
 
-    public static DataMessage of(Component displayName, String username, @Nullable Component message, UUID uuid, @Nullable Component additional, boolean isFromServer) {
-        return of(ChatUtils.getAdventureSerializer().serialize(displayName), username, message == null ? null : ChatUtils.getAdventureSerializer().serialize(message), uuid, additional == null ? null : ChatUtils.getAdventureSerializer().serialize(additional), isFromServer);
+    public static DataMessage of(Text displayName, String username, @Nullable Text message, UUID uuid, @Nullable Text additional, boolean isFromServer) {
+        return of(displayName.toJsonString(), username, message == null ? null : message.toJsonString(), uuid, additional == null ? null : additional.toJsonString(), isFromServer);
     }
 
-    public Component displayName() {
-        return ChatUtils.getAdventureSerializer().deserialize(displayName);
+    public Text displayName() {
+        return Text.fromJson(displayName);
     }
 
-    public Component message() {
-        return ChatUtils.getAdventureSerializer().deserialize(message);
+    public Text message() {
+        return Text.fromJson(message);
     }
 
-    public Component additional() {
-        return ChatUtils.getAdventureSerializer().deserialize(additional);
+    public Text additional() {
+        return Text.fromJson(additional);
     }
 
 }

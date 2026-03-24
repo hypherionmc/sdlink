@@ -1,11 +1,11 @@
 package com.hypherionmc.sdlink.networking;
 
-import com.hypherionmc.craterlib.client.mentions.MentionsController;
+import com.hypherionmc.craterlib.api.client.mentions.MentionsController;
+import com.hypherionmc.craterlib.api.game.nbt.CraterDataTag;
+import com.hypherionmc.craterlib.api.game.network.CraterFriendlyByteBuf;
+import com.hypherionmc.craterlib.api.game.resources.CraterIdentifier;
 import com.hypherionmc.craterlib.core.networking.data.PacketContext;
 import com.hypherionmc.craterlib.core.networking.data.PacketSide;
-import com.hypherionmc.craterlib.nojang.nbt.BridgedCompoundTag;
-import com.hypherionmc.craterlib.nojang.network.BridgedFriendlyByteBuf;
-import com.hypherionmc.craterlib.nojang.resources.ResourceIdentifier;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public final class MentionsSyncPacket {
 
-    public static final ResourceIdentifier CHANNEL = new ResourceIdentifier(SDLinkConstants.MOD_ID, "syncpacket");
+    public static final CraterIdentifier CHANNEL = CraterIdentifier.fromGame(SDLinkConstants.MOD_ID, "syncpacket");
 
     private HashMap<String, String> roles;
     private HashMap<String, String> channelHashMap;
@@ -33,16 +33,16 @@ public final class MentionsSyncPacket {
         this.users = users;
     }
 
-    public static MentionsSyncPacket decode(BridgedFriendlyByteBuf buf) {
+    public static MentionsSyncPacket decode(CraterFriendlyByteBuf buf) {
         MentionsSyncPacket p = new MentionsSyncPacket();
 
-        BridgedCompoundTag tag = buf.readNbt();
+        CraterDataTag tag = buf.readNbt();
         if (tag == null)
             return p;
 
-        BridgedCompoundTag rolesTag = tag.getCompound("roles");
-        BridgedCompoundTag channelsTag = tag.getCompound("channels");
-        BridgedCompoundTag usersTag = tag.getCompound("users");
+        CraterDataTag rolesTag = tag.getCompound("roles");
+        CraterDataTag channelsTag = tag.getCompound("channels");
+        CraterDataTag usersTag = tag.getCompound("users");
 
         p.roles = new HashMap<>();
         rolesTag.getAllKeys().forEach(k -> p.roles.put(k, rolesTag.getString(k)));
@@ -58,11 +58,11 @@ public final class MentionsSyncPacket {
         return p;
     }
 
-    public void write(BridgedFriendlyByteBuf friendlyByteBuf) {
-        BridgedCompoundTag tag = BridgedCompoundTag.empty();
-        BridgedCompoundTag rolesTag = BridgedCompoundTag.empty();
-        BridgedCompoundTag channelsTag = BridgedCompoundTag.empty();
-        BridgedCompoundTag usersTag = BridgedCompoundTag.empty();
+    public void write(CraterFriendlyByteBuf friendlyByteBuf) {
+        CraterDataTag tag = CraterDataTag.empty();
+        CraterDataTag rolesTag = CraterDataTag.empty();
+        CraterDataTag channelsTag = CraterDataTag.empty();
+        CraterDataTag usersTag = CraterDataTag.empty();
         roles.forEach(rolesTag::putString);
         channelHashMap.forEach(channelsTag::putString);
         users.forEach(usersTag::putString);
@@ -79,17 +79,17 @@ public final class MentionsSyncPacket {
             MentionsSyncPacket p = ctx.message();
 
             if (!(p.roles == null || p.roles.isEmpty())) {
-                ResourceIdentifier rrl = new ResourceIdentifier("sdlink:roles");
+                CraterIdentifier rrl = CraterIdentifier.fromGame("sdlink:roles");
                 MentionsController.registerMention(rrl, p.roles.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
             }
 
             if (!(p.channelHashMap == null || p.channelHashMap.isEmpty())) {
-                ResourceIdentifier crl = new ResourceIdentifier("sdlink:channels");
+                CraterIdentifier crl = CraterIdentifier.fromGame("sdlink:channels");
                 MentionsController.registerMention(crl, p.channelHashMap.keySet(), currentWord -> currentWord.startsWith("[#") || currentWord.startsWith("#"));
             }
 
             if (!(p.users == null || p.users.isEmpty())) {
-                ResourceIdentifier url = new ResourceIdentifier("sdlink:users");
+                CraterIdentifier url = CraterIdentifier.fromGame("sdlink:users");
                 MentionsController.registerMention(url, p.users.keySet(), currentWord -> currentWord.startsWith("[@") || currentWord.startsWith("@"));
             }
 

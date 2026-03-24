@@ -1,9 +1,9 @@
 package com.hypherionmc.sdlink.server;
 
-import com.hypherionmc.craterlib.core.platform.ModloaderEnvironment;
-import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
-import com.hypherionmc.craterlib.nojang.server.BridgedMinecraftServer;
-import com.hypherionmc.craterlib.utils.ChatUtils;
+import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
+import com.hypherionmc.craterlib.api.game.server.CraterGameServer;
+import com.hypherionmc.craterlib.api.game.text.Text;
+import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
@@ -15,12 +15,11 @@ import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-import shadow.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public final class SDLinkMinecraftBridge {
 
     public void discordMessageReceived(MessageContext context) {
         try {
-            Component component = context.getFormattedMessageComponent();
+            Text component = context.getFormattedMessageComponent();
             if (component == null) return;
 
             if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayDiscordChats) {
@@ -43,7 +42,7 @@ public final class SDLinkMinecraftBridge {
                         RelayMessage.MessageType.DISCORD,
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
                         null,
-                        ChatUtils.getAdventureSerializer().serialize(component)
+                        component.toJsonString()
                 );
 
                 SDLinkRelayClient.INSTANCE.relayMessage(relayMessage);
@@ -67,7 +66,7 @@ public final class SDLinkMinecraftBridge {
     }
 
     public Pair<Integer, Integer> getPlayerCounts() {
-        BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
+        CraterGameServer server = ServerEvents.getInstance().getMinecraftServer();
 
         int playerCount = server.getPlayers().stream().filter(SDLinkMCPlatform.INSTANCE::playerIsActive).toList().size();
         return Pair.of(playerCount, server.getMaxPlayers());
@@ -75,7 +74,7 @@ public final class SDLinkMinecraftBridge {
 
     public List<MinecraftAccount> getOnlinePlayers() {
         List<MinecraftAccount> accounts = new ArrayList<>();
-        BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
+        CraterGameServer server = ServerEvents.getInstance().getMinecraftServer();
 
         if (server != null) {
             server.getPlayers().stream().filter(SDLinkMCPlatform.INSTANCE::playerIsActive).forEach(p -> {
@@ -92,9 +91,9 @@ public final class SDLinkMinecraftBridge {
     }
 
     public String getServerVersion() {
-        BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
+        CraterGameServer server = ServerEvents.getInstance().getMinecraftServer();
         if (server == null)
-            return Text.translate("error.unknown") + " - " + Text.translate("error.unknown") ;
+            return SDText.translate("error.unknown") + " - " + SDText.translate("error.unknown") ;
         return server.getServerModName() + " - " + server.getName();
     }
 
@@ -114,22 +113,22 @@ public final class SDLinkMinecraftBridge {
     }
 
     public boolean isOnlineMode() {
-        BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
+        CraterGameServer server = ServerEvents.getInstance().getMinecraftServer();
         if (server == null)
             return false;
 
-        if (ModloaderEnvironment.INSTANCE.isModLoaded("fabrictailor"))
+        if (CraterLoader.isModLoaded("fabrictailor"))
             return true;
 
         return server.usesAuthentication();
     }
 
     public void banPlayer(MinecraftAccount minecraftAccount) {
-        BridgedMinecraftServer server = ServerEvents.getInstance().getMinecraftServer();
+        CraterGameServer server = ServerEvents.getInstance().getMinecraftServer();
         if (server == null)
             return;
 
-        BridgedGameProfile profile = BridgedGameProfile.mojang(minecraftAccount.getUuid(), minecraftAccount.getUsername());
+        CraterGameProfile profile = CraterGameProfile.fromGame(minecraftAccount.getUsername(), minecraftAccount.getUuid());
         server.banPlayer(profile);
     }
 }

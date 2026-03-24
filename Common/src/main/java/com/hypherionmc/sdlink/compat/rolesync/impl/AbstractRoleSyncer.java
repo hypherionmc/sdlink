@@ -1,6 +1,6 @@
 package com.hypherionmc.sdlink.compat.rolesync.impl;
 
-import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
+import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,7 +19,7 @@ public abstract class AbstractRoleSyncer {
         this.isSyncActive = isSyncActive;
     }
 
-    public abstract void sync(BridgedPlayer p, List<Role> roles, Guild guild, Member member);
+    public abstract void sync(CraterPlayer p, List<Role> roles, Guild guild, Member member);
 
     public void discordRoleAddedToMember(Member member, Role role, Guild guild) {
         if (ignoreEvent || !isSyncActive.get())

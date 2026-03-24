@@ -6,10 +6,10 @@ import com.hypherionmc.craterlib.core.config.formats.TomlConfigFormat;
 import com.hypherionmc.sdlink.core.config.impl.compat.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import org.apache.commons.io.FileUtils;
-import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
-import shadow.hypherionmc.moonconfig.core.conversion.Path;
-import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
-import shadow.hypherionmc.moonconfig.core.file.CommentedFileConfig;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.ObjectConverter;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
+import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 
 import java.io.File;
 import java.io.IOException;

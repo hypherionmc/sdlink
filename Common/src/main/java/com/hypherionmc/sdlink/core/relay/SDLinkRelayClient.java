@@ -2,8 +2,8 @@ package com.hypherionmc.sdlink.core.relay;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.hypherionmc.craterlib.nojang.world.level.BridgedGameRules;
-import com.hypherionmc.craterlib.utils.ChatUtils;
+import com.hypherionmc.craterlib.api.game.text.Text;
+import com.hypherionmc.craterlib.api.game.world.level.CraterCommonGameRules;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessage;
@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import shadow.kyori.adventure.text.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -196,12 +195,12 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
         String prefix = SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.replace("%server_name%", relayMessage.getServerName()) + " ";
 
         // Set up the prefix component for Minecraft
-        Component base = prefix.trim().isEmpty() ? Component.empty() : ChatUtils.format(prefix);
+        Text base = prefix.trim().isEmpty() ? Text.empty() : Text.formatted(prefix);
 
         // Message was a user message sent in discord
         if (relayMessage.getType() == RelayMessage.MessageType.DISCORD) {
             ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
-                    base.append(ChatUtils.getAdventureSerializer().deserialize(relayMessage.getMessage())),
+                    base.append(Text.fromJson(relayMessage.getMessage())),
                     false
             );
             return;
@@ -213,11 +212,11 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
         switch (relayMessage.getType()) {
             case ADVANCEMENT ->  {
                 // Respect the game rules!
-                if (!ServerEvents.getInstance().getMinecraftServer().getGameRules().getBoolean(BridgedGameRules.RULE_ANNOUNCE_ADVANCEMENTS))
+                if (!ServerEvents.getInstance().getMinecraftServer().getGameRules().getBoolean(CraterCommonGameRules.RULE_ANNOUNCE_ADVANCEMENTS))
                     return;
 
                 ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
-                        base.append(Component.translatable(
+                        base.append(Text.translatable(
                                 "chat.type.advancement.task",
                                 dataMessage.displayName(),
                                 dataMessage.additional())),
@@ -227,13 +226,13 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
             case CHAT -> {
                 ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
-                        base.append(Component.translatable("chat.type.text", dataMessage.displayName(), dataMessage.message())),
+                        base.append(Text.translatable("chat.type.text", dataMessage.displayName(), dataMessage.message())),
                         false
                 );
             }
 
             case DEATH -> {
-                if (!ServerEvents.getInstance().getMinecraftServer().getGameRules().getBoolean(BridgedGameRules.RULE_SHOWDEATHMESSAGES))
+                if (!ServerEvents.getInstance().getMinecraftServer().getGameRules().getBoolean(CraterCommonGameRules.RULE_SHOWDEATHMESSAGES))
                     return;
 
                 ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
@@ -244,14 +243,14 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
             case JOIN -> {
                 ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
-                        base.append(Component.translatable("multiplayer.player.joined", dataMessage.displayName())),
+                        base.append(Text.translatable("multiplayer.player.joined", dataMessage.displayName())),
                         false
                 );
             }
 
             case LEAVE -> {
                 ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
-                        base.append(Component.translatable("multiplayer.player.left", dataMessage.displayName())),
+                        base.append(Text.translatable("multiplayer.player.left", dataMessage.displayName())),
                         false
                 );
             }
@@ -263,11 +262,11 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                     if (!SDLinkConfig.INSTANCE.chatConfig.playerMessages)
                         return;
 
-                    String username = ChatUtils.resolve(dataMessage.displayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
-                    String msg = ChatUtils.resolve(dataMessage.message(), SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String username = dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String msg = dataMessage.message().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
-                        username = ChatUtils.resolve(ChatUtils.format(prefix + " " + username), false);
+                        username = Text.formatted(prefix + " " + username).asString();
                     }
 
                     if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
@@ -289,16 +288,16 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                     if (!SDLinkConfig.INSTANCE.chatConfig.playerJoin)
                         return;
 
-                    String msg = SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", ChatUtils.resolve(dataMessage.displayName(), SDLinkConfig.INSTANCE.chatConfig.formatting));
+                    String msg = SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting));
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
-                        msg = ChatUtils.resolve(ChatUtils.format(prefix + " " + msg), false);
+                        msg = Text.formatted(prefix + " " + msg).asString();
                     }
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                             .message(msg)
                             .author(DiscordAuthor.getServer()
-                                    .setPlayerName(ChatUtils.resolve(dataMessage.displayName(), false))
+                                    .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
                             .build();
 
@@ -308,24 +307,24 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                     if (!SDLinkConfig.INSTANCE.chatConfig.playerLeave)
                         return;
 
-                    String msg = SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", ChatUtils.resolve(dataMessage.displayName(), SDLinkConfig.INSTANCE.chatConfig.formatting));
+                    String msg = SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting));
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
-                        msg = ChatUtils.resolve(ChatUtils.format(prefix + " " + msg), false);
+                        msg = Text.formatted(prefix + " " + msg).asString();
                     }
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.LEAVE)
                             .message(msg)
                             .author(DiscordAuthor.getServer()
-                                    .setPlayerName(ChatUtils.resolve(dataMessage.displayName(), false))
+                                    .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
                             .build();
 
                     discordMessage.sendMessage();
                 }
                 case DEATH -> {
-                    String name = ChatUtils.resolve(dataMessage.displayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
-                    String msg = ChatUtils.resolve(dataMessage.message(), SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String name = dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String msg = dataMessage.message().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
                     String finalMessage = SDLinkConfig.INSTANCE.messageFormatting.death;
 
                     if (msg.startsWith(name + " ")) {
@@ -339,33 +338,33 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                     finalMessage = finalMessage.replace("%player%", name).replace("%message%", msg);
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
-                        finalMessage = ChatUtils.resolve(ChatUtils.format(prefix + " " + finalMessage), false);
+                        finalMessage = Text.formatted(prefix + " " + finalMessage).asString();
                     }
 
                     DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                             .message(finalMessage)
                             .author(DiscordAuthor.getServer()
-                                    .setPlayerName(ChatUtils.resolve(dataMessage.displayName(), false))
+                                    .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
                             .build();
 
                     message.sendMessage();
                 }
                 case ADVANCEMENT -> {
-                    String username = ChatUtils.resolve(dataMessage.displayName(), SDLinkConfig.INSTANCE.chatConfig.formatting);
-                    String finalAdvancement = ChatUtils.resolve(dataMessage.message(), SDLinkConfig.INSTANCE.chatConfig.formatting);
-                    String advancementBody = ChatUtils.resolve(dataMessage.additional(), SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String username = dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String finalAdvancement = dataMessage.message().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                    String advancementBody = dataMessage.additional().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
                     String msg = SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody);
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
-                        msg = ChatUtils.resolve(ChatUtils.format(prefix + " " + msg), false);
+                        msg = Text.formatted(prefix + " " + msg).asString();
                     }
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
                             .message(msg)
                             .author(DiscordAuthor.getServer()
-                                    .setPlayerName(ChatUtils.resolve(dataMessage.displayName(), false))
+                                    .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
                             .build();
 

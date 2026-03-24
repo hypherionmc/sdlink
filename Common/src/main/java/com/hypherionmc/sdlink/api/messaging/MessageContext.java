@@ -1,15 +1,14 @@
 package com.hypherionmc.sdlink.api.messaging;
 
-import com.hypherionmc.craterlib.utils.ChatUtils;
+import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,14 +16,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.entities.Role;
 import net.fellbaum.jemoji.EmojiManager;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.Nullable;
-import shadow.kyori.adventure.text.Component;
-import shadow.kyori.adventure.text.TextComponent;
-import shadow.kyori.adventure.text.event.ClickEvent;
-import shadow.kyori.adventure.text.event.HoverEvent;
-import shadow.kyori.adventure.text.format.NamedTextColor;
-import shadow.kyori.adventure.text.format.Style;
-import shadow.kyori.adventure.text.format.TextColor;
 
 import java.net.URL;
 import java.util.List;
@@ -70,7 +68,7 @@ public final class MessageContext {
 
         // Check for attachments
         if (!originalMessage.getAttachments().isEmpty()) {
-            String attachmentText = String.valueOf(Text.translate("message.attachments", (long) originalMessage.getAttachments().size()));
+            String attachmentText = String.valueOf(SDText.translate("message.attachments", (long) originalMessage.getAttachments().size()));
             message = message.isEmpty() ? String.format("%s attachments", originalMessage.getAttachments().size()) : String.format("%s %s", message, attachmentText);
         }
 
@@ -86,7 +84,7 @@ public final class MessageContext {
                 formattedReply = replyReference.getContentDisplay();
 
                 if (!replyReference.getAttachments().isEmpty()) {
-                    String attachmentText = String.valueOf(Text.translate("message.attachments", (long) replyReference.getAttachments().size()));
+                    String attachmentText = String.valueOf(SDText.translate("message.attachments", (long) replyReference.getAttachments().size()));
                     formattedReply = formattedReply.isEmpty() ? String.format("%s attachments", replyReference.getAttachments().size()) : String.format("%s %s", formattedReply, attachmentText);
                 }
 
@@ -105,9 +103,9 @@ public final class MessageContext {
     /**
      * Get the formatted message, to be sent to Minecraft
      *
-     * @return The formatted {@link Component} that will be sent to Minecraft
+     * @return The formatted {@link Text} that will be sent to Minecraft
      */
-    public Component getFormattedMessageComponent() {
+    public Text getFormattedMessageComponent() {
         // Parse Discord Content
         parseMessage();
 
@@ -137,14 +135,14 @@ public final class MessageContext {
             prefix = mainPrefix;
 
         Style baseStyle = Style.empty();
-        Component component = parsePlaceholders(SDLinkChatUtils.format(prefix), baseStyle, sender);
+        Text component = parsePlaceholders(Text.formatted(prefix), baseStyle, sender);
 
         // Apply messaging filters
         formattedMessage = SDLinkChatUtils.applyFiltering(formattedMessage, (i) -> i.appliesTo.isMinecraft() && i.appliesTo.appliesToChat(i));
         if (formattedMessage.isEmpty())
             return null;
 
-        Component finalComponent = component.append(SDLinkChatUtils.parseChatLinks(formattedMessage));
+        Text finalComponent = component.append(SDLinkChatUtils.parseChatLinks(formattedMessage));
 
         // Handle Replies
         if (formattedReply != null && !formattedReply.isEmpty() && replyMember != null) {
@@ -155,25 +153,25 @@ public final class MessageContext {
             }
 
             finalComponent = parsePlaceholders(
-                    SDLinkChatUtils.format(SDLinkConfig.INSTANCE.messageFormatting.mcReplyFormatting),
+                    Text.formatted(SDLinkConfig.INSTANCE.messageFormatting.mcReplyFormatting),
                     Style.style().build(),
                     replyMember,
                     formattedReply
             ).append(finalComponent);
 
             if (formattedReply.length() > 30) {
-                finalComponent = finalComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, SDLinkChatUtils.parseChatLinks(formattedReply)));
+                finalComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, SDLinkChatUtils.parseChatLinks(formattedReply).getComponent()));
             }
 
             try {
-                finalComponent = finalComponent.clickEvent(ClickEvent.openUrl(
+                finalComponent.clickEvent(ClickEvent.openUrl(
                         new URL(getOriginalMessage().getReferencedMessage().getJumpUrl())
                 ));
             } catch (Exception ignored) {}
         }
 
         if ((formattedReply == null || formattedReply.isEmpty()) && SDLinkConfig.INSTANCE.chatConfig.showDiscordInfo) {
-            finalComponent = appendDiscordInfo(sender, finalComponent);
+            appendDiscordInfo(sender, finalComponent);
         }
 
         return finalComponent;
@@ -182,36 +180,36 @@ public final class MessageContext {
     /**
      * Parse Placeholders in strings, into their values
      *
-     * @param inComponent The {@link Component} to handle
+     * @param inComponent The {@link Text} to handle
      * @param baseStyle The base {@link Style} to build on
      * @param member The Discord {@link Member} that sent the message
      * @return The formatted Component
      */
-    private Component parsePlaceholders(Component inComponent, Style baseStyle, Member member) {
+    private Text parsePlaceholders(Text inComponent, Style baseStyle, Member member) {
         return parsePlaceholders(inComponent, baseStyle, member, null);
     }
 
     /**
      * Parse Placeholders in strings, into their values
      *
-     * @param component The {@link Component} to handle
+     * @param component The {@link Text} to handle
      * @param baseStyle The base {@link Style} to build on
      * @param member The Discord {@link Member} that sent the message
      * @param message The optional message that will replace the %message_summary% placeholder
      * @return The formatted Component
      */
-    private Component parsePlaceholders(Component component, Style baseStyle, Member member, @Nullable String message) {
-        Component result = Component.empty();
+    private Text parsePlaceholders(Text component, Style baseStyle, Member member, @Nullable String message) {
+        Text result = Text.empty();
 
-        if (component instanceof TextComponent textComponent) {
+        if (component.getComponent() instanceof TextComponent textComponent) {
             String content = textComponent.content();
             int lastIndex = 0;
             Matcher matcher = patternStart.matcher(content);
 
             while (matcher.find()) {
                 if (matcher.start() > lastIndex) {
-                    result = result.append(
-                            Component.text(content.substring(lastIndex, matcher.start()))
+                    result.append(
+                            Text.literal(content.substring(lastIndex, matcher.start()))
                                     .style(baseStyle.merge(textComponent.style()))
                     );
                 }
@@ -221,25 +219,25 @@ public final class MessageContext {
                     switch (var) {
                         case "color" -> baseStyle = baseStyle.color(TextColor.color(member.getColorRaw()));
                         case "end_color" -> baseStyle = baseStyle.color(NamedTextColor.WHITE);
-                        case "replier_name" -> result = result.append(
-                                Component.text(member.getEffectiveName())
+                        case "replier_name" -> result.append(
+                                Text.literal(member.getEffectiveName())
                                         .style(baseStyle.merge(textComponent.style()))
                         );
                         case "message_summary" -> {
                             if (message != null) {
-                                Component msgComponent = SDLinkChatUtils.parseChatLinks(message);
+                                Text msgComponent = SDLinkChatUtils.parseChatLinks(message);
 
                                 if (message.length() > 30) {
-                                    msgComponent = Component.text(ChatUtils.resolve(msgComponent, false).substring(0, 30) + "...").style(msgComponent.style());
+                                    msgComponent = Text.literal(msgComponent.asString().substring(0, 30) + "...").style(msgComponent.style());
                                 }
 
-                                result = result.append(
+                                result.append(
                                         msgComponent.applyFallbackStyle(baseStyle.merge(textComponent.style()))
                                 );
                             }
                         }
-                        default -> result = result.append(
-                                Component.text("%" + var + "%")
+                        default -> result.append(
+                                Text.literal("%" + var + "%")
                                         .style(baseStyle.merge(textComponent.style()))
                         );
                     }
@@ -249,14 +247,14 @@ public final class MessageContext {
             }
 
             if (lastIndex < content.length()) {
-                result = result.append(Component.text(content.substring(lastIndex))
+                result.append(Text.literal(content.substring(lastIndex))
                                 .style(baseStyle.merge(textComponent.style()))
                 );
             }
         }
 
-        for (Component child : component.children()) {
-            result = result.append(parsePlaceholders(child, baseStyle.merge(component.style()), member, message));
+        for (Text child : component.children()) {
+            result.append(parsePlaceholders(child, baseStyle.merge(component.style()), member, message));
         }
 
         return result;
@@ -266,35 +264,35 @@ public final class MessageContext {
      * Append Discord User Info to the hover tooltip
      *
      * @param member The Discord Member that sent the message
-     * @param currentComponent The {@link Component} that will be sent to minecraft
+     * @param currentComponent The {@link Text} that will be sent to minecraft
      * @return The formatted component with tooltip added
      */
-    private Component appendDiscordInfo(Member member, Component currentComponent) {
-        Component memberDetails = Component.empty();
+    private Text appendDiscordInfo(Member member, Text currentComponent) {
+        Text memberDetails = Text.empty();
 
-        memberDetails = memberDetails
-                .append(Component.text(
-                        Text.translate("tooltip.display_name") + ": ")
+        memberDetails
+                .append(Text.literal(
+                        SDText.translate("tooltip.display_name") + ": ")
                         .style(Style.style().color(NamedTextColor.YELLOW).build())
-                        .append(Component.text(member.getEffectiveName()).style(Style.style()
+                        .append(Text.literal(member.getEffectiveName()).style(Style.style()
                                 .color(NamedTextColor.WHITE).build()))
                         .appendNewline()
                 )
-                .append(Component.text(
-                        Text.translate("tooltip.username") + ": ")
+                .append(Text.literal(
+                        SDText.translate("tooltip.username") + ": ")
                         .style(Style.style().color(NamedTextColor.YELLOW).build())
-                        .append(Component.text(member.getUser().getName())
+                        .append(Text.literal(member.getUser().getName())
                                 .style(Style.style().color(NamedTextColor.WHITE).build()))
                         .appendNewline()
                 )
-                .append(Component.text(
-                        Text.translate("tooltip.roles") + ": ")
+                .append(Text.literal(
+                        SDText.translate("tooltip.roles") + ": ")
                         .style(Style.style().color(NamedTextColor.YELLOW).build())
-                        .append(Component.text(String.join(", ", member.getRoles().stream().map(Role::getName).toList()))
+                        .append(Text.literal(String.join(", ", member.getRoles().stream().map(Role::getName).toList()))
                                 .style(Style.style().color(NamedTextColor.WHITE).build()))
                 );
 
-        currentComponent = currentComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, memberDetails));
+        currentComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, memberDetails.getComponent()));
         return currentComponent;
     }
 

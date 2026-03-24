@@ -2,13 +2,13 @@ package com.hypherionmc.sdlink.server.commands;
 
 import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
+import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkUtils;
-import com.hypherionmc.sdlink.util.translations.Text;
-import shadow.kyori.adventure.text.Component;
+import com.hypherionmc.sdlink.util.translations.SDText;
 
 public final class DiscordVerifyCommand {
 
@@ -18,12 +18,12 @@ public final class DiscordVerifyCommand {
                 .withNode("sdlink.discord_verify")
                 .execute(ctx -> {
                     if (!ctx.isPlayer() || ctx.getPlayer() == null) {
-                        ctx.sendFailure(Component.text(Text.translate("error.verify.only_by_players").toString()));
+                        ctx.sendFailure(Text.literal(SDText.translate("error.verify.only_by_players").toString()));
                         return 1;
                     }
 
                     if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
-                        ctx.sendFailure(Component.text(Text.translate("error.verify.not_enabled").toString()));
+                        ctx.sendFailure(Text.literal(SDText.translate("error.verify.not_enabled").toString()));
                         return 1;
                     }
 
@@ -31,7 +31,7 @@ public final class DiscordVerifyCommand {
                     SDLinkAccount sdLinkAccount = account.getStoredAccount();
 
                     if (sdLinkAccount == null) {
-                        ctx.sendFailure(Component.text(Text.translate("account.load_failed").toString()));
+                        ctx.sendFailure(Text.literal(SDText.translate("account.load_failed").toString()));
                         return 1;
                     }
 
@@ -39,9 +39,9 @@ public final class DiscordVerifyCommand {
                         int code = SDLinkUtils.intInRange(1000, 9999);
                         sdLinkAccount.setVerifyCode(String.valueOf(code));
                         DatabaseManager.INSTANCE.updateEntry(sdLinkAccount);
-                        ctx.sendSuccess(() -> Component.text(SDLinkConfig.INSTANCE.accessControl.verificationMessages.optionalVerificationMessage.replace("{code}", String.valueOf(code))), false);
+                        ctx.sendSuccess(() -> Text.literal(SDLinkConfig.INSTANCE.accessControl.verificationMessages.optionalVerificationMessage.replace("{code}", String.valueOf(code))), false);
                     } else {
-                        ctx.sendSuccess(() -> Component.text(SDLinkConfig.INSTANCE.accessControl.verificationMessages.optionalVerificationMessage.replace("{code}", String.valueOf(sdLinkAccount.getVerifyCode()))), false);
+                        ctx.sendSuccess(() -> Text.literal(SDLinkConfig.INSTANCE.accessControl.verificationMessages.optionalVerificationMessage.replace("{code}", String.valueOf(sdLinkAccount.getVerifyCode()))), false);
                     }
                     return 1;
                 });

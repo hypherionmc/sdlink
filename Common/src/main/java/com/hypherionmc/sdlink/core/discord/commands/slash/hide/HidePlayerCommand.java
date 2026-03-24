@@ -6,7 +6,7 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -20,7 +20,7 @@ public final class HidePlayerCommand extends SDLinkSlashCommand {
     public HidePlayerCommand() {
         super(true);
         this.name = "hideplayer";
-        this.help = Text.translate("command.hideplayer.help").toString();
+        this.help = SDText.translate("command.hideplayer.help").toString();
 
         this.options = new ArrayList<>() {{
             add(new OptionData(OptionType.USER, "user", "The user to make invisible").setRequired(true));
@@ -36,13 +36,13 @@ public final class HidePlayerCommand extends SDLinkSlashCommand {
 
         if (mc) {
             if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
-                event.getHook().editOriginal(Text.translate("command.hideplayer.access_control").toString()).queue();
+                event.getHook().editOriginal(SDText.translate("command.hideplayer.access_control").toString()).queue();
                 return;
             }
 
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class).stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(user.getId())).toList();
             if (accounts.isEmpty()) {
-                event.getHook().editOriginal(Text.translate("command.hideplayer.account_not_found", user.getAsMention()).toString()).queue();
+                event.getHook().editOriginal(SDText.translate("command.hideplayer.account_not_found", user.getAsMention()).toString()).queue();
             } else {
                 for (SDLinkAccount account : accounts) {
                     HiddenPlayersManager.INSTANCE.hidePlayer(account.getUuid(), account.getDiscordID(), "minecraft");

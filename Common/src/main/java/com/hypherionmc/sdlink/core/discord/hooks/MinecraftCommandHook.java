@@ -10,7 +10,7 @@ import com.hypherionmc.sdlink.core.config.impl.MinecraftCommands;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -58,7 +58,7 @@ public final class MinecraftCommandHook {
         }
 
         if (allowedCommand == null) {
-            event.getMessage().reply(Text.translate("commands.permission_denied")).mentionRepliedUser(false).queue(suc -> suc.delete().queueAfter(5, TimeUnit.SECONDS));
+            event.getMessage().reply(SDText.translate("commands.permission_denied")).mentionRepliedUser(false).queue(suc -> suc.delete().queueAfter(5, TimeUnit.SECONDS));
             event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             return;
         }
@@ -76,7 +76,7 @@ public final class MinecraftCommandHook {
         }
 
         if (SDLinkConfig.INSTANCE.linkedCommands.outputInvalid) {
-            event.getMessage().reply(Text.translate("commands.command_not_allowed")).mentionRepliedUser(false).queue(suc -> {
+            event.getMessage().reply(SDText.translate("commands.command_not_allowed")).mentionRepliedUser(false).queue(suc -> {
                 suc.delete().queueAfter(5, TimeUnit.SECONDS);
                 event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             });

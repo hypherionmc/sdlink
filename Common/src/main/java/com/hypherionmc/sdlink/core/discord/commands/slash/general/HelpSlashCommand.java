@@ -7,7 +7,7 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,7 +24,7 @@ public final class HelpSlashCommand extends SDLinkSlashCommand {
     public HelpSlashCommand() {
         super(false);
         this.name = "help";
-        this.help = Text.translate("command.help.help").toString();
+        this.help = SDText.translate("command.help.help").toString();
     }
 
     @Override
@@ -33,7 +33,7 @@ public final class HelpSlashCommand extends SDLinkSlashCommand {
         Set<SlashCommand> commands = CommandManager.INSTANCE.getCommands();
 
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(Text.translate("command.help.title").toString());
+        builder.setTitle(SDText.translate("command.help.title").toString());
         builder.setColor(Color.BLUE);
 
         commands.forEach(cmd -> builder.addField(cmd.getName(), cmd.getHelp(), false));

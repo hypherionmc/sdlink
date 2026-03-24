@@ -1,17 +1,15 @@
 package com.hypherionmc.sdlink.util;
 
-import com.hypherionmc.craterlib.utils.ChatUtils;
+import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
-import shadow.kyori.adventure.text.Component;
-import shadow.kyori.adventure.text.event.ClickEvent;
-import shadow.kyori.adventure.text.event.HoverEvent;
-import shadow.kyori.adventure.text.format.NamedTextColor;
-import shadow.kyori.adventure.text.format.Style;
-import shadow.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -62,31 +60,31 @@ public final class SDLinkChatUtils {
         return finalMessage;
     }
 
-    public static Component parseChatLinks(String input) {
+    public static Text parseChatLinks(String input) {
         Pattern pattern = Pattern.compile("\\b(?:https?)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]");
         Matcher matcher = pattern.matcher(input);
 
-        Component component = Component.empty();
+        Text component = Text.empty();
 
         int lastEnd = 0;
         while (matcher.find()) {
             String url = matcher.group();
             String msg = input.substring(lastEnd, matcher.start());
 
-            component = component.append(ChatUtils.resolve(msg, SDLinkConfig.INSTANCE.chatConfig.formatting));
+            component.append(Text.fromString(msg, SDLinkConfig.INSTANCE.chatConfig.formatting));
 
             Style emptyStyle = Style.empty()
                     .color(NamedTextColor.BLUE)
                     .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url))
-                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to Open")));
+                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to Open").getComponent()));
 
-            Component urlComponent = Component.text(url).style(emptyStyle);
-            component = component.append(urlComponent);
+            Text urlComponent = Text.literal(url).style(emptyStyle);
+            component.append(urlComponent);
             lastEnd = matcher.end();
         }
 
         String remaining = input.substring(lastEnd);
-        component = component.append(ChatUtils.resolve(remaining, SDLinkConfig.INSTANCE.chatConfig.formatting));
+        component.append(Text.fromString(remaining, SDLinkConfig.INSTANCE.chatConfig.formatting));
 
         return component;
     }
@@ -137,20 +135,6 @@ public final class SDLinkChatUtils {
         }
 
         return input;
-    }
-
-    public static shadow.kyori.adventure.text.Component format(String value) {
-        value = convertFormattingCodes(value);
-
-        try {
-            return MiniMessage.miniMessage().deserializeOr(value, shadow.kyori.adventure.text.Component.text(value));
-        } catch (Exception var2) {
-            return shadow.kyori.adventure.text.Component.text(value);
-        }
-    }
-
-    private static String convertFormattingCodes(String input) {
-        return input.replaceAll("§([0-9a-fklmnor])", "§$1");
     }
 
 }

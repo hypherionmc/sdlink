@@ -10,7 +10,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.MessageUtil;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jagrosh.jdautilities.menu.ButtonEmbedPaginator;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -32,7 +32,7 @@ public final class ViewVerifiedAccounts extends SDLinkSlashCommand {
         super(true);
 
         this.name = "verifiedaccounts";
-        this.help = Text.translate("command.verifiedaccounts.help").toString();
+        this.help = SDText.translate("command.verifiedaccounts.help").toString();
     }
 
     @Override
@@ -48,14 +48,14 @@ public final class ViewVerifiedAccounts extends SDLinkSlashCommand {
             AtomicInteger count = new AtomicInteger();
 
             if (accounts.isEmpty()) {
-                event.getHook().sendMessage(Text.translate("command.verifiedaccounts.no_accounts").toString()).setEphemeral(true).queue();
+                event.getHook().sendMessage(SDText.translate("command.verifiedaccounts.no_accounts").toString()).setEphemeral(true).queue();
                 return;
             }
 
             MessageUtil.listBatches(accounts, 10).forEach(itm -> {
                 count.getAndIncrement();
                 builder.clear();
-                builder.setTitle(Text.translate("command.verifiedaccounts.title_page", count.get(),(int) Math.ceil(((float) accounts.size() / 10))).toString());
+                builder.setTitle(SDText.translate("command.verifiedaccounts.title_page", count.get(),(int) Math.ceil(((float) accounts.size() / 10))).toString());
                 builder.setColor(Color.GREEN);
                 StringBuilder sBuilder = new StringBuilder();
 
@@ -77,7 +77,7 @@ public final class ViewVerifiedAccounts extends SDLinkSlashCommand {
 
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
-            event.getHook().sendMessage(Text.translate("error.command_failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            event.getHook().sendMessage(SDText.translate("error.command_failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             BotController.INSTANCE.getLogger().error("Failed to run verifiedaccounts command", e);
         }
     }

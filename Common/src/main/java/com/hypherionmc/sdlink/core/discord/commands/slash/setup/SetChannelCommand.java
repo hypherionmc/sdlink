@@ -9,7 +9,7 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -26,7 +26,7 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
     public SetChannelCommand() {
         super(true);
         this.name = "setchannel";
-        this.help = Text.translate("command.setchannel.help").toString();
+        this.help = SDText.translate("command.setchannel.help").toString();
         this.guildOnly = true;
 
         List<Command.Choice> choices = new ArrayList<>();
@@ -51,7 +51,7 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
         boolean webhook = event.getOption("webhook").getAsBoolean();
 
         if (!channel.canTalk()) {
-            event.getHook().sendMessage(Text.translate("error.no_message_perms", channel.getAsMention()).toString()).setEphemeral(true).queue();
+            event.getHook().sendMessage(SDText.translate("error.no_message_perms", channel.getAsMention()).toString()).setEphemeral(true).queue();
             return;
         }
 
@@ -86,10 +86,10 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
                 }
             }
 
-            return Result.success(Text.translate("command.setchannel.saved"));
+            return Result.success(SDText.translate("command.setchannel.saved"));
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to save config", e);
-            return Result.error(Text.translate("command.setchannel.failed", e.getMessage()));
+            return Result.error(SDText.translate("command.setchannel.failed", e.getMessage()));
         }
     }
 
@@ -122,10 +122,10 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
                 }
             }
 
-            return Result.success(Text.translate("command.setchannel.webhook_saved"));
+            return Result.success(SDText.translate("command.setchannel.webhook_saved"));
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to save config", e);
-            return Result.error(Text.translate("command.setchannel.failed", e.getMessage()));
+            return Result.error(SDText.translate("command.setchannel.failed", e.getMessage()));
         }
     }
 

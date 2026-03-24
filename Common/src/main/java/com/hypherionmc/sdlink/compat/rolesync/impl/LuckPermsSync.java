@@ -1,10 +1,10 @@
 package com.hypherionmc.sdlink.compat.rolesync.impl;
 
+import com.hypherionmc.craterlib.api.compat.LuckPermsCompat;
 import com.hypherionmc.craterlib.api.events.compat.LuckPermsCompatEvents;
-import com.hypherionmc.craterlib.compat.LuckPermsCompat;
+import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
+import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
-import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
-import com.hypherionmc.craterlib.nojang.world.entity.player.BridgedPlayer;
 import com.hypherionmc.sdlink.api.accounts.DiscordUser;
 import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
@@ -30,7 +30,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
     }
 
     @Override
-    public void sync(BridgedPlayer p, List<Role> roles, Guild guild, Member member) {
+    public void sync(CraterPlayer p, List<Role> roles, Guild guild, Member member) {
 
         // Discord to Minecraft Sync
         if (SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncToMinecraft) {
@@ -39,9 +39,9 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
                 sync.ifPresent(s -> {
-                    if (!LuckPermsCompat.INSTANCE.hasGroup(p.getUUID(), s.rank)) {
+                    if (!LuckPermsCompat.getInstance().hasGroup(p.getUUID(), s.rank)) {
                         ignoreEvent = true;
-                        LuckPermsCompat.INSTANCE.addGroupToUser(p.getUUID(), s.rank);
+                        LuckPermsCompat.getInstance().addGroupToUser(p.getUUID(), s.rank);
                         ignoreEvent = false;
                     }
 
@@ -49,14 +49,14 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
             }
 
             // Remove Ranks from Users
-            Set<String> ranks = LuckPermsCompat.INSTANCE.getUserGroups(p.getUUID());
+            Set<String> ranks = LuckPermsCompat.getInstance().getUserGroups(p.getUUID());
             for (String rank : ranks) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncs.stream().filter(s -> s.rank.equalsIgnoreCase(rank)).findFirst();
 
                 sync.ifPresent(s -> {
-                    if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && LuckPermsCompat.INSTANCE.hasGroup(p.getUUID(), s.rank)) {
+                    if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && LuckPermsCompat.getInstance().hasGroup(p.getUUID(), s.rank)) {
                         ignoreEvent = true;
-                        LuckPermsCompat.INSTANCE.removeGroupFromUser(p.getUUID(), s.rank);
+                        LuckPermsCompat.getInstance().removeGroupFromUser(p.getUUID(), s.rank);
                         ignoreEvent = false;
                     }
                 });
@@ -65,7 +65,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
 
         // Minecraft to Discord Sync
         if (SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncToDiscord) {
-            Set<String> ranks = LuckPermsCompat.INSTANCE.getUserGroups(p.getUUID());
+            Set<String> ranks = LuckPermsCompat.getInstance().getUserGroups(p.getUUID());
 
             // Add Roles to Users
             for (String rank : ranks) {
@@ -87,7 +87,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
             for (Role role : roles) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
-                if (sync.isPresent() && !LuckPermsCompat.INSTANCE.hasGroup(p.getUUID(), sync.get().rank)) {
+                if (sync.isPresent() && !LuckPermsCompat.getInstance().hasGroup(p.getUUID(), sync.get().rank)) {
                     Optional<Role> r = RoleManager.getLuckPermsRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(sync.get().role)).findFirst();
                     if (r.isEmpty())
                         return;
@@ -149,7 +149,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
         updateLuckpermsGroup(identifier, event.toProfile(), false);
     }
 
-    private void updateLuckpermsGroup(String rank, BridgedGameProfile profile, boolean add) {
+    private void updateLuckpermsGroup(String rank, CraterGameProfile profile, boolean add) {
         MinecraftAccount account = MinecraftAccount.of(profile);
         DiscordUser user = account.getDiscordUser();
         if (user == null)
@@ -189,15 +189,15 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
         if (sync == null) return;
 
         if (add) {
-            if (!LuckPermsCompat.INSTANCE.hasGroup(account.getUuid(), sync.rank)) {
+            if (!LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
                 ignoreEvent = true;
-                LuckPermsCompat.INSTANCE.addGroupToUser(account.getUuid(), sync.rank);
+                LuckPermsCompat.getInstance().addGroupToUser(account.getUuid(), sync.rank);
                 ignoreEvent = false;
             }
         } else {
-            if (LuckPermsCompat.INSTANCE.hasGroup(account.getUuid(), sync.rank)) {
+            if (LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
                 ignoreEvent = true;
-                LuckPermsCompat.INSTANCE.removeGroupFromUser(account.getUuid(), sync.rank);
+                LuckPermsCompat.getInstance().removeGroupFromUser(account.getUuid(), sync.rank);
                 if (oldAccount != null) {
                     try {
                         guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();

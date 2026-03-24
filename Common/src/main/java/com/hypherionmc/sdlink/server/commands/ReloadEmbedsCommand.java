@@ -2,8 +2,8 @@ package com.hypherionmc.sdlink.server.commands;
 
 import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
+import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
-import shadow.kyori.adventure.text.Component;
 
 public final class ReloadEmbedsCommand {
 
@@ -13,7 +13,7 @@ public final class ReloadEmbedsCommand {
                 .withNode("sdlink.reloadembeds")
                 .execute(ctx -> {
                     EmbedManager.init();
-                    ctx.sendSuccess(() -> Component.text("Reloaded Embeds"), false);
+                    ctx.sendSuccess(() -> Text.literal("Reloaded Embeds"), false);
                     return 1;
                 });
 

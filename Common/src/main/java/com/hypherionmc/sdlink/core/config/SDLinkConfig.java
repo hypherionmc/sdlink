@@ -14,12 +14,12 @@ import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.translations.TranslationManager;
 import net.dv8tion.jda.api.entities.Activity;
 import org.apache.commons.io.FileUtils;
-import shadow.hypherionmc.moonconfig.core.CommentedConfig;
-import shadow.hypherionmc.moonconfig.core.conversion.ObjectConverter;
-import shadow.hypherionmc.moonconfig.core.conversion.Path;
-import shadow.hypherionmc.moonconfig.core.conversion.SpecComment;
-import shadow.hypherionmc.moonconfig.core.fields.RandomArrayList;
-import shadow.hypherionmc.moonconfig.core.file.CommentedFileConfig;
+import com.hypherionmc.craterlib.libs.moonconfig.core.CommentedConfig;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.ObjectConverter;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
+import com.hypherionmc.craterlib.libs.moonconfig.core.fields.RandomArrayList;
+import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 
 import java.io.File;
 import java.io.IOException;

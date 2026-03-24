@@ -4,8 +4,8 @@
  */
 package com.hypherionmc.sdlink.api.accounts;
 
+import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
-import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
 import com.hypherionmc.sdlink.api.events.VerificationEvent;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
@@ -16,7 +16,7 @@ import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.RoleManager;
 import com.hypherionmc.sdlink.util.SDLinkUtils;
-import com.hypherionmc.sdlink.util.translations.Text;
+import com.hypherionmc.sdlink.util.translations.SDText;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -67,12 +67,12 @@ public final class MinecraftAccount {
      *
      * @param profile The player GameProfile
      */
-    public static MinecraftAccount of(BridgedGameProfile profile) {
+    public static MinecraftAccount of(CraterGameProfile profile) {
         return new MinecraftAccount(profile.getName(), profile.getId());
     }
 
-    public BridgedGameProfile toGameProfile() {
-        return BridgedGameProfile.mojang(uuid, username);
+    public CraterGameProfile toGameProfile() {
+        return CraterGameProfile.fromGame(username, uuid);
     }
 
     @Nullable
@@ -125,11 +125,11 @@ public final class MinecraftAccount {
     public String getDiscordName() {
         SDLinkAccount account = getStoredAccount();
         if (account == null || SDLinkUtils.isNullOrEmpty(account.getDiscordID()))
-            return Text.translate("account.unlinked").toString();
+            return SDText.translate("account.unlinked").toString();
 
         DiscordUser user = getDiscordUser();
 
-        return user == null ? Text.translate("account.unlinked").toString() : user.getEffectiveName();
+        return user == null ? SDText.translate("account.unlinked").toString() : user.getEffectiveName();
     }
 
     @Nullable
@@ -149,7 +149,7 @@ public final class MinecraftAccount {
         SDLinkAccount account = getStoredAccount();
 
         if (account == null)
-            return Result.error(Text.translate("account.notfound"));
+            return Result.error(SDText.translate("account.notfound"));
 
         account.setDiscordID(member.getId());
         account.setVerifyCode(null);
@@ -180,14 +180,14 @@ public final class MinecraftAccount {
 
         CraterEventBus.INSTANCE.postEvent(new VerificationEvent.PlayerVerified(this));
 
-        return Result.success(Text.translate("account.verify_success"));
+        return Result.success(SDText.translate("account.verify_success"));
     }
 
     public Result unverifyAccount(Member member, Guild guild) {
         SDLinkAccount account = getStoredAccount();
 
         if (account == null)
-            return Result.error(Text.translate("account.notfound"));
+            return Result.error(SDText.translate("account.notfound"));
 
         MinecraftAccount oldAccount = this;
         account.setDiscordID(null);
@@ -229,7 +229,7 @@ public final class MinecraftAccount {
 
         CraterEventBus.INSTANCE.postEvent(new VerificationEvent.PlayerUnverified(this));
 
-        return Result.success(Text.translate("account.unverify_success"));
+        return Result.success(SDText.translate("account.unverify_success"));
     }
 
     public Result canLogin() {
@@ -239,7 +239,7 @@ public final class MinecraftAccount {
         SDLinkAccount account = getStoredAccount();
 
         if (account == null)
-            return Result.error(Text.translate("account.load_failed"));
+            return Result.error(SDText.translate("account.load_failed"));
 
         if (!isAccountVerified() && SDLinkConfig.INSTANCE.accessControl.enabled) {
             if (SDLinkUtils.isNullOrEmpty(account.getVerifyCode())) {
@@ -257,19 +257,19 @@ public final class MinecraftAccount {
         if (result.isError()) {
             switch (result.getMessage()) {
                 case "notFound" -> {
-                    return Result.error(Text.translate("account.not_in_database"));
+                    return Result.error(SDText.translate("account.not_in_database"));
                 }
                 case "noGuildFound" -> {
-                    return Result.error(Text.translate("error.no_discord_server"));
+                    return Result.error(SDText.translate("error.no_discord_server"));
                 }
                 case "memberNotFound" -> {
                     return Result.error(SDLinkConfig.INSTANCE.accessControl.verificationMessages.nonMember);
                 }
                 case "userCacheEmpty" -> {
-                    return Result.error(Text.translate("error.empty_cache"));
+                    return Result.error(SDText.translate("error.empty_cache"));
                 }
                 case "rolesNotLoaded" -> {
-                    return Result.error(Text.translate("error.no_roles"));
+                    return Result.error(SDText.translate("error.no_roles"));
                 }
                 case "accessDeniedByRole" -> {
                     return Result.error(SDLinkConfig.INSTANCE.accessControl.verificationMessages.roleDenied);

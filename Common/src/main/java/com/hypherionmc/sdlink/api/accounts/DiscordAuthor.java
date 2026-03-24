@@ -4,7 +4,7 @@
  */
 package com.hypherionmc.sdlink.api.accounts;
 
-import com.hypherionmc.craterlib.nojang.authlib.BridgedGameProfile;
+import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
@@ -25,7 +25,7 @@ public final class DiscordAuthor {
     private final boolean isServer;
     private String username;
     private String uuid;
-    private BridgedGameProfile profile;
+    private CraterGameProfile profile;
     String realPlayerAvatar = "";
     String realPlayerName = "";
     @Setter private int color = Role.DEFAULT_COLOR_RAW;
@@ -120,7 +120,7 @@ public final class DiscordAuthor {
         fixDisplayName(name);
     }
 
-    public DiscordAuthor setGameProfile(@Nullable BridgedGameProfile profile) {
+    public DiscordAuthor setGameProfile(@Nullable CraterGameProfile profile) {
         this.profile = profile;
         if (profile != null) {
             this.username = profile.getName();
