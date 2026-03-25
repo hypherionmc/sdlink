@@ -96,6 +96,8 @@ public final class MessageContext {
             }
         }
 
+        message = message.replace("§k", "#k");
+
         // Format emojis
         formattedMessage = EmojiManager.replaceAllEmojis(message, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
     }
