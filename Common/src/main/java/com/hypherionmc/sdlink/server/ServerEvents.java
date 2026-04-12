@@ -38,6 +38,7 @@ import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.*;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.SDText;
@@ -191,11 +192,16 @@ public final class ServerEvents {
                 String username = user.asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
                 String msg = message.asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
+                Debugger.INSTANCE.log("Username is {}", username);
+                Debugger.INSTANCE.log("Message is {}", msg);
+
                 if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
                     msg = SDLinkChatUtils.parse(msg);
+                    Debugger.INSTANCE.log("Message after ClientMentionParse is {}", msg);
                 }
 
                 msg = parseChatMentions(msg);
+                Debugger.INSTANCE.log("Message after ChatMentionParse is {}", msg);
 
                 DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName())
                         .setGameProfile(gameProfile).setPlayerName(gameProfile.getName())
@@ -834,15 +840,25 @@ public final class ServerEvents {
         if (CacheManager.getCustomEmotes().isEmpty())
             return input;
 
+        StringBuilder result = new StringBuilder();
+
         while (matcher.find()) {
-            String emoji = matcher.group(0);
+            String emoji = matcher.group();
 
             if (CacheManager.getCustomEmotes().containsKey(emoji)) {
-                input = input.replace(matcher.group(0), CacheManager.getCustomEmotes().get(emoji).getAsMention());
+                String replacement = CacheManager
+                        .getCustomEmotes()
+                        .get(emoji)
+                        .getAsMention();
+
+                matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+            } else {
+                matcher.appendReplacement(result, emoji);
             }
         }
 
-        return input;
+        matcher.appendTail(result);
+        return result.toString();
     }
 
 }
