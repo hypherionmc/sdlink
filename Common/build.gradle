@@ -1,3 +1,4 @@
+// TODO: Convert to Kotlin Build Script
 jar.enabled = false
 shadowJar.enabled = false
 publishMod.enabled = false

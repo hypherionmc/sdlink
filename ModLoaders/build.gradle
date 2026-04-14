@@ -1,3 +1,5 @@
+// TODO: Convert to Kotlin Build Script
+
 import com.hypherionmc.modpublisher.properties.ReleaseType
 archivesBaseName = "${mod_name.replace(" ", "")}-Universal"
 
