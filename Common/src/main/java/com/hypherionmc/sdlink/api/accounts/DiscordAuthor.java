@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
  * @author HypherionSA
  * Represents a Message Author for messages sent from Minecraft to Discord
  */
+// TODO: Rewrite
+@Deprecated(forRemoval = true)
 @Getter
 public final class DiscordAuthor {
 

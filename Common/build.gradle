@@ -1,7 +1,0 @@
-// TODO: Convert to Kotlin Build Script
-jar.enabled = false
-shadowJar.enabled = false
-publishMod.enabled = false
-publishCurseforge.enabled = false
-publishModrinth.enabled = false
-publishNightbloom.enabled = false

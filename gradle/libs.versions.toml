@@ -1,0 +1,11 @@
+[versions]
+unimined = "1.0.8+1.4.2-SNAPSHOT"
+shadow = "9.3.0"
+modpublisher = "2.2.+"
+orion = "2.0.+"
+
+[plugins]
+unimined = { id = "dev.firstdark.unimined", version.ref = "unimined" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+modpublisher = { id = "com.hypherionmc.modutils.modpublisher", version.ref = "modpublisher" }
+orion = { id = "com.hypherionmc.modutils.orion", version.ref = "orion" }

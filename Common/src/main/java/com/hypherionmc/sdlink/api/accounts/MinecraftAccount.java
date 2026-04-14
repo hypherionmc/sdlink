@@ -41,7 +41,6 @@ public final class MinecraftAccount {
 
     private final String username;
     private final UUID uuid;
-    //private final boolean isOffline;
 
     /**
      * Internal.
