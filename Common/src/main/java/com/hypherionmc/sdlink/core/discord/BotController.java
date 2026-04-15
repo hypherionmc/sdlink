@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -69,6 +70,19 @@ public final class BotController {
 
         File newConfigDir = new File("./config/simple-discord-link");
         newConfigDir.mkdirs();
+
+        File newConfigBackup = new File(newConfigDir, "simple-discord-link.legacy");
+        File currentConfig = new File(newConfigDir, "simple-discord-link.toml");
+
+        if (newConfigBackup.exists()) {
+            logger.info("Found backed up config. Restoring...");
+            try {
+                FileUtils.moveFile(currentConfig, new File(currentConfig.getAbsolutePath().replace(".toml", ".experimental")));
+                FileUtils.moveFile(newConfigBackup, currentConfig);
+            } catch (Exception e) {
+                logger.error("Failed to restore config", e);
+            }
+        }
 
         ExperimentalFeatures.INSTANCE.loadFeatures();
 
