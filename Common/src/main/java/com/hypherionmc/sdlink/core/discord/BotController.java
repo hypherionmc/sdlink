@@ -9,12 +9,13 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.events.DiscordEventHandler;
-import com.hypherionmc.sdlink.core.editor.ConfigEditorClient;
 import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.managers.*;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.ThreadedEventManager;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
+import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorClient;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -49,7 +51,7 @@ public final class BotController {
     @Getter
     private final EventWaiter eventWaiter = new EventWaiter();
     @Getter
-    private final Logger logger;
+    public final Logger logger;
 
     @Getter
     private final SpamManager spamManager;
@@ -70,6 +72,19 @@ public final class BotController {
         File newConfigDir = new File("./config/simple-discord-link");
         newConfigDir.mkdirs();
 
+        File newConfigBackup = new File(newConfigDir, "simple-discord-link.experimental");
+        File currentConfig = new File(newConfigDir, "simple-discord-link.toml");
+
+        if (newConfigBackup.exists()) {
+            logger.info("Found backed up experimental config. Restoring...");
+            try {
+                FileUtils.moveFile(currentConfig, new File(currentConfig.getAbsolutePath().replace(".toml", ".legacy")));
+                FileUtils.moveFile(newConfigBackup, currentConfig);
+            } catch (Exception e) {
+                logger.error("Failed to restore config", e);
+            }
+        }
+
         ExperimentalFeatures.INSTANCE.loadFeatures();
 
         // Initialize Config
@@ -84,9 +99,6 @@ public final class BotController {
 
         // Initialize Account Storage
         DatabaseManager.INSTANCE.initialize();
-
-        // Initialize Webhook Clients
-        WebhookManager.init();
 
         // Initialize Embeds
         EmbedManager.init();
@@ -204,7 +216,7 @@ public final class BotController {
                 _jda.shutdownNow();
             }
 
-            WebhookManager.shutdown();
+            WebhookCluster.INSTANCE.shutdown();
             taskManager.shutdownNow();
             updatesManager.shutdownNow();
         } catch (IllegalStateException ignored) {

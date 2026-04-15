@@ -11,16 +11,17 @@ import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.BotConfigSettings;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.SystemUtils;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -90,23 +91,26 @@ public final class BotReadyHooks {
         BotController.INSTANCE.updatesManager.scheduleAtFixedRate(() -> {
             try {
                 if (BotController.INSTANCE.isBotReady() && (SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic != null && !SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic.isEmpty())) {
-                    MessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
-                    if (channel instanceof StandardGuildMessageChannel mc) {
-                        if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled
-                                && CraterLoader.isModLoaded("mmode")
-                                && MModeCompat.getMotd() != null
-                                && !MModeCompat.getMotd().isEmpty()
-                                && MModeCompat.maintenanceActive
-                                && SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.updateChannelTopic) {
-                            mc.getManager().setTopic(MModeCompat.getMotd()).queue();
-                        } else {
-                            String topic = SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic
-                                    .replace("%players%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft()))
-                                    .replace("%maxplayers%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()))
-                                    .replace("%uptime%", SystemUtils.secondsToTimestamp(SDLinkPlatform.minecraftHelper.getServerUptime()));
-                            mc.getManager().setTopic(topic).queue();
+                    List<GuildMessageChannel> channels = SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT);
+
+                    channels.forEach(channel -> {
+                        if (channel instanceof StandardGuildMessageChannel mc) {
+                            if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled
+                                    && CraterLoader.isModLoaded("mmode")
+                                    && MModeCompat.getMotd() != null
+                                    && !MModeCompat.getMotd().isEmpty()
+                                    && MModeCompat.maintenanceActive
+                                    && SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.updateChannelTopic) {
+                                mc.getManager().setTopic(MModeCompat.getMotd()).queue();
+                            } else {
+                                String topic = SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic
+                                        .replace("%players%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft()))
+                                        .replace("%maxplayers%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()))
+                                        .replace("%uptime%", SystemUtils.secondsToTimestamp(SDLinkPlatform.minecraftHelper.getServerUptime()));
+                                mc.getManager().setTopic(topic).queue();
+                            }
                         }
-                    }
+                    });
                 }
             } catch (Exception e) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

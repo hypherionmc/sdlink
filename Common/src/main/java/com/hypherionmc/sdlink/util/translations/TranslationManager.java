@@ -44,24 +44,7 @@ public final class TranslationManager {
         File f = new File("config/simple-discord-link/language/" + lang + ".json");
         f.getParentFile().mkdirs();
 
-        if (f.exists()) {
-            // TODO - Remove temporary code when safe to do so
-            Map<String, String> diskMap = loadMapFromFile(f);
-            Map<String, String> resourceMap = loadMapFromFile(f);
-
-            if (diskMap != null && resourceMap != null && !diskMap.keySet().equals(resourceMap.keySet())) {
-                BotController.INSTANCE.getLogger().warn("Translation keys mismatch in {}. Regenerating from resource.", f.getName());
-                if (createFileFromResource(f, "assets/sdlink/lang/" + lang + ".json")) {
-                    loadFromFile(f);
-                    return;
-                }
-            }
-
-            if (diskMap != null) {
-                translations = diskMap;
-                return;
-            }
-        } else if (lang.equals("en_us")) {
+        if (!f.exists() && lang.equals("en_us")) {
             if (createFileFromResource(f, "assets/sdlink/lang/en_us.json")) {
                 loadFromFile(f);
                 return;
@@ -156,25 +139,6 @@ public final class TranslationManager {
             return gson.fromJson(reader, type);
         } catch (IOException e) {
             BotController.INSTANCE.getLogger().error("Failed to load translation file: {}", file.getAbsolutePath(), e);
-        }
-        return null;
-    }
-
-    /**
-     * Same as {@link TranslationManager#loadMapFromFile(File)}, but for resource files
-     *
-     * @param resourcePath The resource path to read from
-     * @return The key map of the file
-     */
-    private Map<String, String> loadMapFromResource(String resourcePath) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
-            if (inputStream == null)
-                return null;
-
-            InputStreamReader reader = new InputStreamReader(inputStream);
-            return gson.fromJson(reader, type);
-        } catch (IOException e) {
-            BotController.INSTANCE.getLogger().error("Failed to load resource translation file: {}", resourcePath, e);
         }
         return null;
     }

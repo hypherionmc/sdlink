@@ -5,17 +5,17 @@ import com.hypherionmc.craterlib.api.game.server.CraterGameServer;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.sdlink.SDLinkConstants;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,6 +48,7 @@ public final class SDLinkMinecraftBridge {
                 SDLinkRelayClient.INSTANCE.relayMessage(relayMessage);
             }
 
+            // TODO: Relay message to other discord servers
             ServerEvents.getInstance().getMinecraftServer().broadcastSystemMessage(
                     component,
                     false

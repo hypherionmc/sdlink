@@ -12,7 +12,7 @@ public enum MessageDestination {
     CHAT,
     EVENT,
     CONSOLE,
-    OVERRIDE;
+    RELAY;
 
     public boolean isChat() {
         return this == CHAT;
@@ -26,7 +26,7 @@ public enum MessageDestination {
         return this == CONSOLE;
     }
 
-    public boolean isOverride() {
-        return this == OVERRIDE;
+    public boolean isRelay() {
+        return this == RELAY;
     }
 }

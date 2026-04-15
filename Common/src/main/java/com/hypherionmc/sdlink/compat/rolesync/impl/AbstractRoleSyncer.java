@@ -1,7 +1,7 @@
 package com.hypherionmc.sdlink.compat.rolesync.impl;
 
 import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;

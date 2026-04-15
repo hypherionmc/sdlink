@@ -9,6 +9,7 @@ import com.hypherionmc.sdlink.compat.rolesync.impl.FTBRankSync;
 import com.hypherionmc.sdlink.compat.rolesync.impl.LuckPermsSync;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.server.ServerEvents;
+import com.hypherionmc.sdlink.util.Debugger;
 
 public class SDLCraterPlugin implements CraterPlugin {
 
@@ -22,6 +23,9 @@ public class SDLCraterPlugin implements CraterPlugin {
         ServerEvents events = ServerEvents.getInstance();
         CraterEventBus.INSTANCE.registerEventListener(events);
         SDLinkNetworking.registerPackets();
+
+        // TODO: Disable this on release
+        Debugger.setupSentry();
 
         if (CraterLoader.isModLoaded("mmode")) {
             MModeCompat.init();

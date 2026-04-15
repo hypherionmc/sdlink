@@ -50,6 +50,10 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    kotlin {
+        jvmToolchain(17)
+    }
+
     repositories {
         mavenCentral()
         orion.unimaven()
@@ -77,6 +81,9 @@ subprojects {
         shade("com.github.oshi:oshi-core:${orion.getProperty("oshi")}")
         shade("org.jasypt:jasypt:${orion.getProperty("jasypt")}:lite")
         shade("net.fellbaum:jemoji:1.6.0")
+
+        // TODO: Disable this on release builds
+        shade("io.sentry:sentry:8.38.0")
 
         implementation("com.hypherionmc.craterlib:CraterLib-API:${orion.getProperty("craterlib")}")
         implementation("unimaven.nightbloom:mmode:${orion.getProperty("maintenance_mode")}")
@@ -178,6 +185,9 @@ subprojects {
             relocate("org.checkerframework", "${orion.getProperty("shade_group")}.org.checkerframework")
             relocate("com.google.errorprone", "${orion.getProperty("shade_group")}.com.google.errorprone")
             relocate("net.fellbaum.jemoji", "${orion.getProperty("shade_group")}.net.fellbaum.jemoji")
+            relocate("io.sentry", "${orion.getProperty("shade_group")}.io.sentry")
+            relocate("com.google.crypto", "${orion.getProperty("shade_group")}.com.google.crypto")
+            relocate("com.google.protobuf", "${orion.getProperty("shade_group")}.com.google.protobuf")
         }
 
         exclude("META-INF/maven/**")
@@ -213,7 +223,8 @@ subprojects {
                     "Timestamp"               to System.currentTimeMillis(),
                     "Built-On-Java"           to "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})",
                     "Built-On-Minecraft"      to orion.getProperty("minecraft_version")
-            ))        }
+            ))
+        }
     }
     tasks.withType(JavaCompile::class.java).configureEach {
         options.encoding = "UTF-8"

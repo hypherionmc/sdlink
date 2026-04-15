@@ -13,9 +13,10 @@ import lombok.Getter;
  */
 public final class Result {
 
-    private final Type type;
+    public final Type type;
     @Getter
-    private final String message;
+    public final String message;
+
     private Result(Type type, String message) {
         this.type = type;
         this.message = message;
@@ -41,7 +42,7 @@ public final class Result {
         return this.type == Type.ERROR;
     }
 
-    enum Type {
+    public enum Type {
         ERROR,
         SUCCESS
     }

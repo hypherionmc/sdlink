@@ -3,12 +3,12 @@ package com.hypherionmc.sdlink.api.messaging;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
@@ -118,7 +118,7 @@ public final class MessageContext {
         try {
             if (SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
                 List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-                accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
+                accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

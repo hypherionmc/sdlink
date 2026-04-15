@@ -4,26 +4,36 @@
  */
 package com.hypherionmc.sdlink.core.discord.hooks;
 
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.MessageDestination;
+import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
+import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
-import com.hypherionmc.sdlink.core.managers.ChannelManager;
+import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
-import com.hypherionmc.sdlink.core.managers.WebhookManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.PKUtil;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -40,25 +50,19 @@ public final class DiscordMessageHooks {
             if (!SDLinkConfig.INSTANCE.chatConfig.discordMessages)
                 return;
 
-            if (!event.getChannel().getId().equalsIgnoreCase(SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID))
-                return;
+            if (!SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID.contains(event.getChannel().getId())) return;
 
-            GuildMessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
-
-            if (channel == null) {
-                BotController.INSTANCE.getLogger().warn("Tried to relay discord message before bot is ready. Aborting");
+            if (SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT).isEmpty()) {
+                BotController.INSTANCE.getLogger().warn("There are no chat channels set up! Cannot relay messages.");
                 return;
             }
-
-            if (event.getChannel().getIdLong() != channel.getIdLong())
-                return;
 
             Member member = event.isWebhookMessage() ? SDLWebhookServerMember.of(event.getMessage().getAuthor(), event.getGuild(), event.getJDA()) : event.getMember();
 
             if (!event.isWebhookMessage() && HiddenPlayersManager.INSTANCE.isPlayerHidden(member.getId()))
                 return;
 
-            if (WebhookManager.isAppWebhook(event.getMessage().getAuthor().getIdLong()))
+            if (WebhookCluster.INSTANCE.isAppWebhook(event.getMessage().getAuthor().getIdLong()))
                 return;
 
             if (event.isWebhookMessage() || event.getAuthor().isBot()) {
@@ -68,19 +72,54 @@ public final class DiscordMessageHooks {
                 }
             }
 
-
             if (!(event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event))
                 return;
-
 
             if (SDLinkConfig.INSTANCE.linkedCommands.enabled && !SDLinkConfig.INSTANCE.linkedCommands.permissions.isEmpty() && event.getMessage().getContentRaw().startsWith(SDLinkConfig.INSTANCE.linkedCommands.prefix))
                 return;
 
+            var cloned = cloneMessage(event.getMessage());
+
+            if (!(cloned.getEmbeds().isEmpty() && cloned.getContent().isBlank())) {
+                SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT).stream().filter(chan -> chan.getIdLong() != event.getChannel().getIdLong()).forEach(channel -> {
+                    Debugger.INSTANCE.log("Relaying message to " + channel.getName() + " (" + channel.getId() + ")");
+                    var client = WebhookCluster.INSTANCE.getClient(MessageDestination.CHAT, channel.getIdLong());
+
+                    if (client != null) {
+                        var relayMessage = WebhookMessageBuilder.fromJDA(cloned);
+                        relayMessage.setUsername(event.getMember().getEffectiveName());
+                        relayMessage.setAvatarUrl(event.getMember().getEffectiveAvatarUrl());
+                        client.send(relayMessage.build()).thenRun(() -> {});
+                    } else {
+                        Debugger.INSTANCE.log("No client found for " + channel.getName() + " (" + channel.getId() + ")");
+                    }
+                });
+            }
 
             SDLinkPlatform.minecraftHelper.discordMessageReceived(MessageContext.of(member, event.getMessage()));
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to process discord message", e);
         }
+    }
+
+    private static MessageCreateData cloneMessage(Message message) {
+        MessageCreateBuilder data = MessageCreateBuilder.fromMessage(message)
+                .setAllowedMentions(EnumSet.allOf(Message.MentionType.class))
+                .setAllowedMentions(EnumSet.of(Message.MentionType.CHANNEL));
+
+        if (message.getReferencedMessage() != null && !message.getReferencedMessage().getContentRaw().isBlank()) {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setDescription(message.getReferencedMessage().getContentRaw());
+            data.setEmbeds(embed.build());
+        }
+
+        if (data.getContent().isBlank()) {
+            data.setContent("-# *via " + message.getGuild().getName() + "*");
+        } else {
+            data.setContent(data.getContent() + "\r\n-# *via " + message.getGuild().getName() + "*");
+        }
+
+        return data.build();
     }
 
     public static void checkVerification(MessageReceivedEvent event) {
@@ -119,14 +158,14 @@ public final class DiscordMessageHooks {
             if (account.getVerifyCode() == null)
                 continue;
 
-            if (accounts.stream().anyMatch(a -> a.getDiscordID() != null && a.getDiscordID().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
+            if (accounts.stream().anyMatch(a -> a.getDiscordId() != null && a.getDiscordId().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
                 event.getMessage().reply(SDText.translate("command.verify.already_verified")).queue();
                 return;
             }
 
             if (account.getVerifyCode().equalsIgnoreCase(message)) {
                 MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
-                Result result = minecraftAccount.verifyAccount(m, guild);
+                Result result = minecraftAccount.verifyAccount(m);
                 event.getMessage().reply(result.getMessage()).queue();
                 didVerify = true;
                 break;

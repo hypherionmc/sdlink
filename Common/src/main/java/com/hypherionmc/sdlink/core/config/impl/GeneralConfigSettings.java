@@ -4,9 +4,9 @@
  */
 package com.hypherionmc.sdlink.core.config.impl;
 
-import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
+import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 
 /**
  * @author HypherionSA

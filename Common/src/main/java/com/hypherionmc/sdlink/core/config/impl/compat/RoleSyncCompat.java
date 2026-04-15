@@ -1,9 +1,9 @@
 package com.hypherionmc.sdlink.core.config.impl.compat;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;

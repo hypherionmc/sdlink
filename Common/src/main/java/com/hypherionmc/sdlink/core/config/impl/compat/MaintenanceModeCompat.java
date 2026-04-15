@@ -1,8 +1,8 @@
 package com.hypherionmc.sdlink.core.config.impl.compat;
 
-import net.dv8tion.jda.api.OnlineStatus;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
+import net.dv8tion.jda.api.OnlineStatus;
 
 public final class MaintenanceModeCompat {
 

@@ -2,11 +2,11 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.hide;
 
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -40,12 +40,12 @@ public final class HidePlayerCommand extends SDLinkSlashCommand {
                 return;
             }
 
-            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class).stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(user.getId())).toList();
+            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class).stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(user.getId())).toList();
             if (accounts.isEmpty()) {
                 event.getHook().editOriginal(SDText.translate("command.hideplayer.account_not_found", user.getAsMention()).toString()).queue();
             } else {
                 for (SDLinkAccount account : accounts) {
-                    HiddenPlayersManager.INSTANCE.hidePlayer(account.getUuid(), account.getDiscordID(), "minecraft");
+                    HiddenPlayersManager.INSTANCE.hidePlayer(account.getUuid(), account.getDiscordId(), "minecraft");
                 }
             }
         }

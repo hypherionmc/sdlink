@@ -5,13 +5,11 @@
 package com.hypherionmc.sdlink.api.messaging.discord;
 
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
-import com.hypherionmc.sdlink.api.accounts.DiscordUser;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
-import com.hypherionmc.sdlink.core.config.AppliesTo;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
+import com.hypherionmc.sdlinkrw.api.accounts.DiscordUser;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -68,7 +66,6 @@ public final class DiscordMessageBuilder {
         if (this.messageType == MessageType.CHAT
                 && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.useServerForChat
                 && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled
-                && !SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.chatWebhook.trim().isEmpty()
         ) {
             this.author = DiscordAuthor.getServer();
         }

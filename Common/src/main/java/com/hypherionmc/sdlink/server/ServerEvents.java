@@ -10,15 +10,10 @@ import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.api.game.world.level.CraterCommonGameRules;
 import com.hypherionmc.craterlib.api.loader.CraterCompat;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
-import com.hypherionmc.craterlib.api.loader.LoaderType;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
-import com.hypherionmc.craterlib.core.networking.CraterPacketNetwork;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
-import com.hypherionmc.sdlink.api.accounts.DiscordUser;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.events.SDLinkReadyEvent;
-import com.hypherionmc.sdlink.api.events.VerificationEvent;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessageBuilder;
@@ -26,27 +21,31 @@ import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.core.relay.DataMessage;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
-import com.hypherionmc.sdlink.networking.MentionsSyncPacket;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.*;
 import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.api.accounts.DiscordUser;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.api.events.VerificationEvent;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import io.github.joagar21.guilds.api.GuildsAPI;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -114,8 +113,8 @@ public final class ServerEvents {
             message.sendMessage();
         }
 
-        if (BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && CacheManager.getDiscordMembers().isEmpty())
-            CacheManager.loadCache();
+        if (BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && SDLCache.INSTANCE.getAllMembers().isEmpty())
+            SDLCache.INSTANCE.loadCache(BotController.INSTANCE.getJDA());
 
         if (CraterLoader.isModLoaded("utilitarian")) {
             BotController.INSTANCE.getLogger().warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
@@ -414,10 +413,12 @@ public final class ServerEvents {
     public void playerJoinEvent(CraterPlayerEvent.PlayerLoggedIn event) {
         // Allow Mentions
         try {
-            if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat && CraterLoader.getLoaderType() != LoaderType.PAPER) {
-                MentionsSyncPacket packet = new MentionsSyncPacket(CacheManager.getServerRoles(), CacheManager.getServerChannels(), CacheManager.getUserCache());
-                CraterPacketNetwork.INSTANCE.getPacketRegistry().sendToClient(packet, event.getPlayer());
-            }
+
+            // TODO: Syncing
+//            if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat && CraterLoader.getLoaderType() != LoaderType.PAPER) {
+//                MentionsSyncPacket packet = new MentionsSyncPacket(CacheManager.getServerRoles(), CacheManager.getServerChannels(), CacheManager.getUserCache());
+//                CraterPacketNetwork.INSTANCE.getPacketRegistry().sendToClient(packet, event.getPlayer());
+//            }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
                 SDLinkConstants.LOGGER.error("Failed to sync Mentions to Client", e);
@@ -801,6 +802,7 @@ public final class ServerEvents {
         message.sendMessage();
     }
 
+    // TODO: Double Check this
     private String parseChatMentions(String input) {
         Pattern pattern = Pattern.compile("([@#])([A-Za-z0-9_]+)");
         Matcher matcher = pattern.matcher(input);
@@ -811,20 +813,23 @@ public final class ServerEvents {
                 String group = matcher.group(2);
 
                 if (type.equals("@")) {
-                    Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getEffectiveName().equalsIgnoreCase(group) || m.getUser().getName().equalsIgnoreCase(group)).findFirst();
+                    Optional<Member> member = SDLCache.INSTANCE.getAllMembers().stream().filter(m -> m.getEffectiveName().equalsIgnoreCase("@" + group) || m.getUser().getName().equalsIgnoreCase("@" + group)).findFirst();
 
                     if (member.isPresent()) {
                         input = input.replace(matcher.group(0), member.get().getAsMention());
                     } else {
-                        if (CacheManager.getServerRoles().containsKey(matcher.group(0))) {
-                            input = input.replace(matcher.group(0), CacheManager.getServerRoles().get(matcher.group(0)));
+                        Optional<Role> role = SDLCache.INSTANCE.getAllRoles().stream().filter(r -> r.getName().equalsIgnoreCase("@" + group)).findFirst();
+                        if (role.isPresent()) {
+                            input = input.replace(matcher.group(0), role.get().getAsMention());
                         }
                     }
                 }
 
                 if (type.equals("#")) {
-                    if (CacheManager.getServerChannels().containsKey(matcher.group(0))) {
-                        input = input.replace(matcher.group(0), CacheManager.getServerChannels().get(matcher.group(0)));
+                    Optional<GuildChannel> channel = SDLCache.INSTANCE.getAllChannels().stream().filter(c -> c.getName().equalsIgnoreCase("#" + group)).findFirst();
+
+                    if (channel.isPresent()) {
+                        input = input.replace(matcher.group(0), channel.get().getAsMention());
                     }
                 }
             }
@@ -833,11 +838,12 @@ public final class ServerEvents {
         return parseChatEmojis(input);
     }
 
+    // TODO: Double Check This
     private String parseChatEmojis(String input) {
         Pattern pattern = Pattern.compile(":[a-zA-Z0-9_]+:");
         Matcher matcher = pattern.matcher(input);
 
-        if (CacheManager.getCustomEmotes().isEmpty())
+        if (SDLCache.INSTANCE.getAllEmojis().isEmpty())
             return input;
 
         StringBuilder result = new StringBuilder();
@@ -845,12 +851,10 @@ public final class ServerEvents {
         while (matcher.find()) {
             String emoji = matcher.group();
 
-            if (CacheManager.getCustomEmotes().containsKey(emoji)) {
-                String replacement = CacheManager
-                        .getCustomEmotes()
-                        .get(emoji)
-                        .getAsMention();
+            Optional<RichCustomEmoji> customEmoji = SDLCache.INSTANCE.getAllEmojis().stream().filter(e -> e.getName().equalsIgnoreCase(emoji.substring(1, emoji.length() - 1))).findFirst();
 
+            if (customEmoji.isPresent()) {
+                String replacement = customEmoji.get().getAsMention();
                 matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
             } else {
                 matcher.appendReplacement(result, emoji);

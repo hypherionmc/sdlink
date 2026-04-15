@@ -2,13 +2,13 @@ package com.hypherionmc.sdlink.compat.rolesync;
 
 import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
-import com.hypherionmc.sdlink.api.accounts.DiscordUser;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.compat.rolesync.impl.FTBRankSync;
 import com.hypherionmc.sdlink.compat.rolesync.impl.LuckPermsSync;
 import com.hypherionmc.sdlink.compat.rolesync.impl.PlayerRolesSync;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlinkrw.api.accounts.DiscordUser;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;

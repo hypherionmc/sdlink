@@ -1,11 +1,9 @@
 package com.hypherionmc.sdlink.util;
 
 import com.hypherionmc.craterlib.api.game.text.Text;
-import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -25,39 +23,41 @@ public final class SDLinkChatUtils {
     private static final Pattern USER_ROLE_PATTERN = Pattern.compile("\\[@(.*?)\\]", Pattern.CASE_INSENSITIVE);
 
     public static String parse(String message) {
-        String finalMessage = message;
-
-        try {
-            Matcher m = CHANNEL_PATTERN.matcher(message);
-
-            while (m.find()) {
-                String channelKey = m.group().replace("[", "").replace("]", "");
-
-                if (!CacheManager.getServerChannels().isEmpty() && CacheManager.getServerChannels().containsKey(channelKey)) {
-                    finalMessage = finalMessage.replace("[" + channelKey + "]", CacheManager.getServerChannels().get(channelKey));
-                }
-            }
-
-            Matcher c = USER_ROLE_PATTERN.matcher(message);
-
-            while (c.find()) {
-                String key = c.group().replace("[", "").replace("]", "");
-
-                if (!CacheManager.getServerRoles().isEmpty() && CacheManager.getServerRoles().containsKey(key)) {
-                    finalMessage = finalMessage.replace("[" + key + "]", CacheManager.getServerRoles().get(key));
-                }
-
-                if (!CacheManager.getUserCache().isEmpty() && CacheManager.getUserCache().containsKey(key)) {
-                    finalMessage = finalMessage.replace("[" + key + "]", CacheManager.getUserCache().get(key));
-                }
-            }
-        } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to parse mention", e);
-            }
-        }
-
-        return finalMessage;
+        // TODO: Mentions
+//        String finalMessage = message;
+//
+//        try {
+//            Matcher m = CHANNEL_PATTERN.matcher(message);
+//
+//            while (m.find()) {
+//                String channelKey = m.group().replace("[", "").replace("]", "");
+//
+//                if (!CacheManager.getServerChannels().isEmpty() && CacheManager.getServerChannels().containsKey(channelKey)) {
+//                    finalMessage = finalMessage.replace("[" + channelKey + "]", CacheManager.getServerChannels().get(channelKey));
+//                }
+//            }
+//
+//            Matcher c = USER_ROLE_PATTERN.matcher(message);
+//
+//            while (c.find()) {
+//                String key = c.group().replace("[", "").replace("]", "");
+//
+//                if (!CacheManager.getServerRoles().isEmpty() && CacheManager.getServerRoles().containsKey(key)) {
+//                    finalMessage = finalMessage.replace("[" + key + "]", CacheManager.getServerRoles().get(key));
+//                }
+//
+//                if (!CacheManager.getUserCache().isEmpty() && CacheManager.getUserCache().containsKey(key)) {
+//                    finalMessage = finalMessage.replace("[" + key + "]", CacheManager.getUserCache().get(key));
+//                }
+//            }
+//        } catch (Exception e) {
+//            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
+//                SDLinkConstants.LOGGER.error("Failed to parse mention", e);
+//            }
+//        }
+//
+//        return finalMessage;
+        return message;
     }
 
     public static Text parseChatLinks(String input) {

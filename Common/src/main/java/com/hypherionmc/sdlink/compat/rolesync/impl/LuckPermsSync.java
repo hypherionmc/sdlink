@@ -5,12 +5,12 @@ import com.hypherionmc.craterlib.api.events.compat.LuckPermsCompatEvents;
 import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
-import com.hypherionmc.sdlink.api.accounts.DiscordUser;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.impl.compat.RoleSyncCompat;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.managers.RoleManager;
+import com.hypherionmc.sdlinkrw.api.accounts.DiscordUser;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -73,7 +73,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
 
                 sync.ifPresent(s -> {
                     if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role))) {
-                        Optional<Role> r = RoleManager.getLuckPermsRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(s.role)).findFirst();
+                        Optional<Role> r = SDLCache.INSTANCE.getLuckPermsRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(s.role)).findFirst();
                         if (r.isEmpty())
                             return;
 
@@ -88,7 +88,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
                 if (sync.isPresent() && !LuckPermsCompat.getInstance().hasGroup(p.getUUID(), sync.get().rank)) {
-                    Optional<Role> r = RoleManager.getLuckPermsRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(sync.get().role)).findFirst();
+                    Optional<Role> r = SDLCache.INSTANCE.getLuckPermsRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(sync.get().role)).findFirst();
                     if (r.isEmpty())
                         return;
 
@@ -166,7 +166,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
         Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncs.stream().filter(s -> s.rank.equalsIgnoreCase(rank)).findFirst();
 
         sync.ifPresent(s -> {
-            Role role = RoleManager.getLuckPermsRoles().stream().filter(r -> r.getId().equalsIgnoreCase(s.role)).findFirst().orElse(null);
+            Role role = SDLCache.INSTANCE.getLuckPermsRoles().stream().filter(r -> r.getId().equalsIgnoreCase(s.role)).findFirst().orElse(null);
             if (role == null)
                 return;
 

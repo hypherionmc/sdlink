@@ -8,6 +8,9 @@ package com.hypherionmc.sdlink.core.config.impl;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author HypherionSA
  * Config Structure to control Channels and Webhooks used by the bot
@@ -23,25 +26,25 @@ public final class ChannelWebhookConfig {
     public String serverName = "Minecraft Server";
 
     @Path("channels")
-    @SpecComment("Config relating to the discord channels to use with the mod")
+    @SpecComment("[DEPRECATED] Config relating to the discord channels to use with the mod")
     public Channels channels = new Channels();
 
     @Path("webhooks")
-    @SpecComment("Config relating to the discord Webhooks to use with the mod")
+    @SpecComment("[DEPRECATED] Config relating to the discord Webhooks to use with the mod")
     public Webhooks webhooks = new Webhooks();
 
     public static class Channels {
         @Path("chatChannelID")
         @SpecComment("REQUIRED! The ID of the channel to post in and relay messages from. This is still needed, even in webhook mode")
-        public String chatChannelID = "0";
+        public List<String> chatChannelID = new ArrayList<>();
 
         @Path("eventsChannelID")
         @SpecComment("If this ID is set, event messages will be posted in this channel instead of the chat channel")
-        public String eventsChannelID = "0";
+        public List<String> eventsChannelID = new ArrayList<>();
 
         @Path("consoleChannelID")
         @SpecComment("If this ID is set, console messages sent after the bot started will be relayed here")
-        public String consoleChannelID = "0";
+        public List<String> consoleChannelID = new ArrayList<>();
     }
 
     public static class Webhooks {
@@ -56,18 +59,6 @@ public final class ChannelWebhookConfig {
         @Path("useServerForChat")
         @SpecComment("Use Server Author for chat messages, instead of the real author information")
         public boolean useServerForChat = false;
-
-        @Path("chatWebhook")
-        @SpecComment("The URL of the channel webhook to use for Chat Messages. Will be encrypted on first run")
-        public String chatWebhook = "";
-
-        @Path("eventsWebhook")
-        @SpecComment("The URL of the channel webhook to use for Server Messages. Will be encrypted on first run")
-        public String eventsWebhook = "";
-
-        @Path("consoleWebhook")
-        @SpecComment("The URL of the channel webhook to use for Console Messages. DOES NOT WORK FOR CONSOLE RELAY! Will be encrypted on first run")
-        public String consoleWebhook = "";
     }
 
 }

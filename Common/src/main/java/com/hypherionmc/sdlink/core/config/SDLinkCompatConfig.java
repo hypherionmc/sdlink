@@ -3,13 +3,13 @@ package com.hypherionmc.sdlink.core.config;
 import com.hypherionmc.craterlib.core.config.AbstractConfig;
 import com.hypherionmc.craterlib.core.config.ConfigController;
 import com.hypherionmc.craterlib.core.config.formats.TomlConfigFormat;
-import com.hypherionmc.sdlink.core.config.impl.compat.*;
-import com.hypherionmc.sdlink.core.discord.BotController;
-import org.apache.commons.io.FileUtils;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.ObjectConverter;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
+import com.hypherionmc.sdlink.core.config.impl.compat.*;
+import com.hypherionmc.sdlink.core.discord.BotController;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

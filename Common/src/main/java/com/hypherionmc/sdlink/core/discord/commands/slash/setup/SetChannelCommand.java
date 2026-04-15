@@ -67,60 +67,63 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
     }
 
     private Result setChannel(GuildMessageChannel channel, String type) {
-        try {
-            switch (type.toLowerCase()) {
-                case "chat": {
-                    SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID = channel.getId();
-                    SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
-                    break;
-                }
-                case "event": {
-                    SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID = channel.getId();
-                    SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
-                    break;
-                }
-                case "console": {
-                    SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.consoleChannelID = channel.getId();
-                    SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
-                    break;
-                }
-            }
+//        try {
+//            switch (type.toLowerCase()) {
+//                case "chat": {
+//                    SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID = channel.getId();
+//                    SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+//                    break;
+//                }
+//                case "event": {
+//                    SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID = channel.getId();
+//                    SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+//                    break;
+//                }
+//                case "console": {
+//                    SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.consoleChannelID = channel.getId();
+//                    SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+//                    break;
+//                }
+//            }
+//
+//            return Result.success(SDText.translate("command.setchannel.saved"));
+//        } catch (Exception e) {
+//            BotController.INSTANCE.getLogger().error("Failed to save config", e);
+//            return Result.error(SDText.translate("command.setchannel.failed", e.getMessage()));
+//        }
 
-            return Result.success(SDText.translate("command.setchannel.saved"));
-        } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to save config", e);
-            return Result.error(SDText.translate("command.setchannel.failed", e.getMessage()));
-        }
+        return Result.success(SDText.translate("command.setchannel.saved"));
     }
 
     private Result setWebhook(StandardGuildMessageChannel channel, String type) {
+        // TODO: Implement this again
         try {
-            switch (type.toLowerCase()) {
-                case "chat": {
-                    channel.createWebhook("SDLink " + type).queue(s -> {
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.chatWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
-                        SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
-                    });
-                    break;
-                }
-                case "event": {
-                    channel.createWebhook("SDLink " + type).queue(s -> {
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.eventsWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
-                        SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
-                    });
-                    break;
-                }
-                case "console": {
-                    channel.createWebhook("SDLink " + type).queue(s -> {
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.consoleWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
-                        SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
-                    });
-                    break;
-                }
-            }
+//            switch (type.toLowerCase()) {
+//                case "chat": {
+//                    channel.createWebhook("SDLink " + type).queue(s -> {
+//                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.chatWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
+//                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
+//                        SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+//                    });
+//                    break;
+//                }
+//                case "event": {
+//                    channel.createWebhook("SDLink " + type).queue(s -> {
+//                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.eventsWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
+//                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
+//                        SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+//                    });
+//                    break;
+//                }
+//                case "console": {
+//                    channel.createWebhook("SDLink " + type).queue(s -> {
+//                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.consoleWebhook = EncryptionUtil.INSTANCE.encrypt(s.getUrl());
+//                        SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled = true;
+//                        SDLinkConfig.INSTANCE.saveConfig(SDLinkConfig.INSTANCE);
+//                    });
+//                    break;
+//                }
+//            }
 
             return Result.success(SDText.translate("command.setchannel.webhook_saved"));
         } catch (Exception e) {

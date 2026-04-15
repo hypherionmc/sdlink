@@ -4,10 +4,10 @@
  */
 package com.hypherionmc.sdlink.core.config.impl;
 
-import net.dv8tion.jda.api.entities.Activity;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.fields.RandomArrayList;
+import net.dv8tion.jda.api.entities.Activity;
 
 /**
  * @author HypherionSA

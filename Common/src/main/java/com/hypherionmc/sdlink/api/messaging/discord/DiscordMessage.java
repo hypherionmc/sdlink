@@ -4,11 +4,9 @@
  */
 package com.hypherionmc.sdlink.api.messaging.discord;
 
-import club.minnced.discord.webhook.send.AllowedMentions;
-import club.minnced.discord.webhook.send.WebhookEmbed;
-import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
+import com.hypherionmc.sdlink.api.messaging.MessageDestination;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
@@ -17,12 +15,17 @@ import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.DestinationHolder;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
+import lombok.val;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
@@ -96,97 +99,92 @@ public final class DiscordMessage {
      * Send a Non Console relay message to discord
      */
     private void sendNormalMessage() {
+        Debugger.INSTANCE.log("Sending message of type " + messageType.name());
         DestinationHolder channel = resolveDestination();
 
         try {
-            // Check if a webhook is configured, and use that instead
-            if (channel.hasWebhook() && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled) {
-                WebhookMessageBuilder builder = new WebhookMessageBuilder();
+            if (channel.channel() == null) {
+                if (SDLinkConfig.INSTANCE.generalConfig.debugging)
+                    BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
+                runAfterSend();
+                return;
+            }
+            MessageCreateBuilder builder = new MessageCreateBuilder();
 
-                if (messageType == MessageType.START || messageType == MessageType.STOP) {
-                    builder.setAllowedMentions(AllowedMentions.all());
-                } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat && channel.channel() != null) {
-                    builder.setAllowedMentions(
-                            new AllowedMentions()
-                                    .withParseUsers(true)
-                                    .withParseEveryone(false)
-                                    .withRoles(getMentionableRoles(message))
-                    );
-                } else {
-                    builder.setAllowedMentions(AllowedMentions.none());
-                }
-
-                if (messageType == MessageType.CHAT) {
-                    builder.setUsername(SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.webhookNameFormat.replace("%display_name%", this.author.getDisplayName().replace("\\_", "_")).replace("%mc_name%", this.author.getUsername()));
-                } else {
-                    builder.setUsername(this.author.getDisplayName());
-                }
-
-                if (!this.author.getAvatar().isEmpty()) {
-                    builder.setAvatarUrl(this.author.getAvatar());
-                }
-
-                // Message must be an Embed
-                if (channel.useEmbed()) {
-                    EmbedBuilder eb = buildEmbed(false, channel.embedLayout());
-                    WebhookEmbed web = WebhookEmbedBuilder.fromJDA(eb.build()).build();
-                    builder.addEmbeds(web);
-                } else {
-                    builder.setContent(message);
-                }
-
-                var sender = channel.webhook().send(builder.build());
-
-                if (messageType == MessageType.STOP) {
-                    sender.complete(null);
-                    runAfterSend();
-                } else {
-                    sender.thenRun(this::runAfterSend);
-                }
-
+            if (messageType == MessageType.START || messageType == MessageType.STOP) {
+                builder.setAllowedMentions(EnumSet.allOf(Message.MentionType.class));
+            } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+                builder.setAllowedMentions(EnumSet.of(Message.MentionType.USER));
+                builder.mentionRoles(getMentionableRoles(message));
             } else {
-                if (channel.channel() == null) {
-                    if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                        BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
-                    runAfterSend();
-                    return;
-                }
-                MessageCreateBuilder builder = new MessageCreateBuilder();
+                builder.setAllowedMentions(EnumSet.noneOf(Message.MentionType.class));
+            }
 
-                if (messageType == MessageType.START || messageType == MessageType.STOP) {
-                    builder.setAllowedMentions(EnumSet.allOf(Message.MentionType.class));
-                } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
-                    builder.setAllowedMentions(EnumSet.of(Message.MentionType.USER));
-                    builder.mentionRoles(getMentionableRoles(message));
-                } else {
-                    builder.setAllowedMentions(EnumSet.noneOf(Message.MentionType.class));
-                }
+            // Use the configured channel instead
+            if (channel.useEmbed()) {
+                EmbedBuilder eb = buildEmbed(true, channel.embedLayout());
+                builder.setEmbeds(eb.build());
+            } else {
+                String content = this.messageType == MessageType.CHAT ?
+                        SDLinkConfig.INSTANCE.messageFormatting.chat
+                                .replace("%player%", author.getDisplayName())
+                                .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName())
+                                .replace("%message%", message)
+                        : message.replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName());
+                builder.setContent(content);
+            }
 
-                // Use the configured channel instead
-                if (channel.useEmbed()) {
-                    EmbedBuilder eb = buildEmbed(true, channel.embedLayout());
-                    builder.setEmbeds(eb.build());
-                } else {
-                    String content = this.messageType == MessageType.CHAT ?
-                            SDLinkConfig.INSTANCE.messageFormatting.chat
-                                    .replace("%player%", author.getDisplayName())
-                                    .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName())
-                                    .replace("%message%", message)
-                            : message.replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName());
-                    builder.setContent(content);
+            Debugger.INSTANCE.log("Before Sending");
+
+            // TODO: This needs to be cleaned up
+            if (messageType == MessageType.STOP) {
+                for (MessageChannel cc : channel.channel()) {
+                    sendMessage(channel.destination(), cc, builder, true, message);
                 }
 
-                var sender = channel.channel().sendMessage(builder.build());
-
-                if (messageType == MessageType.STOP) {
-                    sender.complete();
-                    runAfterSend();
-                } else {
-                    sender.queue(success -> runAfterSend());
-                }
+                BotController.INSTANCE.shutdownBot(false);
+            } else {
+                channel.channel().forEach(cc -> {
+                    sendMessage(channel.destination(), cc, builder, false, message);
+                });
             }
         } catch (Exception e) {
             runAfterSend();
+        }
+    }
+
+    private void sendMessage(MessageDestination destination, MessageChannel channel, MessageCreateBuilder data, boolean isStopMessage, String rawMessage) {
+        Debugger.INSTANCE.log("Sending message to " + destination + " in " + channel.getIdLong());
+        var client = !SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled ? null : WebhookCluster.INSTANCE.getClient(destination, channel.getIdLong());
+        Debugger.INSTANCE.log("Client: " + (client == null ? "null" : client.isShutdown()));
+
+        if (client != null && !client.isShutdown()) {
+            data.setContent(rawMessage);
+            var message = WebhookMessageBuilder.fromJDA(data.build());
+
+            if (messageType == MessageType.CHAT) {
+                message.setUsername(SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.webhookNameFormat.replace("%display_name%", this.author.getDisplayName().replace("\\_", "_")).replace("%mc_name%", this.author.getUsername()));
+            } else {
+                message.setUsername(this.author.getDisplayName());
+            }
+
+            if (!this.author.getAvatar().isEmpty()) {
+                message.setAvatarUrl(this.author.getAvatar());
+            }
+
+            var sender = client.send(message.build());
+            if (isStopMessage) {
+                sender.complete(null);
+            } else {
+                sender.thenRun(() -> {});
+            }
+        } else {
+            var sender = channel.sendMessage(data.build());
+            if (isStopMessage) {
+                sender.complete();
+            } else {
+                sender.queue();
+            }
         }
     }
 
@@ -205,7 +203,7 @@ public final class DiscordMessage {
     private boolean isRoleMentionable(String roleId) {
         Role role;
         try {
-            role = resolveDestination().channel().getGuild().getRoleById(roleId);
+            role = SDLCache.INSTANCE.retrieveRoleById(roleId);
         } catch (NumberFormatException e) {
             return false;
         }

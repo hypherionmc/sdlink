@@ -5,23 +5,22 @@
 package com.hypherionmc.sdlink.core.discord.events;
 
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.ServerStatusSlashCommand;
 import com.hypherionmc.sdlink.core.discord.hooks.BotReadyHooks;
 import com.hypherionmc.sdlink.core.discord.hooks.DiscordMessageHooks;
 import com.hypherionmc.sdlink.core.discord.hooks.DiscordRoleHooks;
 import com.hypherionmc.sdlink.core.discord.hooks.MinecraftCommandHook;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
-import com.hypherionmc.sdlink.core.managers.PermissionChecker;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
 import com.hypherionmc.sdlink.util.PKUtil;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
@@ -40,6 +39,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
+import net.dv8tion.jda.api.events.role.update.GenericRoleUpdateEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -129,11 +129,11 @@ public final class DiscordEventHandler extends ListenerAdapter {
             isStuckInNotReady = false;
             BotController.INSTANCE.getLogger().info("Successfully connected to discord");
 
-            PermissionChecker.checkBotSetup();
+            SDLCache.INSTANCE.loadCache(event.getJDA());
+            SDLCache.INSTANCE.checkBotSetup();
             ChannelManager.loadChannels();
             BotReadyHooks.startActivityUpdates(event);
             BotReadyHooks.startTopicUpdates();
-            CacheManager.loadCache();
             CraterEventBus.INSTANCE.postEvent(new SDLinkReadyEvent());
         }
     }
@@ -151,21 +151,21 @@ public final class DiscordEventHandler extends ListenerAdapter {
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadUserCache();
+            SDLCache.INSTANCE.reloadMemberCache(event.getGuild());
         }
     }
 
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadUserCache();
+            SDLCache.INSTANCE.reloadMemberCache(event.getGuild());
         }
     }
 
     @Override
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadUserCache();
+            SDLCache.INSTANCE.reloadMemberCache(event.getGuild());
         }
 
         if (event.getUser().isBot() || !(SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification))
@@ -173,7 +173,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
 
         try {
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
+            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(event.getUser().getId())).findFirst();
             account.ifPresent(a -> DatabaseManager.INSTANCE.deleteEntry(a, SDLinkAccount.class));
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to remove linked account", e);
@@ -183,28 +183,35 @@ public final class DiscordEventHandler extends ListenerAdapter {
     @Override
     public void onRoleCreate(@NotNull RoleCreateEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadRoleCache();
+            SDLCache.INSTANCE.reloadRoleCache(event.getGuild());
         }
     }
 
     @Override
     public void onRoleDelete(@NotNull RoleDeleteEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadRoleCache();
+            SDLCache.INSTANCE.reloadRoleCache(event.getGuild());
+        }
+    }
+
+    @Override
+    public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {
+        if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
+            SDLCache.INSTANCE.reloadRoleCache(event.getGuild());
         }
     }
 
     @Override
     public void onChannelCreate(@NotNull ChannelCreateEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadChannelCache();
+            SDLCache.INSTANCE.reloadChannelCache(event.getGuild());
         }
     }
 
     @Override
     public void onChannelDelete(@NotNull ChannelDeleteEvent event) {
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
-            CacheManager.loadChannelCache();
+            SDLCache.INSTANCE.reloadChannelCache(event.getGuild());
         }
     }
 
@@ -213,14 +220,14 @@ public final class DiscordEventHandler extends ListenerAdapter {
         if (event.getUser().isBot())
             return;
 
-        CacheManager.loadUserCache();
+        SDLCache.INSTANCE.reloadMemberCache(event.getGuild());
 
         if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification)
             return;
 
         try {
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
+            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(event.getUser().getId())).findFirst();
 
             account.ifPresent(a -> {
                 MinecraftAccount acc = MinecraftAccount.of(a);
@@ -258,22 +265,22 @@ public final class DiscordEventHandler extends ListenerAdapter {
 
     @Override
     public void onEmojiAdded(EmojiAddedEvent event) {
-        CacheManager.loadEmoteCache();
+        SDLCache.INSTANCE.reloadEmojiCache(event.getGuild());
     }
 
     @Override
     public void onEmojiRemoved(EmojiRemovedEvent event) {
-        CacheManager.loadEmoteCache();
+        SDLCache.INSTANCE.reloadEmojiCache(event.getGuild());
     }
 
     @Override
     public void onEmojiUpdateName(EmojiUpdateNameEvent event) {
-        CacheManager.loadEmoteCache();
+        SDLCache.INSTANCE.reloadEmojiCache(event.getGuild());
     }
 
     @Override
     public void onEmojiUpdateRoles(EmojiUpdateRolesEvent event) {
-        CacheManager.loadEmoteCache();
+        SDLCache.INSTANCE.reloadEmojiCache(event.getGuild());
     }
 
     private void startReadyDetection(JDA jda) {

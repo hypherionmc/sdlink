@@ -3,8 +3,8 @@ package com.hypherionmc.sdlink.server.commands;
 import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
 import com.hypherionmc.craterlib.api.game.text.Text;
-import com.hypherionmc.sdlink.core.editor.ConfigEditorClient;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorClient;
 
 public final class ConfigEditorCommand {
 

@@ -5,9 +5,10 @@
 package com.hypherionmc.sdlink.core.managers;
 
 import com.hypherionmc.sdlink.core.database.HiddenPlayers;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.jsondb.JsonDatabase;
 import com.hypherionmc.sdlink.core.jsondb.annotations.Document;
+import com.hypherionmc.sdlinkrw.modules.database.SDLWebhooks;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ public final class DatabaseManager {
     private final Set<Class<?>> tables = new LinkedHashSet<>() {{
         add(SDLinkAccount.class);
         add(HiddenPlayers.class);
+        add(SDLWebhooks.class);
     }};
 
     DatabaseManager() {

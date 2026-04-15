@@ -4,13 +4,13 @@
  */
 package com.hypherionmc.sdlink.core.discord.commands.slash.verification;
 
-import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -71,14 +71,14 @@ public final class VerifyAccountCommand extends SDLinkSlashCommand {
             if (account.getVerifyCode() == null)
                 continue;
 
-            if (accounts.stream().anyMatch(a -> a.getDiscordID() != null && a.getDiscordID().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
+            if (accounts.stream().anyMatch(a -> a.getDiscordId() != null && a.getDiscordId().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
                 event.getHook().sendMessage(SDText.translate("command.verify.already_verified").toString()).queue();
                 return;
             }
 
             if (account.getVerifyCode().equalsIgnoreCase(String.valueOf(mcCode))) {
                 MinecraftAccount minecraftAccount = MinecraftAccount.of(account);
-                Result result = minecraftAccount.verifyAccount(m, guild);
+                Result result = minecraftAccount.verifyAccount(m);
                 event.getHook().sendMessage(result.getMessage()).setEphemeral(true).queue();
                 didVerify = true;
                 break;

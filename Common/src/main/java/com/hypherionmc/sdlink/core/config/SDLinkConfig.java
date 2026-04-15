@@ -6,20 +6,18 @@ package com.hypherionmc.sdlink.core.config;
 
 import com.hypherionmc.craterlib.core.config.AbstractConfig;
 import com.hypherionmc.craterlib.core.config.ConfigController;
+import com.hypherionmc.craterlib.libs.moonconfig.core.CommentedConfig;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.ObjectConverter;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
+import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
+import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.impl.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.translations.TranslationManager;
-import net.dv8tion.jda.api.entities.Activity;
 import org.apache.commons.io.FileUtils;
-import com.hypherionmc.craterlib.libs.moonconfig.core.CommentedConfig;
-import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.ObjectConverter;
-import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
-import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
-import com.hypherionmc.craterlib.libs.moonconfig.core.fields.RandomArrayList;
-import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +35,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 36;
+    public transient static int configVer = 41;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
@@ -50,7 +48,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     public BotConfigSettings botConfig = new BotConfigSettings();
 
     @Path("channelsAndWebhooks")
-    @SpecComment("Config relating to the discord channels and webhooks to use with the mod")
+    @SpecComment("[DEPRECATED] Config relating to the discord channels and webhooks to use with the mod")
     public ChannelWebhookConfig channelsAndWebhooks = new ChannelWebhookConfig();
 
     @Path("chat")
@@ -120,7 +118,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         newConfig.set("general.configVersion", configVer);
 
         try {
-            FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", ".old")));
+            FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", config.getInt("general.configVersion") < 40 ? ".legacy" : ".old")));
         } catch (IOException e) {
             BotController.INSTANCE.getLogger().warn("Failed to create config backup.", e);
         }
@@ -149,36 +147,10 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         oldConfig.load();
 
         String botToken = oldConfig.getOrElse("botConfig.botToken", "");
-        String chatWebhook = oldConfig.getOrElse("channelsAndWebhooks.webhooks.chatWebhook", "");
-        String eventsWebhook = oldConfig.getOrElse("channelsAndWebhooks.webhooks.eventsWebhook", "");
-        String consoleWebhook = oldConfig.getOrElse("channelsAndWebhooks.webhooks.consoleWebhook", "");
 
         if (!botToken.isEmpty()) {
             botToken = EncryptionUtil.INSTANCE.encrypt(botToken);
             oldConfig.set("botConfig.botToken", botToken);
-        }
-
-        if (!chatWebhook.isEmpty()) {
-            chatWebhook = EncryptionUtil.INSTANCE.encrypt(chatWebhook);
-            oldConfig.set("channelsAndWebhooks.webhooks.chatWebhook", chatWebhook);
-        }
-
-        if (!eventsWebhook.isEmpty()) {
-            eventsWebhook = EncryptionUtil.INSTANCE.encrypt(eventsWebhook);
-            oldConfig.set("channelsAndWebhooks.webhooks.eventsWebhook", eventsWebhook);
-        }
-
-        if (!consoleWebhook.isEmpty()) {
-            consoleWebhook = EncryptionUtil.INSTANCE.encrypt(consoleWebhook);
-            oldConfig.set("channelsAndWebhooks.webhooks.consoleWebhook", consoleWebhook);
-        }
-
-        for (Map.Entry<MessageType, MessageChannelConfig.DestinationObject> d : CacheManager.messageDestinations.entrySet()) {
-            if (!d.getValue().channel.isOverride() || d.getValue().override == null || !d.getValue().override.startsWith("http"))
-                continue;
-
-            String url = d.getValue().override;
-            encryptOverrideUrls(d.getKey().name().toLowerCase(), oldConfig, url);
         }
 
         oldConfig.save();
@@ -193,8 +165,16 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     private void updateConfigValues(CommentedConfig oldConfig, CommentedConfig newConfig, CommentedConfig outputConfig, String subKey) {
         int ver = oldConfig.getInt("general.configVersion");
 
+        // TODO: Move this to its own handler
         newConfig.valueMap().forEach((key, value) -> {
             String finalKey = subKey + (subKey.isEmpty() ? "" : ".") + key;
+
+            if (ver < 40) {
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.chatChannelID") || finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.eventsChannelID") || finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.consoleChannelID")) {
+                    outputConfig.set(finalKey, Collections.singletonList(oldConfig.get(finalKey)));
+                    return;
+                }
+            }
 
             if (ver < 21) {
                 if (finalKey.equalsIgnoreCase("botConfig.botStatus")) {
@@ -236,9 +216,5 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
                 outputConfig.set(finalKey, oldConfig.contains(finalKey) ? oldConfig.get(finalKey) : value);
             }
         });
-    }
-
-    private void encryptOverrideUrls(String key, CommentedFileConfig oldConfig, String url) {
-        oldConfig.set("messageDestinations." + key + ".override", EncryptionUtil.INSTANCE.encrypt(url));
     }
 }

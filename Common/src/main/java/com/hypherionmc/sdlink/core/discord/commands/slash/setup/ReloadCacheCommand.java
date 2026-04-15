@@ -3,9 +3,9 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.setup;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 
 public final class ReloadCacheCommand extends SDLinkSlashCommand {
@@ -19,7 +19,7 @@ public final class ReloadCacheCommand extends SDLinkSlashCommand {
     @Override
     protected void execute(SlashCommandEvent slashCommandEvent) {
         try {
-            CacheManager.loadCache();
+            SDLCache.INSTANCE.loadCache(slashCommandEvent.getJDA());
             ChannelManager.loadChannels();
             slashCommandEvent.reply(SDText.translate("command.reloadcache.reloaded").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
         } catch (Exception e) {
