@@ -5,11 +5,6 @@
 
 *Requires CraterLib 3.1.1 or newer*
 
-**Bug Fixes**:
-
-- Fixed the error message that shows up when allowMentionsInChat is enabled
-- Fixed Custom emotes being sent in minecraft not rendering correctly in discord
-
 **Changes**:
 
-- Added automatic config migration handling between V4 experimental and V3
+- Added config flag to disable filtering IPs in console relay

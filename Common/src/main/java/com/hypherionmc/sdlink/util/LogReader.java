@@ -99,7 +99,10 @@ public final class LogReader extends AbstractAppender {
             messageScheduler = new Thread(() -> {
                 while (BotController.INSTANCE.isBotReady()) {
                     if (System.currentTimeMillis() - time > 250) {
-                        logs = logs.replaceAll("\\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\\b", "[REDACTED]");
+                        if (SDLinkConfig.INSTANCE.chatConfig.hideIpsInConsoleRelay) {
+                            logs = logs.replaceAll("\\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\\b", "[REDACTED]");
+                        }
+
                         logs = logs.replaceAll("https:\\/\\/editor\\.firstdark\\.dev\\/[a-zA-Z0-9]+", "[REDACTED]");
 
                         if (logs.length() > 2000) {

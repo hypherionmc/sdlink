@@ -38,6 +38,10 @@ public final class ChatSettingsConfig {
     @SpecComment("Should console messages be sent to the Console Channel")
     public boolean sendConsoleMessages = false;
 
+    @Path("hideIpsInConsoleRelay")
+    @SpecComment("Should IPs be shown as [REDACTED] when the console is relayed to discord?")
+    public boolean hideIpsInConsoleRelay = true;
+
     @Path("customAvatarService")
     @SpecComment("Add your own Avatar service URL here. Use {uuid} to replace the player ID in the URL")
     public String customAvatarService = "https://crafatar.com/avatars/{uuid}";
