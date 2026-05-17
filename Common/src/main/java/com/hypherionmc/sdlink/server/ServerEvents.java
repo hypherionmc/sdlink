@@ -161,6 +161,9 @@ public final class ServerEvents {
             return;
         }
 
+        if (ExperimentalFeatures.INSTANCE.IGNORE_CANCELLED_CHAT && event.isUpstreamCancelled())
+            return;
+
         if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
             return;
 

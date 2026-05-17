@@ -150,29 +150,32 @@ public final class FTBRankSync extends AbstractRoleSyncer {
     }
 
     @Override
-    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, MinecraftAccount oldAccount) {
-        MinecraftAccount account = oldAccount != null ? oldAccount : MinecraftAccount.fromDiscordId(member.getId());
-        if (account == null) return;
+    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, List<MinecraftAccount> oldAccount) {
+        if (oldAccount.isEmpty()) {
+            oldAccount.add(MinecraftAccount.fromDiscordId(member.getId()));
+        }
 
         RoleSyncCompat.Sync sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst().orElse(null);
         if (sync == null) return;
 
-        if (add) {
-            if (!FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
-                ignoreEvent = true;
-                FTBRanks.getInstance().addRank(account.toGameProfile(), sync.rank);
-                ignoreEvent = false;
-            }
-        } else {
-            if (FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
-                ignoreEvent = true;
-                FTBRanks.getInstance().removeRank(account.toGameProfile(), sync.rank);
-                if (oldAccount != null) {
-                    try {
-                        guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
-                    } catch (Exception ignored) {}
+        for (MinecraftAccount account : oldAccount) {
+            if (add) {
+                if (!FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
+                    ignoreEvent = true;
+                    FTBRanks.getInstance().addRank(account.toGameProfile(), sync.rank);
+                    ignoreEvent = false;
                 }
-                ignoreEvent = false;
+            } else {
+                if (FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
+                    ignoreEvent = true;
+                    FTBRanks.getInstance().removeRank(account.toGameProfile(), sync.rank);
+                    if (oldAccount != null) {
+                        try {
+                            guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
+                        } catch (Exception ignored) {}
+                    }
+                    ignoreEvent = false;
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ public final class ExperimentalFeatures {
     public static final ExperimentalFeatures INSTANCE = new ExperimentalFeatures();
 
     public boolean RELAY_SERVER = false;
+    public boolean IGNORE_CANCELLED_CHAT = false;
 
     public void loadFeatures() {
         File f = new File("./sdlinkstorage/IKNOWWHATIMDOING");
@@ -26,6 +27,7 @@ public final class ExperimentalFeatures {
             props.load(new FileReader(f));
 
             RELAY_SERVER = Boolean.parseBoolean(props.getProperty("RELAY_SERVER", "false"));
+            IGNORE_CANCELLED_CHAT = Boolean.parseBoolean(props.getProperty("IGNORE_CANCELLED_CHAT", "false"));
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to load Experimental Features", e);
         }

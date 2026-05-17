@@ -28,7 +28,7 @@ public abstract class AbstractRoleSyncer {
         discordRoleChanged(member, guild, role, true);
     }
 
-    public void discordRoleRemovedFromMember(Member member, Role role, Guild guild, MinecraftAccount oldAccount) {
+    public void discordRoleRemovedFromMember(Member member, Role role, Guild guild, List<MinecraftAccount> oldAccount) {
         if (ignoreEvent || !isSyncActive.get())
             return;
 
@@ -39,6 +39,6 @@ public abstract class AbstractRoleSyncer {
         this.discordRoleChanged(member, guild, role, added, null);
     }
 
-    abstract void discordRoleChanged(Member member, Guild guild, Role role, boolean added, @Nullable MinecraftAccount oldAccount);
+    abstract void discordRoleChanged(Member member, Guild guild, Role role, boolean added, List<MinecraftAccount> oldAccount);
 
 }

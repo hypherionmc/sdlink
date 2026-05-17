@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -25,26 +26,36 @@ public final class DiscordRoleHooks {
     public static final DiscordRoleHooks INSTANCE = new DiscordRoleHooks();
 
     public void onRoleAdded(@NotNull GuildMemberRoleAddEvent event) {
-        runCommandChecks(event.getRoles(), SDLinkConfig.INSTANCE.triggerCommands.roleAdded, "roleAdded", event.getMember().getId());
+        Optional<SDLinkAccount> account = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class)
+                .stream()
+                .filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(event.getMember().getId()))
+                .findFirst();
+
+        runCommandChecks(event.getRoles(), SDLinkConfig.INSTANCE.triggerCommands.roleAdded, "roleAdded", account.map(List::of).orElseGet(List::of));
     }
 
     public void onRoleRemoved(@NotNull GuildMemberRoleRemoveEvent event) {
-        runCommandChecks(event.getRoles(), SDLinkConfig.INSTANCE.triggerCommands.roleRemoved, "roleRemoved", event.getMember().getId());
+        List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class)
+                .stream()
+                .filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(event.getMember().getId()))
+                .toList();
+
+        onRoleRemoved(event.getRoles(), accounts);
     }
 
-    private void runCommandChecks(List<Role> roles, List<TriggerCommandsConfig.TriggerHolder> triggers, String section, String memberId) {
+    public void onRoleRemoved(@NotNull List<Role> roles, @NotNull List<SDLinkAccount> account) {
+        runCommandChecks(roles, SDLinkConfig.INSTANCE.triggerCommands.roleRemoved, "roleRemoved", account);
+    }
+
+    private void runCommandChecks(List<Role> roles, List<TriggerCommandsConfig.TriggerHolder> triggers, String section, List<SDLinkAccount> accounts) {
         if (!(SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification) || !SDLinkConfig.INSTANCE.triggerCommands.enabled)
             return;
 
         try {
-            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-
             if (accounts.isEmpty())
                 return;
 
-            Optional<SDLinkAccount> account = accounts.stream().filter(d -> d.getDiscordID() != null && d.getDiscordID().equalsIgnoreCase(memberId)).findFirst();
-
-            account.ifPresent(acc -> {
+            accounts.forEach(acc -> {
                 MinecraftAccount mcAccount = MinecraftAccount.of(acc);
 
                 for (Role role : roles) {

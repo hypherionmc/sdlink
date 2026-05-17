@@ -107,21 +107,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
         if (!SDLinkCompatConfig.INSTANCE.common.luckperms || !SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncToDiscord)
             return;
 
-        // TODO REMOVE THIS TEMPORARY FIX ON NEXT CRATERLIB RELEASE
-        String identifier = null;
-
-        try {
-            Field identifierField = event.getClass().getDeclaredField("identifier");
-            identifierField.setAccessible(true);
-            identifier = identifierField.get(event).toString();
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        if (identifier == null)
-            return;
-
-        updateLuckpermsGroup(identifier, event.toProfile(), true);
+        updateLuckpermsGroup(event.getIdentifier(), event.toProfile(), true);
     }
 
     @CraterEventListener
@@ -132,21 +118,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
         if (!SDLinkCompatConfig.INSTANCE.common.luckperms || !SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncToDiscord)
             return;
 
-        // TODO REMOVE THIS TEMPORARY FIX ON NEXT CRATERLIB RELEASE
-        String identifier = null;
-
-        try {
-            Field identifierField = event.getClass().getDeclaredField("identifier");
-            identifierField.setAccessible(true);
-            identifier = identifierField.get(event).toString();
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        if (identifier == null)
-            return;
-
-        updateLuckpermsGroup(identifier, event.toProfile(), false);
+        updateLuckpermsGroup(event.getIdentifier(), event.toProfile(), false);
     }
 
     private void updateLuckpermsGroup(String rank, CraterGameProfile profile, boolean add) {
@@ -181,29 +153,32 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
     }
 
     @Override
-    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, MinecraftAccount oldAccount) {
-        MinecraftAccount account = oldAccount != null ? oldAccount : MinecraftAccount.fromDiscordId(member.getId());
-        if (account == null) return;
+    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, List<MinecraftAccount> oldAccount) {
+        if (oldAccount.isEmpty()) {
+            oldAccount.add(MinecraftAccount.fromDiscordId(member.getId()));
+        }
 
         RoleSyncCompat.Sync sync = SDLinkCompatConfig.INSTANCE.luckpermsCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst().orElse(null);
         if (sync == null) return;
 
-        if (add) {
-            if (!LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
-                ignoreEvent = true;
-                LuckPermsCompat.getInstance().addGroupToUser(account.getUuid(), sync.rank);
-                ignoreEvent = false;
-            }
-        } else {
-            if (LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
-                ignoreEvent = true;
-                LuckPermsCompat.getInstance().removeGroupFromUser(account.getUuid(), sync.rank);
-                if (oldAccount != null) {
-                    try {
-                        guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
-                    } catch (Exception ignored) {}
+        for (MinecraftAccount account : oldAccount) {
+            if (add) {
+                if (!LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
+                    ignoreEvent = true;
+                    LuckPermsCompat.getInstance().addGroupToUser(account.getUuid(), sync.rank);
+                    ignoreEvent = false;
                 }
-                ignoreEvent = false;
+            } else {
+                if (LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
+                    ignoreEvent = true;
+                    LuckPermsCompat.getInstance().removeGroupFromUser(account.getUuid(), sync.rank);
+                    if (oldAccount != null) {
+                        try {
+                            guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
+                        } catch (Exception ignored) {}
+                    }
+                    ignoreEvent = false;
+                }
             }
         }
     }

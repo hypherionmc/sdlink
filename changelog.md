@@ -8,3 +8,8 @@
 **Changes**:
 
 - Added config flag to disable filtering IPs in console relay
+
+**Bug Fixes**:
+
+- Fixed accounts being unverified not triggering role removal events
+- Fixed unverify command not unverifying all accounts associated with the user

@@ -12,6 +12,7 @@ import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.core.discord.hooks.DiscordRoleHooks;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.RoleManager;
@@ -26,6 +27,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -184,17 +186,23 @@ public final class MinecraftAccount {
     }
 
     public Result unverifyAccount(Member member, Guild guild) {
-        SDLinkAccount account = getStoredAccount();
+        List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class)
+                .stream()
+                .filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(member.getId()))
+                .toList();
 
-        if (account == null)
+        if (accounts.isEmpty())
             return Result.error(SDText.translate("account.notfound"));
 
-        MinecraftAccount oldAccount = this;
-        account.setDiscordID(null);
-        account.setVerifyCode(null);
+        List<SDLinkAccount> oldAccounts = List.copyOf(accounts);
+
+        accounts.forEach(a -> {
+            a.setDiscordID(null);
+            a.setVerifyCode(null);
+        });
 
         try {
-            DatabaseManager.INSTANCE.updateEntry(account);
+            accounts.forEach(DatabaseManager.INSTANCE::updateEntry);
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to remove verified account", e);
         }
@@ -211,23 +219,31 @@ public final class MinecraftAccount {
 
         if (SDLinkConfig.INSTANCE.accessControl.changeDiscordNickname) {
             try {
-                if (member.getNickname() != null && member.getNickname().equalsIgnoreCase(account.getInGameName())) {
-                    member.modifyNickname(null).queue();
+                for (SDLinkAccount acc : accounts) {
+                    if (member.getNickname() != null && member.getNickname().equalsIgnoreCase(acc.getInGameName())) {
+                        member.modifyNickname(null).queue();
+                    }
                 }
             } catch (Exception e) {
                 BotController.INSTANCE.getLogger().error("Failed to update Nickname for {}", member.getEffectiveName(), e);
             }
         }
 
-        try {
-            List<Role> roles = member.getRoles();
+        List<Role> roles = member.getRoles();
 
+        try {
             for (Role role : roles) {
-                RoleSync.INSTANCE.roleRemovedFromMember(member, role, guild, oldAccount);
+                RoleSync.INSTANCE.roleRemovedFromMember(member, role, guild, oldAccounts.stream().map(MinecraftAccount::of).toList());
             }
         } catch (Exception ignored) {}
 
-        CraterEventBus.INSTANCE.postEvent(new VerificationEvent.PlayerUnverified(this));
+        try {
+            DiscordRoleHooks.INSTANCE.onRoleRemoved(roles, accounts);
+        } catch (Exception ignored) {}
+
+        for (SDLinkAccount acc : oldAccounts) {
+            CraterEventBus.INSTANCE.postEvent(new VerificationEvent.PlayerUnverified(MinecraftAccount.of(acc)));
+        }
 
         return Result.success(SDText.translate("account.unverify_success"));
     }

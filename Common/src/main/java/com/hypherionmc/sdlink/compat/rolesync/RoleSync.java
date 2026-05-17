@@ -73,7 +73,7 @@ public final class RoleSync {
         }
     }
 
-    public void roleRemovedFromMember(Member member, Role role, Guild guild, MinecraftAccount oldAccount) {
+    public void roleRemovedFromMember(Member member, Role role, Guild guild, List<MinecraftAccount> oldAccount) {
         if (CraterLoader.isModLoaded("ftbranks")) {
             FTBRankSync.INSTANCE.discordRoleRemovedFromMember(member, role, guild, oldAccount);
         }
