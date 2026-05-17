@@ -1,15 +1,15 @@
 package com.hypherionmc.sdlink.util;
 
 import com.hypherionmc.craterlib.api.game.text.Text;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.ClickEvent;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.HoverEvent;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.NamedTextColor;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;

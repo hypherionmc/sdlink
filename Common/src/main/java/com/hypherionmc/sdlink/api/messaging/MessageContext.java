@@ -1,6 +1,12 @@
 package com.hypherionmc.sdlink.api.messaging;
 
 import com.hypherionmc.craterlib.api.game.text.Text;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.TextComponent;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.ClickEvent;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.HoverEvent;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.NamedTextColor;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.TextColor;
 import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.database.SDLinkAccount;
@@ -16,12 +22,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.entities.Role;
 import net.fellbaum.jemoji.EmojiManager;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;

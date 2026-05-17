@@ -3,11 +3,12 @@
 - [Documentation](https://sdlink.fdd-docs.com)
 - This single jar works on 1.18.2-26.1.2
 
-*Requires CraterLib 3.1.1 or newer*
+*Requires CraterLib 3.1.2 or newer*
 
 **Changes**:
 
 - Added config flag to disable filtering IPs in console relay
+- Adapt for CraterLib Adventure Revert
 
 **Bug Fixes**:
 

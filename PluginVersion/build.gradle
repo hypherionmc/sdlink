@@ -8,7 +8,7 @@ dependencies {
 
 shadowJar {
     dependencies {
-        relocate 'shadow.kyori', 'net.kyori'
+        relocate 'com.hypherionmc.craterlib.libs.kyori', 'net.kyori'
     }
 }
 
