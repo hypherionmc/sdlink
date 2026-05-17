@@ -5,7 +5,10 @@
 
 *Requires CraterLib 3.1.2 or newer*
 
-**Bug Fixes**:
+**New Features**:
 
-- Fixed the error message that shows up when allowMentionsInChat is enabled
-- Fixed Custom emotes being sent in minecraft not rendering correctly in discord
+- Multiple Discord Server Support. You can now use the bot in more than one discord, or use multiple channels from the same discord
+
+**Changes**:
+
+- You no longer need to manually enter webhook urls. Webhooks are now automatically configured

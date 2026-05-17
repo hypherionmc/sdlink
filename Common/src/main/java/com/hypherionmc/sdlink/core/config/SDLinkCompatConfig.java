@@ -9,6 +9,7 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 import com.hypherionmc.sdlink.core.config.impl.compat.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -98,7 +99,7 @@ public final class SDLinkCompatConfig extends AbstractConfig<SDLinkCompatConfig>
         try {
             FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", ".old")));
         } catch (IOException e) {
-            BotController.INSTANCE.getLogger().warn("Failed to create config backup.", e);
+            SDLinkConstants.LOGGER.warn("Failed to create config backup.", e);
         }
         newConfig.save();
 

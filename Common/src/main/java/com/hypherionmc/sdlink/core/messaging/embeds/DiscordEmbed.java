@@ -6,6 +6,8 @@ package com.hypherionmc.sdlink.core.messaging.embeds;
 
 import java.util.ArrayList;
 
+@Deprecated(forRemoval = true)
+// TODO: Replace with simpler format
 public final class DiscordEmbed {
 
     public String color;

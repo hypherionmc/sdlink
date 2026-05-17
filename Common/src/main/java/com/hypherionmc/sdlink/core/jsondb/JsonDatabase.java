@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+// TODO: Move this to it's own library
+@Deprecated
 @SuppressWarnings({"unchecked", "raw"})
 public class JsonDatabase {
 

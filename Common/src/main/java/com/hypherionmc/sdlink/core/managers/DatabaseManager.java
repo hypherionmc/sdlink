@@ -4,9 +4,9 @@
  */
 package com.hypherionmc.sdlink.core.managers;
 
-import com.hypherionmc.sdlink.core.database.HiddenPlayers;
 import com.hypherionmc.sdlink.core.jsondb.JsonDatabase;
 import com.hypherionmc.sdlink.core.jsondb.annotations.Document;
+import com.hypherionmc.sdlinkrw.modules.database.HiddenPlayers;
 import com.hypherionmc.sdlinkrw.modules.database.SDLWebhooks;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 

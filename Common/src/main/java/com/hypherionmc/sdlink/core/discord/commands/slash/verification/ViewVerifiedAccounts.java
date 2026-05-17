@@ -9,7 +9,8 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.MessageUtil;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jagrosh.jdautilities.menu.ButtonEmbedPaginator;
@@ -78,7 +79,7 @@ public final class ViewVerifiedAccounts extends SDLinkSlashCommand {
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
             event.getHook().sendMessage(SDText.translate("error.command_failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
-            BotController.INSTANCE.getLogger().error("Failed to run verifiedaccounts command", e);
+            SDLinkConstants.LOGGER.error("Failed to run verifiedaccounts command", e);
         }
     }
 

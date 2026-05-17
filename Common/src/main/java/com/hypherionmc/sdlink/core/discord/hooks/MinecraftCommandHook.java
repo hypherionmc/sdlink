@@ -8,8 +8,8 @@ import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MinecraftCommands;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -86,7 +86,7 @@ public final class MinecraftCommandHook {
     private static void executeCommand(String command, int permLevel, MessageReceivedEvent event, SDLinkAccount account) {
         event.getMessage().addReaction(Emoji.fromFormatted("U+2705")).queue();
         CompletableFuture<Result> result = new CompletableFuture<>();
-        SDLinkPlatform.minecraftHelper.executeMinecraftCommand(command, permLevel, event, account, result);
+        SDLinkMinecraftBridge.INSTANCE.executeMinecraftCommand(command, permLevel, event, account, result);
 
         result.thenAccept(res -> {
             event.getMessage().reply(res.getMessage())

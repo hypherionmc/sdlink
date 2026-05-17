@@ -10,12 +10,16 @@ import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.discord.commands.CommandManager;
 import com.hypherionmc.sdlink.core.discord.events.DiscordEventHandler;
 import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
-import com.hypherionmc.sdlink.core.managers.*;
+import com.hypherionmc.sdlink.core.managers.DatabaseManager;
+import com.hypherionmc.sdlink.core.managers.EmbedManager;
+import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
+import com.hypherionmc.sdlink.core.managers.SpamManager;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
-import com.hypherionmc.sdlink.util.EncryptionUtil;
-import com.hypherionmc.sdlink.util.ThreadedEventManager;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
 import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorClient;
+import com.hypherionmc.sdlinkrw.util.EncryptionUtil;
+import com.hypherionmc.sdlinkrw.util.ThreadedEventManager;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -48,10 +52,7 @@ public final class BotController {
     // Public instance of this class that can be called anywhere
     public static BotController INSTANCE;
 
-    @Getter
     private final EventWaiter eventWaiter = new EventWaiter();
-    @Getter
-    public final Logger logger;
 
     @Getter
     private final SpamManager spamManager;
@@ -63,11 +64,10 @@ public final class BotController {
     /**
      * INTERNAL
      *
-     * @param logger A constructed {@link Logger} that the bot will use
+     * @param wasReload Whether or not this is a reload
      */
-    private BotController(Logger logger, boolean wasReload) {
+    private BotController(boolean wasReload) {
         INSTANCE = this;
-        this.logger = logger;
 
         File newConfigDir = new File("./config/simple-discord-link");
         newConfigDir.mkdirs();
@@ -76,12 +76,12 @@ public final class BotController {
         File currentConfig = new File(newConfigDir, "simple-discord-link.toml");
 
         if (newConfigBackup.exists()) {
-            logger.info("Found backed up experimental config. Restoring...");
+            SDLinkConstants.LOGGER.info("Found backed up experimental config. Restoring...");
             try {
                 FileUtils.moveFile(currentConfig, new File(currentConfig.getAbsolutePath().replace(".toml", ".legacy")));
                 FileUtils.moveFile(newConfigBackup, currentConfig);
             } catch (Exception e) {
-                logger.error("Failed to restore config", e);
+                SDLinkConstants.LOGGER.error("Failed to restore config", e);
             }
         }
 
@@ -113,15 +113,14 @@ public final class BotController {
     /**
      * Construct a new instance of this class
      *
-     * @param logger A constructed {@link Logger} that the bot will use
      */
-    public static void newInstance(Logger logger) {
-        new BotController(logger, false);
+    public static void newInstance() {
+        new BotController(false);
     }
 
     public static void reloadInstance(boolean isReload) {
         BotController.INSTANCE.shutdownBot(isReload);
-        new BotController(INSTANCE.logger, true);
+        new BotController(true);
         BotController.INSTANCE.initializeBot();
     }
 
@@ -132,17 +131,17 @@ public final class BotController {
         shutdownCalled = false;
 
         if (SDLinkConfig.INSTANCE == null || !SDLinkConfig.hasConfigLoaded) {
-            logger.error("Failed to load config. Check your log for errors");
+            SDLinkConstants.LOGGER.error("Failed to load config. Check your log for errors");
             return;
         }
 
         if (SDLinkConfig.INSTANCE.botConfig.botToken.isEmpty()) {
-            logger.error("Missing bot token. Mod will be disabled. Please double check this in {}", SDLinkConfig.INSTANCE.getConfigPath());
+            SDLinkConstants.LOGGER.error("Missing bot token. Mod will be disabled. Please double check this in {}", SDLinkConfig.INSTANCE.getConfigPath());
             return;
         }
 
         if (!SDLinkConfig.INSTANCE.generalConfig.enabled) {
-            logger.warn("Simple Discord Link is disabled. Not continuing");
+            SDLinkConstants.LOGGER.warn("Simple Discord Link is disabled. Not continuing");
             return;
         }
 
@@ -178,7 +177,7 @@ public final class BotController {
                     .setEventManager(new ThreadedEventManager())
                     .build();
         } catch (Exception e) {
-            logger.error("Failed to connect to discord", e);
+            SDLinkConstants.LOGGER.error("Failed to connect to discord", e);
         }
     }
 
@@ -222,7 +221,7 @@ public final class BotController {
         } catch (IllegalStateException ignored) {
             // This is sometimes triggered on paper, but works as expected. So we just ignore it
         } catch (Exception e) {
-            logger.error("Failed to shutdown bot.", e);
+            SDLinkConstants.LOGGER.error("Failed to shutdown bot.", e);
         }
 
         if (!isReload) {
@@ -234,6 +233,10 @@ public final class BotController {
                     SDLinkRelayClient.INSTANCE.closeServer(true);
             } catch (Exception ignored) {}
         }
+    }
+
+    public EventWaiter getEventWaiter() {
+        return this.eventWaiter;
     }
 
     public JDA getJDA() {

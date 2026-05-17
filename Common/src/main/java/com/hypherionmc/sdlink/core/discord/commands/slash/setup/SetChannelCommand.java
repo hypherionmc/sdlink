@@ -8,8 +8,8 @@ import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
-import com.hypherionmc.sdlink.util.EncryptionUtil;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -88,7 +88,7 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
 //
 //            return Result.success(SDText.translate("command.setchannel.saved"));
 //        } catch (Exception e) {
-//            BotController.INSTANCE.getLogger().error("Failed to save config", e);
+//            SDLinkConstants.LOGGER.error("Failed to save config", e);
 //            return Result.error(SDText.translate("command.setchannel.failed", e.getMessage()));
 //        }
 
@@ -127,7 +127,7 @@ public final class SetChannelCommand extends SDLinkSlashCommand {
 
             return Result.success(SDText.translate("command.setchannel.webhook_saved"));
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to save config", e);
+            SDLinkConstants.LOGGER.error("Failed to save config", e);
             return Result.error(SDText.translate("command.setchannel.failed", e.getMessage()));
         }
     }

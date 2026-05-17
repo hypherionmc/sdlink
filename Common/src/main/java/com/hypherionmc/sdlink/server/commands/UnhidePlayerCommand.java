@@ -6,7 +6,7 @@ import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 
 public final class UnhidePlayerCommand {
 

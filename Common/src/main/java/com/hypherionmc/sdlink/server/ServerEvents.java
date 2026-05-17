@@ -11,9 +11,8 @@ import com.hypherionmc.craterlib.api.game.world.level.CraterCommonGameRules;
 import com.hypherionmc.craterlib.api.loader.CraterCompat;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
-import com.hypherionmc.sdlink.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
-import com.hypherionmc.sdlink.api.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessageBuilder;
@@ -30,15 +29,16 @@ import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlink.server.commands.*;
-import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.api.accounts.DiscordUser;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.api.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlinkrw.api.events.VerificationEvent;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
+import com.hypherionmc.sdlinkrw.util.Debugger;
 import io.github.joagar21.guilds.api.GuildsAPI;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
@@ -68,7 +68,7 @@ public final class ServerEvents {
     }
 
     private ServerEvents() {
-        BotController.newInstance(SDLinkConstants.LOGGER);
+        BotController.newInstance();
         BotController.INSTANCE.initializeBot();
     }
 
@@ -117,7 +117,7 @@ public final class ServerEvents {
             SDLCache.INSTANCE.loadCache(BotController.INSTANCE.getJDA());
 
         if (CraterLoader.isModLoaded("utilitarian")) {
-            BotController.INSTANCE.getLogger().warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
+            SDLinkConstants.LOGGER.warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
         }
     }
 

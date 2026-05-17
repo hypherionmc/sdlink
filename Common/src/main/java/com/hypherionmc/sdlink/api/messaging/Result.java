@@ -4,7 +4,7 @@
  */
 package com.hypherionmc.sdlink.api.messaging;
 
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import lombok.Getter;
 
 /**

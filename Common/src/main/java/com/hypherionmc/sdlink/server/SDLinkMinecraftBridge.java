@@ -4,7 +4,7 @@ import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.craterlib.api.game.server.CraterGameServer;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
-import com.hypherionmc.sdlink.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -13,7 +13,7 @@ import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import net.dv8tion.jda.api.entities.Role;
@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class SDLinkMinecraftBridge {
+
+    public static final SDLinkMinecraftBridge INSTANCE = new SDLinkMinecraftBridge();
 
     final Pattern patternStart = Pattern.compile("%(.*?)(?:\\|(.*?))?%", Pattern.CASE_INSENSITIVE);
 

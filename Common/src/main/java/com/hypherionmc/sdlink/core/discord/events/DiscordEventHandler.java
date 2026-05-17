@@ -5,7 +5,6 @@
 package com.hypherionmc.sdlink.core.discord.events;
 
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
-import com.hypherionmc.sdlink.api.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlink.compat.rolesync.RoleSync;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
@@ -14,11 +13,12 @@ import com.hypherionmc.sdlink.core.discord.hooks.BotReadyHooks;
 import com.hypherionmc.sdlink.core.discord.hooks.DiscordMessageHooks;
 import com.hypherionmc.sdlink.core.discord.hooks.DiscordRoleHooks;
 import com.hypherionmc.sdlink.core.discord.hooks.MinecraftCommandHook;
-import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.PKUtil;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
+import com.hypherionmc.sdlinkrw.api.events.SDLinkReadyEvent;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import net.dv8tion.jda.api.JDA;
@@ -68,16 +68,16 @@ public final class DiscordEventHandler extends ListenerAdapter {
         CloseCode code = event.getCloseCode();
 
         if (code == null) {
-            BotController.INSTANCE.getLogger().error("Got disconnected from discord for an unknown reason. Code: {}", event.getCode());
+            SDLinkConstants.LOGGER.error("Got disconnected from discord for an unknown reason. Code: {}", event.getCode());
             return;
         }
 
         if (code == CloseCode.DISALLOWED_INTENTS) {
-            BotController.INSTANCE.getLogger().error("Your bot is missing a required setup step, and cannot continue. Please review https://sdlink.fdd-docs.com/installation/bot-creation/#privileged-gateway-intents to fix this");
+            SDLinkConstants.LOGGER.error("Your bot is missing a required setup step, and cannot continue. Please review https://sdlink.fdd-docs.com/installation/bot-creation/#privileged-gateway-intents to fix this");
             return;
         }
 
-        BotController.INSTANCE.getLogger().error("Disconnected from discord with error {}", event.getCloseCode().name());
+        SDLinkConstants.LOGGER.error("Disconnected from discord with error {}", event.getCloseCode().name());
     }
 
     /**
@@ -105,7 +105,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
                 try {
                     Thread.sleep(SDLinkConfig.INSTANCE.chatConfig.pluralKitCompatMessageDelay);
                 } catch (InterruptedException e) {
-                    BotController.INSTANCE.getLogger().error("Unexpected InterruptedException", e);
+                    SDLinkConstants.LOGGER.error("Unexpected InterruptedException", e);
                 }
 
                 DiscordMessageHooks.discordMessageEvent(event);
@@ -127,11 +127,10 @@ public final class DiscordEventHandler extends ListenerAdapter {
 
         if (event.getJDA().getStatus() == JDA.Status.CONNECTED) {
             isStuckInNotReady = false;
-            BotController.INSTANCE.getLogger().info("Successfully connected to discord");
+            SDLinkConstants.LOGGER.info("Successfully connected to discord");
 
             SDLCache.INSTANCE.loadCache(event.getJDA());
             SDLCache.INSTANCE.checkBotSetup();
-            ChannelManager.loadChannels();
             BotReadyHooks.startActivityUpdates(event);
             BotReadyHooks.startTopicUpdates();
             CraterEventBus.INSTANCE.postEvent(new SDLinkReadyEvent());
@@ -176,7 +175,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
             Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(event.getUser().getId())).findFirst();
             account.ifPresent(a -> DatabaseManager.INSTANCE.deleteEntry(a, SDLinkAccount.class));
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to remove linked account", e);
+            SDLinkConstants.LOGGER.error("Failed to remove linked account", e);
         }
     }
 
@@ -234,14 +233,14 @@ public final class DiscordEventHandler extends ListenerAdapter {
 
                 if (acc != null) {
                     if (SDLinkConfig.INSTANCE.accessControl.banPlayerOnDiscordBan) {
-                        SDLinkPlatform.minecraftHelper.banPlayer(acc);
+                        SDLinkMinecraftBridge.INSTANCE.banPlayer(acc);
                     }
                 }
 
                 DatabaseManager.INSTANCE.deleteEntry(a, SDLinkAccount.class);
             });
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to remove linked account", e);
+            SDLinkConstants.LOGGER.error("Failed to remove linked account", e);
         }
     }
 

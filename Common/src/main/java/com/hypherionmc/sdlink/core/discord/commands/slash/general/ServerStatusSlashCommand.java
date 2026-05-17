@@ -6,7 +6,7 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.SystemUtils;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -77,24 +77,24 @@ public final class ServerStatusSlashCommand extends SDLinkSlashCommand {
 
         stringBuilder
                 .append("**Server Uptime:**\r\n```\r\n")
-                .append(SystemUtils.secondsToTimestamp(SDLinkPlatform.minecraftHelper.getServerUptime()))
+                .append(SystemUtils.secondsToTimestamp(SDLinkMinecraftBridge.INSTANCE.getServerUptime()))
                 .append("```\r\n");
 
         stringBuilder
                 .append("**Server Version:**\r\n```\r\n")
-                .append(SDLinkPlatform.minecraftHelper.getServerVersion())
+                .append(SDLinkMinecraftBridge.INSTANCE.getServerVersion())
                 .append("```\r\n");
 
         stringBuilder
                 .append("**Players Online:**\r\n```\r\n")
-                .append(SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft())
+                .append(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getLeft())
                 .append("/")
-                .append(SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight())
+                .append(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getRight())
                 .append("```\r\n");
 
         stringBuilder
                 .append("**Whitelisting:**\r\n```\r\n")
-                .append(!SDLinkPlatform.minecraftHelper.checkWhitelisting().isError() ? "Enabled" : "Disabled")
+                .append(!SDLinkMinecraftBridge.INSTANCE.checkWhitelisting().isError() ? "Enabled" : "Disabled")
                 .append("```\r\n");
 
         builder.setDescription(stringBuilder.toString());

@@ -4,7 +4,7 @@ import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 
 public final class WhoisCommand {

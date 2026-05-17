@@ -12,20 +12,19 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.CacheManager;
-import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
-import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.DestinationHolder;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
-import lombok.val;
+import com.hypherionmc.sdlinkrw.util.Debugger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +33,7 @@ import java.awt.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,7 +76,7 @@ public final class DiscordMessage {
 
         if (BotController.INSTANCE.getSpamManager().isBlocked(String.format("%s:%s", this.author.getUsername(), this.message))) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                BotController.INSTANCE.getLogger().warn("Blocked message {} due to spam", message);
+                SDLinkConstants.LOGGER.warn("Blocked message {} due to spam", message);
 
             return;
         }
@@ -90,7 +90,7 @@ public final class DiscordMessage {
         } catch (Exception e) {
             runAfterSend();
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                BotController.INSTANCE.getLogger().error("Failed to send Discord Message", e);
+                SDLinkConstants.LOGGER.error("Failed to send Discord Message", e);
             }
         }
     }
@@ -105,7 +105,7 @@ public final class DiscordMessage {
         try {
             if (channel.channel() == null) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                    BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
+                    SDLinkConstants.LOGGER.warn("Expected to get Channel for {}, but got null", messageType.name());
                 runAfterSend();
                 return;
             }
@@ -226,18 +226,16 @@ public final class DiscordMessage {
             if (!BotController.INSTANCE.isBotReady() || !SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
                 return;
 
-            MessageChannel channel = ChannelManager.getConsoleChannel();
-            if (channel != null) {
-                channel.sendMessage(
-                        new MessageCreateBuilder()
-                                .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
-                                .setContent(this.message)
-                                .build()
-                ).queue();
-            }
+            List<GuildMessageChannel> channel =SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CONSOLE);
+            channel.forEach(cc -> cc.sendMessage(
+                    new MessageCreateBuilder()
+                            .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
+                            .setContent(this.message)
+                            .build()
+            ).queue());
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                BotController.INSTANCE.getLogger().error("Failed to send console message", e);
+                SDLinkConstants.LOGGER.error("Failed to send console message", e);
             }
         }
 

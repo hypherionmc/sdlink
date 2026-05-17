@@ -6,6 +6,7 @@ import com.hypherionmc.sdlink.core.config.impl.TriggerCommandsConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import lombok.AccessLevel;
@@ -61,7 +62,7 @@ public final class DiscordRoleHooks {
                 }
             });
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to run {} trigger", section, e);
+            SDLinkConstants.LOGGER.error("Failed to run {} trigger", section, e);
         }
     }
 
@@ -71,7 +72,7 @@ public final class DiscordRoleHooks {
 
         result.thenAccept(res -> {
            if (res.isError()) {
-               BotController.INSTANCE.getLogger().error("Failed to trigger command {}: {}", command, res.getMessage());
+               SDLinkConstants.LOGGER.error("Failed to trigger command {}: {}", command, res.getMessage());
            }
         });
     }

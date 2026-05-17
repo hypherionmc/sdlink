@@ -1,6 +1,6 @@
 package com.hypherionmc.sdlink.loaders.dummy;
 
-import com.hypherionmc.sdlink.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import net.minecraftforge.fml.common.Mod;
 
 // Dummy entrypoint

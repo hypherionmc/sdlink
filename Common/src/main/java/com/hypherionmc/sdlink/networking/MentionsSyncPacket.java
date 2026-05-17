@@ -6,9 +6,9 @@ import com.hypherionmc.craterlib.api.game.network.CraterFriendlyByteBuf;
 import com.hypherionmc.craterlib.api.game.resources.CraterIdentifier;
 import com.hypherionmc.craterlib.core.networking.data.PacketContext;
 import com.hypherionmc.craterlib.core.networking.data.PacketSide;
-import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 
 import java.util.HashMap;
 

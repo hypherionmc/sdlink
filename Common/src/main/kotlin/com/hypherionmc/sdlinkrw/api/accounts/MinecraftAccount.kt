@@ -6,14 +6,14 @@ import com.hypherionmc.sdlink.api.messaging.Result
 import com.hypherionmc.sdlink.compat.rolesync.RoleSync
 import com.hypherionmc.sdlink.core.config.SDLinkConfig
 import com.hypherionmc.sdlink.core.managers.DatabaseManager
-import com.hypherionmc.sdlink.util.Debugger
 import com.hypherionmc.sdlinkrw.api.events.VerificationEvent
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount
 import com.hypherionmc.sdlinkrw.modules.kotlin.discord_ext.getAllRoles
 import com.hypherionmc.sdlinkrw.modules.kotlin.discord_ext.memberFromCache
-import com.hypherionmc.sdlinkrw.modules.kotlin.random
-import com.hypherionmc.sdlinkrw.modules.kotlin.translate
+import com.hypherionmc.sdlinkrw.modules.kotlin.java_ext.random
+import com.hypherionmc.sdlinkrw.modules.kotlin.java_ext.translate
+import com.hypherionmc.sdlinkrw.util.Debugger
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -21,19 +21,44 @@ import org.apache.commons.lang3.ArrayUtils
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * @author HypherionSA
+ *
+ * Represents a Minecraft account stored either in the database or in the cache.
+ */
 class MinecraftAccount private constructor(val username: String, val uuid: UUID) {
 
+    /**
+     * Convert this account to a GameProfile.
+     *
+     * @return The GameProfile representation of this account.
+     */
     fun toGameProfile(): CraterGameProfile = CraterGameProfile.fromGame(username, uuid)
 
+    /**
+     * Check if this account is verified.
+     *
+     * @return True if the account is verified, false otherwise.
+     */
     fun isAccountVerified(): Boolean {
         val account = getStoredAccount()
         return !account.discordId.isNullOrBlank()
     }
 
+    /**
+     * Get the stored account from the database.
+     *
+     * @return The stored account or a blank account if none exists.
+     */
     fun getStoredAccount(): SDLinkAccount {
         return DatabaseManager.INSTANCE.findById(uuid.toString(), SDLinkAccount::class.java) ?: newDBEntry()
     }
 
+    /**
+     * Create a new database entry for this account.
+     *
+     * @return The newly created account.
+     */
     private fun newDBEntry(): SDLinkAccount {
         val account = SDLinkAccount(
             uuid.toString(),
@@ -49,6 +74,11 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return account
     }
 
+    /**
+     * Get the Discord name of this account.
+     *
+     * @return The Discord name of this account or "Unlinked" if not linked.
+     */
     fun getDiscordName(): String {
         val account = getStoredAccount()
         if (account.discordId.isNullOrEmpty()) return "account.unlinked".translate()
@@ -56,6 +86,12 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return SDLCache.getUserById(account.discordId!!)?.user?.name ?: "account.unlinked".translate()
     }
 
+    /**
+     * Get the Discord user of this account.
+     *
+     * @param guild The guild to get the user from.
+     * @return The Discord user of this account or null if not linked.
+     */
     fun getDiscordUser(guild: Guild): DiscordUser? {
         val account = getStoredAccount()
         if (account.discordId.isNullOrEmpty()) return null
@@ -74,6 +110,12 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return DiscordUser(member.effectiveName, member.effectiveAvatarUrl, member.idLong, member.asMention, member.colorRaw)
     }
 
+    /**
+     * Verify this account.
+     *
+     * @param member The member to verify.
+     * @return Result of the verification. Use {@link Result#isError()} to check for errors.
+     */
     fun verifyAccount(member: Member): Result {
         val account = getStoredAccount()
         account.discordId = member.id
@@ -90,6 +132,12 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return Result.success("account.verify_success".translate())
     }
 
+    /**
+     * Unverify this account.
+     *
+     * @param member The member to unverify.
+     * @return Result of the unverification. Use {@link Result#isError()} to check for errors.
+     */
     fun unverifyAccount(member: Member, guild: Guild): Result {
         val account = getStoredAccount()
         val oldAccount = this
@@ -115,6 +163,11 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return Result.success("account.unverify_success".translate())
     }
 
+    /**
+     * Check if this account can log in passing all Access Control checks.
+     *
+     * @return Result of the check. Use {@link Result#isError()} to check for errors.
+     */
     fun canLogin(): Result {
         if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification)
             return Result.success("")
@@ -179,6 +232,11 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return Result.success("")
     }
 
+    /**
+     * Check if this account passes all Access Control checks.
+     *
+     * @return Result of the check. Use {@link Result#isError()} to check for errors.
+     */
     fun checkAccessControl(): Result {
         if (!SDLinkConfig.INSTANCE.accessControl.enabled && !SDLinkConfig.INSTANCE.accessControl.optionalVerification)
             return Result.success("")
@@ -198,7 +256,7 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
 
             val member = SDLCache.findMemberByDiscordID(account.discordId!!) ?: return Result.success("pass")
 
-            Debugger.INSTANCE.log("${member.effectiveName} has roles: ${member.getAllRoles().stream().map { obj: Role -> obj.name }.toList()}")
+            Debugger.log("${member.effectiveName} has roles: ${member.getAllRoles().stream().map { obj: Role -> obj.name }.toList()}")
 
             for (role in member.getAllRoles()) {
                 if (SDLCache.getDeniedRoles().stream().anyMatch { it.idLong == role.idLong }) {
@@ -218,6 +276,9 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
         return Result.success("pass")
     }
 
+    /**
+     * Ban this account from the Discord server.
+     */
     fun banDiscordMember() {
         val account = getStoredAccount()
         if (account.discordId.isNullOrEmpty()) return
@@ -225,16 +286,35 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
     }
 
     companion object {
+
+        /**
+         * Create a new MinecraftAccount from an SDLinkAccount.
+         *
+         * @param account The SDLinkAccount to convert.
+         * @return The MinecraftAccount representation of the account.
+         */
         @JvmStatic
         fun of(account: SDLinkAccount): MinecraftAccount {
             return MinecraftAccount(account.username, UUID.fromString(account.uuid))
         }
 
+        /**
+         * Create a new MinecraftAccount from a CraterGameProfile.
+         *
+         * @param profile The CraterGameProfile to convert.
+         * @return The MinecraftAccount representation of the profile.
+         */
         @JvmStatic
         fun of(profile: CraterGameProfile): MinecraftAccount {
             return MinecraftAccount(profile.name, profile.id)
         }
 
+        /**
+         * Get a MinecraftAccount from a Discord ID.
+         *
+         * @param discordId The Discord ID to search for.
+         * @return The MinecraftAccount if found, null otherwise.
+         */
         @JvmStatic
         fun fromDiscordId(discordId: String): MinecraftAccount? {
             val account: SDLinkAccount? = DatabaseManager.INSTANCE

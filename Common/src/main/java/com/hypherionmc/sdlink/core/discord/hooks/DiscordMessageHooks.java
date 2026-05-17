@@ -4,27 +4,24 @@
  */
 package com.hypherionmc.sdlink.core.discord.hooks;
 
-import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.MessageDestination;
-import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
-import com.hypherionmc.sdlink.util.Debugger;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.PKUtil;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
+import com.hypherionmc.sdlinkrw.util.Debugger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -53,7 +50,7 @@ public final class DiscordMessageHooks {
             if (!SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID.contains(event.getChannel().getId())) return;
 
             if (SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT).isEmpty()) {
-                BotController.INSTANCE.getLogger().warn("There are no chat channels set up! Cannot relay messages.");
+                SDLinkConstants.LOGGER.warn("There are no chat channels set up! Cannot relay messages.");
                 return;
             }
 
@@ -96,9 +93,9 @@ public final class DiscordMessageHooks {
                 });
             }
 
-            SDLinkPlatform.minecraftHelper.discordMessageReceived(MessageContext.of(member, event.getMessage()));
+            SDLinkMinecraftBridge.INSTANCE.discordMessageReceived(MessageContext.of(member, event.getMessage()));
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to process discord message", e);
+            SDLinkConstants.LOGGER.error("Failed to process discord message", e);
         }
     }
 

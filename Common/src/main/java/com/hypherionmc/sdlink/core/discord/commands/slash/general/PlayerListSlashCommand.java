@@ -7,9 +7,10 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.MessageUtil;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jagrosh.jdautilities.menu.ButtonEmbedPaginator;
@@ -40,7 +41,7 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
         event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
         try {
-            List<MinecraftAccount> players = SDLinkPlatform.minecraftHelper.getOnlinePlayers();
+            List<MinecraftAccount> players = SDLinkMinecraftBridge.INSTANCE.getOnlinePlayers();
 
             EmbedBuilder builder = new EmbedBuilder();
             List<MessageEmbed> pages = new ArrayList<>();
@@ -65,7 +66,7 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
                 builder.clear();
                 builder.setTitle(SDText.translate("command.playerlist.title_page", count.get(),(int) Math.ceil(((float) players.size() / 10))).toString());
                 builder.setColor(Color.GREEN);
-                builder.setFooter(SDText.translate("command.playerlist.footer", SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft(), SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()).toString());
+                builder.setFooter(SDText.translate("command.playerlist.footer", SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getLeft(), SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getRight()).toString());
 
                 p.forEach(account -> {
                     sb.append("`").append(account.getUsername()).append("`");
@@ -86,7 +87,7 @@ public final class PlayerListSlashCommand extends SDLinkSlashCommand {
             event.getHook().sendMessageEmbeds(pages.get(0)).setEphemeral(false).queue(success -> embedPaginator.paginate(success, 1));
         } catch (Exception e) {
             event.getHook().sendMessage(SDText.translate("error.command_failed").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
-            BotController.INSTANCE.getLogger().error("Failed to run player list command", e);
+            SDLinkConstants.LOGGER.error("Failed to run player list command", e);
         }
     }
 }

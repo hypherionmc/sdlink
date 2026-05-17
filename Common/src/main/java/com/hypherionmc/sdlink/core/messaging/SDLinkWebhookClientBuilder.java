@@ -10,6 +10,7 @@ import club.minnced.discord.webhook.WebhookClientBuilder;
  * @author HypherionSA
  * Wrapped {@link WebhookClientBuilder} for our webhooks
  */
+@Deprecated(forRemoval = true)
 public final class SDLinkWebhookClientBuilder extends WebhookClientBuilder {
 
     public SDLinkWebhookClientBuilder(String name, String url) {

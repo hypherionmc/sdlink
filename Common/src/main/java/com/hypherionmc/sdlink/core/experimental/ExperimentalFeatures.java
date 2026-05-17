@@ -1,6 +1,7 @@
 package com.hypherionmc.sdlink.core.experimental;
 
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +28,7 @@ public final class ExperimentalFeatures {
 
             RELAY_SERVER = Boolean.parseBoolean(props.getProperty("RELAY_SERVER", "false"));
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to load Experimental Features", e);
+            SDLinkConstants.LOGGER.error("Failed to load Experimental Features", e);
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package com.hypherionmc.sdlink.util;
 
+@Deprecated(forRemoval = true)
 public final class SDLinkUtils {
 
     public static boolean isNullOrEmpty(String inString) {

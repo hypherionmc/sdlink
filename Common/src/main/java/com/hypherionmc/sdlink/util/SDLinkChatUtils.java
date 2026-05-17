@@ -8,6 +8,7 @@ import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -118,7 +119,7 @@ public final class SDLinkChatUtils {
                         Matcher matcher = pattern.matcher(input);
                         isMatch = matcher.find();
                     } catch (Exception e) {
-                        BotController.INSTANCE.getLogger().error("Invalid regex pattern: {}", i.search);
+                        SDLinkConstants.LOGGER.error("Invalid regex pattern: {}", i.search);
                     }
                     break;
             }

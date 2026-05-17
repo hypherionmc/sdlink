@@ -1,6 +1,6 @@
 package com.hypherionmc.sdlink.loaders.dummy;
 
-import com.hypherionmc.sdlink.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 

@@ -1,14 +1,14 @@
 package com.hypherionmc.sdlinkrw.modules.cache.discord
 
-import club.minnced.discord.webhook.WebhookClient
 import com.hypherionmc.sdlink.api.messaging.MessageDestination
 import com.hypherionmc.sdlink.core.config.SDLinkConfig
 import com.hypherionmc.sdlink.core.discord.BotController
 import com.hypherionmc.sdlink.core.managers.DatabaseManager
-import com.hypherionmc.sdlink.util.Debugger
+import com.hypherionmc.sdlinkrw.SDLinkConstants
 import com.hypherionmc.sdlinkrw.modules.database.SDLWebhooks
-import com.hypherionmc.sdlinkrw.modules.kotlin.decrypt
-import com.hypherionmc.sdlinkrw.modules.kotlin.encrypt
+import com.hypherionmc.sdlinkrw.modules.kotlin.java_ext.decrypt
+import com.hypherionmc.sdlinkrw.modules.kotlin.java_ext.encrypt
+import com.hypherionmc.sdlinkrw.util.Debugger
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
@@ -19,21 +19,20 @@ import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChanne
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.internal.entities.WebhookImpl
 import java.util.*
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
-import kotlin.jvm.Throws
 
 /**
  * @author HypherionSA
+ *
  * Per Server cache for Discord
  */
 class DiscordServer(val guild: Guild, val jda: JDA) {
 
     //region Cache
     val channelMap: MutableMap<MessageDestination, List<GuildMessageChannel>> = mutableMapOf()
-    val webhookMap: MutableMap<MessageDestination, WebhookClient> = mutableMapOf()
+    val webhookCache: MutableMap<Long, Webhook> = mutableMapOf()
 
     val guildChannels: MutableSet<GuildChannel> = mutableSetOf()
     val guildRoles: MutableSet<Role> = mutableSetOf()
@@ -64,8 +63,6 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
     )
     //endregion
 
-    val webhookCache: MutableMap<Long, Webhook> = mutableMapOf()
-
     /**
      * Initialize the entire cache for this server.
      */
@@ -76,17 +73,23 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
         loadEmojiCache()
     }
 
+    /**
+     * Retrieve a webhook for a channel. This will either be cached or created.
+     *
+     * @param chan The channel to retrieve the webhook for
+     * @return The webhook for the channel
+     */
     @Throws(Exception::class)
     fun getWebhook(chan: GuildMessageChannel): Webhook {
-        Debugger.INSTANCE.log("Getting webhook for $chan from cache")
+        Debugger.log("Getting webhook for $chan from cache")
         return webhookCache.computeIfAbsent(chan.idLong) {
-            Debugger.INSTANCE.log("Creating webhook for $chan")
-            Debugger.INSTANCE.log("ChannelType Matches: ${chan is StandardGuildMessageChannel}")
+            Debugger.log("Creating webhook for $chan")
+            Debugger.log("ChannelType Matches: ${chan is StandardGuildMessageChannel}")
             val wh = (chan as StandardGuildMessageChannel)
                 .createWebhook("SDL")
                 .complete()
 
-            Debugger.INSTANCE.log("Created webhook for $chan")
+            Debugger.log("Created webhook for $chan")
             val whCache = SDLWebhooks(
                 UUID.randomUUID(),
                 wh.id,
@@ -107,7 +110,7 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
         guildChannels.clear()
         guildChannels.addAll(guild.getChannels(false).filter { it.type != ChannelType.CATEGORY }.toList())
 
-        Debugger.INSTANCE.log("Loaded ${guildChannels.size} channels for ${guild.name}")
+        Debugger.log("Loaded ${guildChannels.size} channels for ${guild.name}")
 
         DatabaseManager.INSTANCE.findAll(SDLWebhooks::class.java).filter { it.guildId == guild.id }.forEach { wh ->
             val channel = guildChannels.firstOrNull { it.id == wh.channelId } ?: return@forEach
@@ -145,6 +148,7 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
 
     /**
      * Update the verified roles for a member during verification.
+     *
      * @param member The member to update
      * @param added Whether the roles should be added or removed
      */
@@ -161,13 +165,14 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
                     guild.removeRoleFromMember(member, role).queue()
                 }
             } catch (e: Exception) {
-                BotController.INSTANCE.logger.error("Failed to update verified roles for ${member.effectiveName} in ${guild.name}", e.message)
+                SDLinkConstants.LOGGER.error("Failed to update verified roles for ${member.effectiveName} in ${guild.name}", e.message)
             }
         }
     }
 
     /**
      * Update the nickname for a member during verification.
+     *
      * @param member The member to update
      * @param accountName The account name to set the nickname to
      * @param added Whether the nickname should be added or removed
@@ -183,12 +188,13 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
                 guild.modifyNickname(member, null).queue()
             }
         } catch (e: Exception) {
-            BotController.INSTANCE.logger.error("Failed to update nickname for ${member.effectiveName} in ${guild.name}", e.message)
+            SDLinkConstants.LOGGER.error("Failed to update nickname for ${member.effectiveName} in ${guild.name}", e.message)
         }
     }
 
     /**
      * Ban a member from the server when a ban occurs in Minecraft.
+     *
      * @param userid The user ID of the member to ban
      */
     fun banMember(userid: String) {
@@ -198,14 +204,20 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
         try {
             guild.ban(UserSnowflake.fromId(userid), 7, TimeUnit.DAYS).reason("Banned on Minecraft Server").queue()
         } catch (e: Exception) {
-            BotController.INSTANCE.logger.error("Failed to ban member in ${guild.name}", e.message)
+            SDLinkConstants.LOGGER.error("Failed to ban member in ${guild.name}", e.message)
         }
     }
 
     //region Permission Checker
 
+    /**
+     * Check the bot setup for errors and missing permission.
+     *
+     * @param builder The StringBuilder to append errors to
+     * @param errCount The AtomicInteger to increment the error count by
+     */
     fun checkBotSetup(builder: StringBuilder, errCount: AtomicInteger) {
-        Debugger.INSTANCE.log("Checking bot setup for ${guild.name}")
+        Debugger.log("Checking bot setup for ${guild.name}")
         if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan)
             botPerms.add(Permission.BAN_MEMBERS)
 
@@ -241,12 +253,12 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
 
         if (eventChannels.isEmpty() && !chatChannels.isEmpty()) {
             channelMap[MessageDestination.EVENT] = chatChannels
-            BotController.INSTANCE.logger.warn("No Events Channels set for ${guild.name}. Defaulting to Chat Channels")
+            SDLinkConstants.LOGGER.warn("No Events Channels set for ${guild.name}. Defaulting to Chat Channels")
         }
 
         if (consoleChannel.isEmpty() && !chatChannels.isEmpty()) {
             channelMap[MessageDestination.CONSOLE] = chatChannels
-            BotController.INSTANCE.logger.warn("No Console Channels set for ${guild.name}. Defaulting to Chat Channels")
+            SDLinkConstants.LOGGER.warn("No Console Channels set for ${guild.name}. Defaulting to Chat Channels")
         }
 
         if (eventChannels.isEmpty() && consoleChannel.isEmpty() && chatChannels.isEmpty()) {
@@ -255,6 +267,12 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
         }
     }
 
+    /**
+     * Fetch channels from the cache by ID
+     *
+     * @param filter The list of channel IDs to fetch
+     * @return The list of channels that were fetched
+     */
     private fun fetchChannels(filter: List<String>): List<StandardGuildMessageChannel> {
         return guildChannels
             .filter { it.id in filter && it.type == ChannelType.TEXT }
@@ -262,6 +280,13 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
             .toList()
     }
 
+    /**
+     * Check the permissions of the bot in the current server
+     *
+     * @param errCount The AtomicInteger to increment the error count by
+     * @param builder The StringBuilder to append errors to
+     * @param permissions The permissions of the bot in the channel
+     */
     private fun checkBotPerms(errCount: AtomicInteger, builder: StringBuilder, permissions: EnumSet<Permission>) {
         botPerms.forEach(Consumer { perm: Permission ->
             if (!permissions.contains(perm)) {
@@ -271,6 +296,16 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
         })
     }
 
+    /**
+     * Check the permissions of a channel
+     *
+     * @param channelID The ID of the channel to check
+     * @param channelName The name of the channel to display in the error message
+     * @param errCount The AtomicInteger to increment the error count by
+     * @param builder The StringBuilder to append errors to
+     * @param bot The bot member to check the permissions of
+     * @param isChatChannel Whether the channel is a chat channel or not
+     */
     private fun checkChannelPerms(channelID: String, channelName: String, errCount: AtomicInteger, builder: StringBuilder, bot: Member, isChatChannel: Boolean) {
         if (channelID == "" || channelID == "0") return
         val channel = guild.getChannelById(GuildMessageChannel::class.java, channelID) ?: return

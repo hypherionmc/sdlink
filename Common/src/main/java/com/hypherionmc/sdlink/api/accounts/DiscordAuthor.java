@@ -6,7 +6,7 @@ package com.hypherionmc.sdlink.api.accounts;
 
 import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,7 +72,7 @@ public final class DiscordAuthor {
     public static DiscordAuthor of(String displayName, String uuid, String username) {
         return new DiscordAuthor(
                 displayName,
-                SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkPlatform.minecraftHelper.isOnlineMode() ? uuid : username),
+                SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkMinecraftBridge.INSTANCE.isOnlineMode() ? uuid : username),
                 username,
                 false,
                 uuid
@@ -100,7 +100,7 @@ public final class DiscordAuthor {
     }
 
     public DiscordAuthor setPlayerAvatar(String usr, String userid) {
-        realPlayerAvatar = SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkPlatform.minecraftHelper.isOnlineMode() ? userid : usr);
+        realPlayerAvatar = SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkMinecraftBridge.INSTANCE.isOnlineMode() ? userid : usr);
         return this;
     }
 

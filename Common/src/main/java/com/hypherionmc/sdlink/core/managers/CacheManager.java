@@ -11,6 +11,7 @@ import lombok.Getter;
 
 import java.util.HashMap;
 
+@Deprecated(forRemoval = true)
 public final class CacheManager {
 
     @Getter

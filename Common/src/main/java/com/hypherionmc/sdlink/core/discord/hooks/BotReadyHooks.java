@@ -11,8 +11,9 @@ import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.BotConfigSettings;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.SystemUtils;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -54,13 +55,13 @@ public final class BotReadyHooks {
                                 return;
 
                             Activity act = Activity.of(newStatus.botStatusType, newStatus.botStatus
-                                    .replace("%players%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft()))
-                                    .replace("%maxplayers%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight())));
+                                    .replace("%players%", String.valueOf(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getLeft()))
+                                    .replace("%maxplayers%", String.valueOf(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getRight())));
 
                             if (newStatus.botStatusType == Activity.ActivityType.STREAMING) {
                                 act = Activity.of(newStatus.botStatusType, newStatus.botStatus
-                                                .replace("%players%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft()))
-                                                .replace("%maxplayers%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight())),
+                                                .replace("%players%", String.valueOf(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getLeft()))
+                                                .replace("%maxplayers%", String.valueOf(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getRight())),
                                         newStatus.botStatusStreamingURL);
                             }
 
@@ -70,7 +71,7 @@ public final class BotReadyHooks {
                     }
                 } catch (Exception e) {
                     if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                        BotController.INSTANCE.getLogger().info(e.getMessage());
+                        SDLinkConstants.LOGGER.info(e.getMessage());
                     }
                 }
 
@@ -104,9 +105,9 @@ public final class BotReadyHooks {
                                 mc.getManager().setTopic(MModeCompat.getMotd()).queue();
                             } else {
                                 String topic = SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic
-                                        .replace("%players%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getLeft()))
-                                        .replace("%maxplayers%", String.valueOf(SDLinkPlatform.minecraftHelper.getPlayerCounts().getRight()))
-                                        .replace("%uptime%", SystemUtils.secondsToTimestamp(SDLinkPlatform.minecraftHelper.getServerUptime()));
+                                        .replace("%players%", String.valueOf(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getLeft()))
+                                        .replace("%maxplayers%", String.valueOf(SDLinkMinecraftBridge.INSTANCE.getPlayerCounts().getRight()))
+                                        .replace("%uptime%", SystemUtils.secondsToTimestamp(SDLinkMinecraftBridge.INSTANCE.getServerUptime()));
                                 mc.getManager().setTopic(topic).queue();
                             }
                         }
@@ -114,7 +115,7 @@ public final class BotReadyHooks {
                 }
             } catch (Exception e) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    BotController.INSTANCE.getLogger().info(e.getMessage());
+                    SDLinkConstants.LOGGER.info(e.getMessage());
                 }
             }
         }, Math.max(6, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), Math.max(6, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), TimeUnit.MINUTES);

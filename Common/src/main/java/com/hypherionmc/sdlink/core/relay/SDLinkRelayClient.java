@@ -12,8 +12,9 @@ import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.server.ServerEvents;
-import com.hypherionmc.sdlink.util.EncryptionUtil;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.util.EncryptionUtil;
 import com.neovisionaries.ws.client.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -65,7 +66,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
         String identifier = EncryptionUtil.INSTANCE.decrypt(SDLinkRelayConfig.INSTANCE.relayServer.relayToken);
 
         if (identifier == null || identifier.isEmpty()) {
-            BotController.INSTANCE.getLogger().error("Relay Server Token cannot be empty!");
+            SDLinkConstants.LOGGER.error("Relay Server Token cannot be empty!");
             return;
         }
 
@@ -81,7 +82,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
             webSocket.addListener(this);
             webSocket.connectAsynchronously();
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to open connection to Relay Server", e);
+            SDLinkConstants.LOGGER.error("Failed to open connection to Relay Server", e);
             scheduleReconnect();
         }
     }
@@ -99,7 +100,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
             String json = encryption.encrypt(GSON.toJson(message));
             webSocket.sendText(json);
         } catch (Exception e) {
-            BotController.INSTANCE.getLogger().error("Failed to send relay message", e);
+            SDLinkConstants.LOGGER.error("Failed to send relay message", e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.hypherionmc.sdlink.util;
 
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -56,7 +57,7 @@ public class PKUtil {
 
             return json.getString("sender");
         } catch (IOException | InterruptedException e) {
-            BotController.INSTANCE.getLogger().error("An error occurred while checking message in PluralKit api", e);
+            SDLinkConstants.LOGGER.error("An error occurred while checking message in PluralKit api", e);
             return null;
         }
     }

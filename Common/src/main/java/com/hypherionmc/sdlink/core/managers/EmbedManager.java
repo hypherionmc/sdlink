@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -37,7 +38,7 @@ public final class EmbedManager {
                     String json = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                     embeds.put(file.getName().replace(".json", ""), json);
                 } catch (Exception e) {
-                    BotController.INSTANCE.getLogger().error("Failed to load custom embed {}", file.getName(), e);
+                    SDLinkConstants.LOGGER.error("Failed to load custom embed {}", file.getName(), e);
                 }
             }
         }

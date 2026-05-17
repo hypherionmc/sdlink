@@ -7,14 +7,14 @@ import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.HoverEvent;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.NamedTextColor;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.TextColor;
-import com.hypherionmc.sdlink.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
-import com.hypherionmc.sdlink.util.translations.SDText;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
@@ -91,7 +91,7 @@ public final class MessageContext {
                 formattedReply = EmojiManager.replaceAllEmojis(formattedReply, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
             } catch (Exception e) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    BotController.INSTANCE.getLogger().error("Failed to process reply formatting: {}", e.getMessage());
+                    SDLinkConstants.LOGGER.error("Failed to process reply formatting: {}", e.getMessage());
                 }
             }
         }

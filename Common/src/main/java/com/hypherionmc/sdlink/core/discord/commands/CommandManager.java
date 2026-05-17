@@ -5,7 +5,6 @@
 package com.hypherionmc.sdlink.core.discord.commands;
 
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
-import com.hypherionmc.sdlink.api.events.SlashCommandRegistrationEvent;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.HelpSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.PlayerListSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.ServerStatusSlashCommand;
@@ -15,6 +14,7 @@ import com.hypherionmc.sdlink.core.discord.commands.slash.hide.UnhidePlayerComma
 import com.hypherionmc.sdlink.core.discord.commands.slash.setup.ReloadCacheCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.setup.SetChannelCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.verification.*;
+import com.hypherionmc.sdlinkrw.api.events.SlashCommandRegistrationEvent;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import lombok.Getter;
@@ -76,8 +76,8 @@ public final class CommandManager {
     public void register(CommandClient client) {
         SlashCommandRegistrationEvent event = new SlashCommandRegistrationEvent();
         CraterEventBus.INSTANCE.postEvent(event);
-        commands.addAll(event.getCommands());
 
+        commands.addAll(event.getCommands());
         commands.forEach(client::addSlashCommand);
     }
 

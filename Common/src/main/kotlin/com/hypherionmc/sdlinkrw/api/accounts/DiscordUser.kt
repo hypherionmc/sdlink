@@ -1,5 +1,11 @@
 package com.hypherionmc.sdlinkrw.api.accounts
 
+/**
+ * @author HypherionSA
+ *
+ * Represents a Discord user for universal use.
+ * This allows both {@link Member} and {@link User} to be used interchangeably.
+ */
 data class DiscordUser(
     var effectiveName: String,
     var avatarUrl: String,

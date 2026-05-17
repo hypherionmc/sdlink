@@ -11,18 +11,16 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.ObjectConverter
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
-import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.impl.*;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
-import com.hypherionmc.sdlink.util.EncryptionUtil;
-import com.hypherionmc.sdlink.util.translations.TranslationManager;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.modules.translations.TranslationManager;
+import com.hypherionmc.sdlinkrw.util.EncryptionUtil;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 
 import static com.hypherionmc.sdlink.core.managers.CacheManager.reloadChannelConfigCache;
 
@@ -120,7 +118,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
         try {
             FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", config.getInt("general.configVersion") < 40 ? ".legacy" : ".old")));
         } catch (IOException e) {
-            BotController.INSTANCE.getLogger().warn("Failed to create config backup.", e);
+            SDLinkConstants.LOGGER.warn("Failed to create config backup.", e);
         }
 
         newConfig.save();

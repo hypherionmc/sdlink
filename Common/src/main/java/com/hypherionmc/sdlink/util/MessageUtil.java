@@ -16,6 +16,7 @@ import java.util.stream.Stream;
  * @author HypherionSA
  * Util classes to help manage certain discord message actions
  */
+@Deprecated
 public final class MessageUtil {
 
     /**

@@ -4,7 +4,7 @@ import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.server.ServerEvents;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 
 public final class ReloadBotCommand {
 

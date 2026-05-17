@@ -11,6 +11,7 @@ import com.hypherionmc.sdlink.core.config.impl.RelayMessageConfig;
 import com.hypherionmc.sdlink.core.config.impl.RelayServerConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public final class SDLinkRelayConfig extends AbstractConfig<SDLinkRelayConfig> {
         try {
             FileUtils.copyFile(getConfigPath(), new File(getConfigPath().getAbsolutePath().replace(".toml", ".old")));
         } catch (IOException e) {
-            BotController.INSTANCE.getLogger().warn("Failed to create config backup.", e);
+            SDLinkConstants.LOGGER.warn("Failed to create config backup.", e);
         }
 
         newConfig.save();

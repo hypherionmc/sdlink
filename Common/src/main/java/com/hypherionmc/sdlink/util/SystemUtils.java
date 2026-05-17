@@ -7,6 +7,7 @@ package com.hypherionmc.sdlink.util;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
+@Deprecated(forRemoval = true)
 public final class SystemUtils {
 
     /**
@@ -51,14 +52,5 @@ public final class SystemUtils {
         }
 
         return timeString;
-    }
-
-    public static boolean isLong(String input) {
-        try {
-            Long.parseLong(input);
-            return true;
-        } catch (NumberFormatException ignored) {
-        }
-        return false;
     }
 }

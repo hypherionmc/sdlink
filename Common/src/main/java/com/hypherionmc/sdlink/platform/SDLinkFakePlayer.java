@@ -5,7 +5,7 @@ import com.hypherionmc.craterlib.api.game.server.CraterGameServer;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.util.translations.SDText;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;

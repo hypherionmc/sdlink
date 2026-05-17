@@ -7,17 +7,20 @@ import com.hypherionmc.craterlib.api.game.text.Text
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.ClickEvent
 import com.hypherionmc.sdlink.core.config.SDLinkConfig
 import com.hypherionmc.sdlink.core.discord.BotController
-import com.hypherionmc.sdlink.util.EncryptionUtil
+import com.hypherionmc.sdlinkrw.SDLinkConstants
 import com.hypherionmc.sdlinkrw.modules.editor.responses.SocketResponse
+import com.hypherionmc.sdlinkrw.modules.kotlin.java_ext.saltString
+import com.hypherionmc.sdlinkrw.util.EncryptionUtil
 import com.neovisionaries.ws.client.*
 import org.apache.commons.io.FileUtils
 import java.nio.charset.StandardCharsets
 
+// TODO: Javadoc when final editor is in
 class ConfigEditorClient {
     private var webSocket: WebSocket? = null
 
     fun openConnection(sourceStack: CraterCommandSourceStack) {
-        val identifier = EncryptionUtil.getSaltString()
+        val identifier = String.saltString()
 
         try {
             closeServer()
@@ -26,7 +29,7 @@ class ConfigEditorClient {
             webSocket!!.addListener(ConfigEditorWSEvents(identifier, sourceStack))
             webSocket!!.connect()
         } catch (e: Exception) {
-            BotController.INSTANCE.logger.error("Failed to open connection to Config Editor", e)
+            SDLinkConstants.LOGGER.error("Failed to open connection to Config Editor", e)
         }
     }
 
@@ -45,7 +48,7 @@ class ConfigEditorClient {
         private val GSON: Gson = GsonBuilder().serializeNulls().create()
 
         override fun onConnected(webSocket: WebSocket?, map: MutableMap<String?, MutableList<String?>?>?) {
-            BotController.INSTANCE.logger.info("Editor Websocket connected")
+            SDLinkConstants.LOGGER.info("Editor Websocket connected")
         }
 
         @Throws(java.lang.Exception::class)
@@ -59,7 +62,7 @@ class ConfigEditorClient {
                         .clickEvent(ClickEvent.openUrl(String.format("https://editor.firstdark.dev/%s", identifier)))
                 )
 
-                BotController.INSTANCE.logger.info("Editor Connection Ready. Visit https://editor.firstdark.dev/{} to get started", identifier)
+                SDLinkConstants.LOGGER.info("Editor Connection Ready. Visit https://editor.firstdark.dev/{} to get started", identifier)
             }
 
             if (response.socketCode.equals("WS_GET_CONFIG", ignoreCase = true)) {
@@ -69,7 +72,7 @@ class ConfigEditorClient {
             }
 
             if (response.socketCode.equals("WS_SAVE_CONFIG", ignoreCase = true)) {
-                BotController.INSTANCE.logger.info("Got Config update from editor")
+                SDLinkConstants.LOGGER.info("Got Config update from editor")
 
                 val ec = EncryptionUtil(identifier)
                 val config = ec.decrypt(response.message)
@@ -79,11 +82,11 @@ class ConfigEditorClient {
         }
 
         override fun onConnectError(webSocket: WebSocket?, e: WebSocketException?) {
-            BotController.INSTANCE.logger.error("Failed to connect to editor web socket", e)
+            SDLinkConstants.LOGGER.error("Failed to connect to editor web socket", e)
         }
 
         override fun onDisconnected(webSocket: WebSocket, webSocketFrame: WebSocketFrame, webSocketFrame1: WebSocketFrame, b: Boolean) {
-            BotController.INSTANCE.logger.warn(
+            SDLinkConstants.LOGGER.warn(
                 "Disconnected from Editor Websocket with code {}: {}",
                 webSocketFrame.closeCode,
                 webSocketFrame.closeReason
@@ -91,7 +94,7 @@ class ConfigEditorClient {
         }
 
         override fun onCloseFrame(webSocket: WebSocket?, webSocketFrame: WebSocketFrame) {
-            BotController.INSTANCE.logger.warn(
+            SDLinkConstants.LOGGER.warn(
                 "Connection from Editor Terminated with code {}: {}",
                 webSocketFrame.closeCode,
                 webSocketFrame.closeReason

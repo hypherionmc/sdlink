@@ -12,6 +12,5 @@ data class SDLinkAccount(
     var verifyCode: String?,
     var isOffline: Boolean
 ) {
-
     val effectiveInGameName: String = inGameName.ifBlank { username }
 }

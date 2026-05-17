@@ -10,6 +10,7 @@ import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -122,7 +123,7 @@ public final class LogReader extends AbstractAppender {
                         Thread.sleep(30);
                     } catch (InterruptedException e) {
                         if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                            BotController.INSTANCE.getLogger().error("Failed to send console message: {}", e.getMessage());
+                            SDLinkConstants.LOGGER.error("Failed to send console message: {}", e.getMessage());
                         }
                     }
                 }
