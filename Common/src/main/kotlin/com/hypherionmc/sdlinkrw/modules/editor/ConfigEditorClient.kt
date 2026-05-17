@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.hypherionmc.craterlib.api.game.commands.CraterCommandSourceStack
 import com.hypherionmc.craterlib.api.game.text.Text
+import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.ClickEvent
 import com.hypherionmc.sdlink.core.config.SDLinkConfig
 import com.hypherionmc.sdlink.core.discord.BotController
 import com.hypherionmc.sdlink.util.EncryptionUtil
 import com.hypherionmc.sdlinkrw.modules.editor.responses.SocketResponse
 import com.neovisionaries.ws.client.*
-import net.kyori.adventure.text.event.ClickEvent
 import org.apache.commons.io.FileUtils
 import java.nio.charset.StandardCharsets
 
