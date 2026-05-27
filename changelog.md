@@ -5,12 +5,6 @@
 
 *Requires CraterLib 3.1.2 or newer*
 
-**Changes**:
-
-- Added config flag to disable filtering IPs in console relay
-- Adapt for CraterLib Adventure Revert
-
 **Bug Fixes**:
 
-- Fixed accounts being unverified not triggering role removal events
-- Fixed unverify command not unverifying all accounts associated with the user
+- Fixed LuckPerms/FTB sync throwing NPE and not assigning roles

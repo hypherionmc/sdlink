@@ -12,6 +12,7 @@ import com.hypherionmc.sdlink.core.discord.BotController;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -73,7 +74,7 @@ public final class RoleSync {
         }
     }
 
-    public void roleRemovedFromMember(Member member, Role role, Guild guild, List<MinecraftAccount> oldAccount) {
+    public void roleRemovedFromMember(Member member, Role role, Guild guild, @NotNull List<MinecraftAccount> oldAccount) {
         if (CraterLoader.isModLoaded("ftbranks")) {
             FTBRankSync.INSTANCE.discordRoleRemovedFromMember(member, role, guild, oldAccount);
         }

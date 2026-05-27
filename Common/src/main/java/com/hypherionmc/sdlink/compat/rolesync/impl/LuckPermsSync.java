@@ -15,8 +15,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.jspecify.annotations.NonNull;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -153,7 +153,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
     }
 
     @Override
-    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, List<MinecraftAccount> oldAccount) {
+    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, @NonNull List<MinecraftAccount> oldAccount) {
         if (oldAccount.isEmpty()) {
             oldAccount.add(MinecraftAccount.fromDiscordId(member.getId()));
         }
@@ -172,7 +172,7 @@ public final class LuckPermsSync extends AbstractRoleSyncer {
                 if (LuckPermsCompat.getInstance().hasGroup(account.getUuid(), sync.rank)) {
                     ignoreEvent = true;
                     LuckPermsCompat.getInstance().removeGroupFromUser(account.getUuid(), sync.rank);
-                    if (oldAccount != null) {
+                    if (!oldAccount.isEmpty()) {
                         try {
                             guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
                         } catch (Exception ignored) {}

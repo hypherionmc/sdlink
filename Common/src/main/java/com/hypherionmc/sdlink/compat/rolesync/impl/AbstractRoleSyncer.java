@@ -5,8 +5,10 @@ import com.hypherionmc.sdlink.api.accounts.MinecraftAccount;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -25,20 +27,16 @@ public abstract class AbstractRoleSyncer {
         if (ignoreEvent || !isSyncActive.get())
             return;
 
-        discordRoleChanged(member, guild, role, true);
+        discordRoleChanged(member, guild, role, true, Collections.emptyList());
     }
 
-    public void discordRoleRemovedFromMember(Member member, Role role, Guild guild, List<MinecraftAccount> oldAccount) {
+    public void discordRoleRemovedFromMember(Member member, Role role, Guild guild, @NotNull List<MinecraftAccount> oldAccount) {
         if (ignoreEvent || !isSyncActive.get())
             return;
 
         discordRoleChanged(member, guild, role, false, oldAccount);
     }
 
-    void discordRoleChanged(Member member, Guild guild, Role role, boolean added) {
-        this.discordRoleChanged(member, guild, role, added, null);
-    }
-
-    abstract void discordRoleChanged(Member member, Guild guild, Role role, boolean added, List<MinecraftAccount> oldAccount);
+    abstract void discordRoleChanged(Member member, Guild guild, Role role, boolean added, @NotNull List<MinecraftAccount> oldAccount);
 
 }

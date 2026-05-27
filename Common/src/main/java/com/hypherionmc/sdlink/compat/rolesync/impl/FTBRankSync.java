@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -150,7 +151,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
     }
 
     @Override
-    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, List<MinecraftAccount> oldAccount) {
+    void discordRoleChanged(Member member, Guild guild, Role role, boolean add, @NotNull List<MinecraftAccount> oldAccount) {
         if (oldAccount.isEmpty()) {
             oldAccount.add(MinecraftAccount.fromDiscordId(member.getId()));
         }
@@ -169,7 +170,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
                 if (FTBRanks.getInstance().hasRank(account.toGameProfile(), sync.rank)) {
                     ignoreEvent = true;
                     FTBRanks.getInstance().removeRank(account.toGameProfile(), sync.rank);
-                    if (oldAccount != null) {
+                    if (!oldAccount.isEmpty()) {
                         try {
                             guild.removeRoleFromMember(UserSnowflake.fromId(member.getId()), role).queue();
                         } catch (Exception ignored) {}
