@@ -99,8 +99,10 @@ public final class PlayerRolesSync extends AbstractRoleSyncer {
 
     @Override
     void discordRoleChanged(Member member, Guild guild, Role role, boolean add, @NonNull List<MinecraftAccount> oldAccount) {
-        if (oldAccount.isEmpty()) {
-            oldAccount.add(MinecraftAccount.fromDiscordId(member.getId()));
+        MinecraftAccount fallbackAccount = MinecraftAccount.fromDiscordId(member.getId());
+
+        if (oldAccount.isEmpty() && fallbackAccount != null) {
+            oldAccount.add(fallbackAccount);
         }
 
         RoleSyncCompat.Sync sync = SDLinkCompatConfig.INSTANCE.playerroles.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst().orElse(null);
