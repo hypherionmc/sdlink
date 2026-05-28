@@ -248,6 +248,7 @@ public final class ServerEvents {
         String uuid = null;
         Text user = Text.literal(SDText.translate("error.unknown").toString());
         CraterGameProfile profile = null;
+
         try {
             player = event.getPlayer();
             uuid = SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(player);
@@ -255,13 +256,12 @@ public final class ServerEvents {
                 user = player.getDisplayName();
                 profile = player.getGameProfile();
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         if (player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player))
             return;
 
-        String command = cmd.startsWith("/") ? cmd.replaceFirst("/", "") : cmd;
+        String command = Text.strip(cmd, "/");
         String cmdName = command.split(" ")[0];
         String username = user.asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
@@ -271,6 +271,15 @@ public final class ServerEvents {
 
         if (username.equalsIgnoreCase("sdlinktriggersystem") || username.equalsIgnoreCase(""))
             return;
+
+        DiscordAuthor author = DiscordAuthor.of(
+                username,
+                uuid == null ? "" : uuid,
+                profile != null ? profile.getName() : (player != null ? player.getName().asString() : "server")
+        );
+
+        if (profile != null)
+            author.setGameProfile(profile);
 
         if ((cmdName.equalsIgnoreCase("say") || cmdName.equalsIgnoreCase("me")) && SDLinkConfig.INSTANCE.chatConfig.sendSayCommand) {
             String msg = command;
@@ -285,15 +294,6 @@ public final class ServerEvents {
 
             msg = Text.literal(msg).asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-            DiscordAuthor author = DiscordAuthor.of(
-                    username,
-                    uuid == null ? "" : uuid,
-                    profile != null ? profile.getName() : (player != null ? player.getName().asString() : "server")
-            );
-
-            if (profile != null)
-                author.setGameProfile(profile);
-
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(author)
                     .message(msg)
@@ -302,7 +302,6 @@ public final class ServerEvents {
             discordMessage.sendMessage();
 
             if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
-
                 RelayMessage newRelay = RelayMessage.of(
                         RelayMessage.MessageType.CHAT,
                         SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
@@ -326,15 +325,6 @@ public final class ServerEvents {
             if (!target.equals("@a"))
                 return;
 
-            DiscordAuthor author = DiscordAuthor.of(
-                    username,
-                    uuid == null ? "" : uuid,
-                    profile != null ? profile.getName() : (player != null ? player.getName().asString() : "server")
-            );
-
-            if (profile != null)
-                author.setGameProfile(profile);
-
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(author)
                     .message(event.getMessage().asString(SDLinkConfig.INSTANCE.chatConfig.formatting))
@@ -347,15 +337,6 @@ public final class ServerEvents {
         if (cmdName.equalsIgnoreCase("ftbteams") && command.split(" ")[1].startsWith("chat") && SDLinkCompatConfig.INSTANCE.common.ftbteams_chat) {
             String msg = Text.strip(command, "ftbteams chat");
             msg = Text.literal(msg).asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-
-            DiscordAuthor author = DiscordAuthor.of(
-                    username,
-                    uuid == null ? "" : uuid,
-                    profile != null ? profile.getName() : (player != null ? player.getName().asString() : "server")
-            );
-
-            if (profile != null)
-                author.setGameProfile(profile);
 
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(author)
@@ -382,27 +363,24 @@ public final class ServerEvents {
             return;
         }
 
-        if (SDLinkConfig.INSTANCE.chatConfig.ignoredCommands.contains(cmdName))
-            return;
-
-        if (!SDLinkConfig.INSTANCE.chatConfig.broadcastCommands)
+        if (SDLinkConfig.INSTANCE.chatConfig.ignoredCommands.contains(cmdName) || !SDLinkConfig.INSTANCE.chatConfig.broadcastCommands)
             return;
 
         if (!SDLinkConfig.INSTANCE.chatConfig.relayFullCommands) {
             command = command.split(" ")[0];
         }
 
-        if (event.getPlayer() != null) {
+        if (event.getPlayer() != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
             MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
             DiscordUser discordUser = mcAccount.getDiscordUser();
 
-            if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+            if (discordUser != null) {
                 username = discordUser.getEffectiveName();
             }
         }
 
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.COMMANDS)
-                .author(DiscordAuthor.getServer())
+                .author(author)
                 .message(
                         SDLinkConfig.INSTANCE.messageFormatting.commands
                                 .replace("%player%", username)
@@ -439,7 +417,7 @@ public final class ServerEvents {
         MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
         DiscordUser discordUser = mcAccount.getDiscordUser();
 
-        if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+        if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
             playerName = discordUser.getEffectiveName();
         }
 
@@ -506,7 +484,7 @@ public final class ServerEvents {
         MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
         DiscordUser discordUser = mcAccount.getDiscordUser();
 
-        if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+        if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
             playerName = discordUser.getEffectiveName();
         }
 
@@ -574,7 +552,7 @@ public final class ServerEvents {
             MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
             DiscordUser discordUser = mcAccount.getDiscordUser();
 
-            if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+            if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
                 name = discordUser.getEffectiveName();
             }
 
@@ -624,7 +602,7 @@ public final class ServerEvents {
                 MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
                 DiscordUser discordUser = mcAccount.getDiscordUser();
 
-                if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+                if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
                     username = discordUser.getEffectiveName();
                 }
 
@@ -763,7 +741,7 @@ public final class ServerEvents {
         MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
         DiscordUser discordUser = mcAccount.getDiscordUser();
 
-        if (mcAccount != null && discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+        if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
             name = discordUser.getEffectiveName();
         }
 
