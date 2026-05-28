@@ -46,6 +46,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.CloseCode;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -253,7 +254,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
         DiscordRoleHooks.INSTANCE.onRoleRemoved(event);
 
         event.getRoles().forEach(role -> {
-            RoleSync.INSTANCE.roleRemovedFromMember(event.getMember(), role, event.getGuild(), Collections.emptyList());
+            RoleSync.INSTANCE.roleRemovedFromMember(event.getMember(), role, event.getGuild(), new ArrayList<>());
         });
     }
 

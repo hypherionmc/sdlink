@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Role;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -27,7 +28,7 @@ public abstract class AbstractRoleSyncer {
         if (ignoreEvent || !isSyncActive.get())
             return;
 
-        discordRoleChanged(member, guild, role, true, Collections.emptyList());
+        discordRoleChanged(member, guild, role, true, new ArrayList<>());
     }
 
     public void discordRoleRemovedFromMember(Member member, Role role, Guild guild, @NotNull List<MinecraftAccount> oldAccount) {
