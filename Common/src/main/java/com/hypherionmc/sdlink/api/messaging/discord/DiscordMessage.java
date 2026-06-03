@@ -59,10 +59,15 @@ public final class DiscordMessage {
         this.afterSend = builder.getAfterSend();
     }
 
+    public void sendMessage() {
+        sendMessage(false);
+    }
+
     /**
      * Try to send the message to discord
+     * @param immediately Should the message be sent via the normal queue, or delivered instantly
      */
-    public void sendMessage() {
+    public void sendMessage(boolean immediately) {
         if (!BotController.INSTANCE.isBotReady())
             return;
 
@@ -80,9 +85,9 @@ public final class DiscordMessage {
 
         try {
             if (messageType == MessageType.CONSOLE) {
-                sendConsoleMessage();
+                sendConsoleMessage(immediately);
             } else {
-                sendNormalMessage();
+                sendNormalMessage(immediately);
             }
         } catch (Exception e) {
             runAfterSend();
@@ -95,7 +100,7 @@ public final class DiscordMessage {
     /**
      * Send a Non Console relay message to discord
      */
-    private void sendNormalMessage() {
+    private void sendNormalMessage(boolean immediately) {
         DestinationHolder channel = resolveDestination();
 
         try {
@@ -178,7 +183,7 @@ public final class DiscordMessage {
 
                 var sender = channel.channel().sendMessage(builder.build());
 
-                if (messageType == MessageType.STOP) {
+                if (immediately) {
                     sender.complete();
                     runAfterSend();
                 } else {
@@ -223,19 +228,25 @@ public final class DiscordMessage {
     /**
      * Only used for console relay messages
      */
-    private void sendConsoleMessage() {
+    private void sendConsoleMessage(boolean immediately) {
         try {
             if (!BotController.INSTANCE.isBotReady() || !SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
                 return;
 
             MessageChannel channel = ChannelManager.getConsoleChannel();
             if (channel != null) {
-                channel.sendMessage(
+                var msg = channel.sendMessage(
                         new MessageCreateBuilder()
                                 .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
                                 .setContent(this.message)
                                 .build()
-                ).queue();
+                );
+
+                if (immediately) {
+                    msg.complete();
+                } else {
+                    msg.queue();
+                }
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

@@ -136,7 +136,7 @@ public final class ServerEvents {
                     })
                     .build();
 
-            message.sendMessage();
+            message.sendMessage(true);
         }
     }
 
@@ -149,7 +149,7 @@ public final class ServerEvents {
                     .afterSend(() -> BotController.INSTANCE.shutdownBot(false))
                     .build();
 
-            message.sendMessage();
+            message.sendMessage(true);
         } else {
             BotController.INSTANCE.shutdownBot(false);
         }
@@ -363,6 +363,8 @@ public final class ServerEvents {
             return;
         }
 
+        boolean sendImmediately = cmd.equalsIgnoreCase("stop");
+
         if (SDLinkConfig.INSTANCE.chatConfig.ignoredCommands.contains(cmdName) || !SDLinkConfig.INSTANCE.chatConfig.broadcastCommands)
             return;
 
@@ -388,7 +390,7 @@ public final class ServerEvents {
                 )
                 .build();
 
-        discordMessage.sendMessage();
+        discordMessage.sendMessage(sendImmediately);
     }
 
     @CraterEventListener

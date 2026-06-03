@@ -11,3 +11,4 @@
 
 - Fixed LuckPerms/FTB sync throwing NPE and not assigning roles
 - Fixed Command Relays always using the server as author
+- Fixed Stopping/Stopped/Console Relay causing rare errors during bot shutdown
