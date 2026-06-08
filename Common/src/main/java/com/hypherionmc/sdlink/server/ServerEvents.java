@@ -91,6 +91,7 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onServerStarting(CraterServerLifecycleEvent.Starting event) {
+        Debugger.INSTANCE.log("Running Starting Event");
         this.minecraftServer = event.getServer();
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarting) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
@@ -104,8 +105,8 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onServerStarted(CraterServerLifecycleEvent.Started event) {
+        Debugger.INSTANCE.log("Running Started Event");
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarted) {
-
             DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarted)
                     .author(DiscordAuthor.getServer())
@@ -124,6 +125,7 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onServerStopping(CraterServerLifecycleEvent.Stopping event) {
+        Debugger.INSTANCE.log("Running server stopping event");
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopping) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopping)
@@ -142,6 +144,7 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onServerStoppedEvent(CraterServerLifecycleEvent.Stopped event) {
+        Debugger.INSTANCE.log("Running server stopped event");
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopped) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)
