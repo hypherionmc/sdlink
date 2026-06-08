@@ -126,6 +126,9 @@ public final class ServerEvents {
     @CraterEventListener
     public void onServerStopping(CraterServerLifecycleEvent.Stopping event) {
         Debugger.INSTANCE.log("Running server stopping event");
+        Debugger.INSTANCE.log("Can Run: {}", canSendMessage());
+        Debugger.INSTANCE.log("Event Enabled: {}", SDLinkConfig.INSTANCE.chatConfig.serverStopping);
+
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopping) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopping)
@@ -145,6 +148,9 @@ public final class ServerEvents {
     @CraterEventListener
     public void onServerStoppedEvent(CraterServerLifecycleEvent.Stopped event) {
         Debugger.INSTANCE.log("Running server stopped event");
+        Debugger.INSTANCE.log("Can Run: {}", canSendMessage());
+        Debugger.INSTANCE.log("Event Enabled: {}", SDLinkConfig.INSTANCE.chatConfig.serverStopping);
+
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopped) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)

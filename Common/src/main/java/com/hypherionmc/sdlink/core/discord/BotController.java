@@ -203,6 +203,9 @@ public final class BotController {
         if (_jda.getStatus() == JDA.Status.SHUTTING_DOWN || _jda.getStatus() == JDA.Status.SHUTDOWN)
             return false;
 
+        if (SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled)
+            return true;
+
         return _jda.getStatus() == JDA.Status.CONNECTED;
     }
 

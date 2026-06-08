@@ -4,9 +4,11 @@ import com.hypherionmc.sdlink.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import org.slf4j.Logger;
 
+import java.util.Optional;
+
 public class Debugger {
 
-    private final StackWalker STACK_WALKER = StackWalker.getInstance();
+    private final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
     private final Logger LOGGER = SDLinkConstants.LOGGER;
 
     public static final Debugger INSTANCE = new Debugger();
@@ -16,13 +18,23 @@ public class Debugger {
     }
 
     public void log(String message, Object... args) {
-        StackWalker.StackFrame frame = STACK_WALKER.walk(stream -> stream.skip(1).findFirst().orElse(null));
+        if (!SDLinkConfig.INSTANCE.generalConfig.debugging)  return;
 
-        if (frame == null || !SDLinkConfig.INSTANCE.generalConfig.debugging) {
+        Optional<StackWalker.StackFrame> caller = STACK_WALKER.walk(stream -> stream.filter(f -> !f.getClassName().equals(getClass().getName())).findFirst());
+
+        if (caller.isEmpty()) {
             return;
         }
 
-        LOGGER.error("[{}#{}:{}] " + message, frame.getClassName(), frame.getMethodName(), frame.getLineNumber(), args);
+        StackWalker.StackFrame frame = caller.get();
+
+        Object[] allArgs = new Object[args.length + 3];
+        allArgs[0] = frame.getDeclaringClass().getSimpleName();
+        allArgs[1] = frame.getMethodName();
+        allArgs[2] = frame.getLineNumber();
+        System.arraycopy(args, 0, allArgs, 3, args.length);
+
+        LOGGER.error("[{}#{}:{}] " + message, allArgs);
     }
 
 }

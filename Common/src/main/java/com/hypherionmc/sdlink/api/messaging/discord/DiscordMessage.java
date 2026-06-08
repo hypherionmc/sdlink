@@ -17,6 +17,7 @@ import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.DestinationHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -74,6 +75,7 @@ public final class DiscordMessage {
         if (message.isEmpty())
             return;
 
+        Debugger.INSTANCE.log("Sending Message {} from {}", this.message, this.author.getUsername());
         BotController.INSTANCE.getSpamManager().receiveMessage(String.format("%s:%s", this.author.getUsername(), this.message));
 
         if (BotController.INSTANCE.getSpamManager().isBlocked(String.format("%s:%s", this.author.getUsername(), this.message))) {
@@ -142,8 +144,8 @@ public final class DiscordMessage {
 
                 var sender = channel.webhook().send(builder.build());
 
-                if (messageType == MessageType.STOP) {
-                    sender.complete(null);
+                if (immediately) {
+                    sender.join();
                     runAfterSend();
                 } else {
                     sender.thenRun(this::runAfterSend);
@@ -191,6 +193,7 @@ public final class DiscordMessage {
                 }
             }
         } catch (Exception e) {
+            Debugger.INSTANCE.log("Failed to send Message", e);
             runAfterSend();
         }
     }
