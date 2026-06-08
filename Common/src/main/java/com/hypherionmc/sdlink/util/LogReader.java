@@ -127,9 +127,7 @@ public final class LogReader extends AbstractAppender {
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException e) {
-                        if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                            BotController.INSTANCE.getLogger().error("Failed to send console message: {}", e.getMessage());
-                        }
+                        Debugger.INSTANCE.log("Failed to send console message: {}", e.getMessage());
                     }
                 }
             });

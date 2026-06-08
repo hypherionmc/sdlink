@@ -79,8 +79,8 @@ public final class DiscordMessage {
         BotController.INSTANCE.getSpamManager().receiveMessage(String.format("%s:%s", this.author.getUsername(), this.message));
 
         if (BotController.INSTANCE.getSpamManager().isBlocked(String.format("%s:%s", this.author.getUsername(), this.message))) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                BotController.INSTANCE.getLogger().warn("Blocked message {} due to spam", message);
+            Debugger.INSTANCE.log("Blocked message {} due to spam", message);
+
 
             return;
         }
@@ -93,9 +93,7 @@ public final class DiscordMessage {
             }
         } catch (Exception e) {
             runAfterSend();
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                BotController.INSTANCE.getLogger().error("Failed to send Discord Message", e);
-            }
+            Debugger.INSTANCE.log("Failed to send Discord Message", e);
         }
     }
 
@@ -153,8 +151,7 @@ public final class DiscordMessage {
 
             } else {
                 if (channel.channel() == null) {
-                    if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                        BotController.INSTANCE.getLogger().warn("Expected to get Channel for {}, but got null", messageType.name());
+                    Debugger.INSTANCE.log("Expected to get Channel for {}, but got null", messageType.name());
                     runAfterSend();
                     return;
                 }
@@ -252,9 +249,7 @@ public final class DiscordMessage {
                 }
             }
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                BotController.INSTANCE.getLogger().error("Failed to send console message", e);
-            }
+            Debugger.INSTANCE.log("Failed to send console message", e);
         }
 
         if (afterSend != null)

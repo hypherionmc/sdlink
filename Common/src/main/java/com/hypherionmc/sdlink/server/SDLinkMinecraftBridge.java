@@ -15,6 +15,7 @@ import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.translations.SDText;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -54,9 +55,7 @@ public final class SDLinkMinecraftBridge {
             );
 
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to send message: {}", e.getMessage());
-            }
+            Debugger.INSTANCE.log("Failed to send message: {}", e.getMessage());
         }
     }
 

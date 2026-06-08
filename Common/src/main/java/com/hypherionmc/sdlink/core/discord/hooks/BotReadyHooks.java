@@ -13,6 +13,7 @@ import com.hypherionmc.sdlink.core.config.impl.BotConfigSettings;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.ChannelManager;
 import com.hypherionmc.sdlink.core.services.SDLinkPlatform;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.SystemUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -68,9 +69,7 @@ public final class BotReadyHooks {
 
                     }
                 } catch (Exception e) {
-                    if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                        BotController.INSTANCE.getLogger().info(e.getMessage());
-                    }
+                    Debugger.INSTANCE.log(e.getMessage());
                 }
 
                 if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled && CraterLoader.isModLoaded("mmode")) {
@@ -109,9 +108,7 @@ public final class BotReadyHooks {
                     }
                 }
             } catch (Exception e) {
-                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    BotController.INSTANCE.getLogger().info(e.getMessage());
-                }
+                Debugger.INSTANCE.log(e.getMessage());
             }
         }, Math.max(6, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), Math.max(6, SDLinkConfig.INSTANCE.botConfig.channelTopic.updateInterval), TimeUnit.MINUTES);
     }

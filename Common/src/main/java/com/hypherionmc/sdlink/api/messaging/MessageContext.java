@@ -13,6 +13,7 @@ import com.hypherionmc.sdlink.core.database.SDLinkAccount;
 import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
+import com.hypherionmc.sdlink.util.Debugger;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.SDText;
 import lombok.Getter;
@@ -90,9 +91,7 @@ public final class MessageContext {
 
                 formattedReply = EmojiManager.replaceAllEmojis(formattedReply, emoji -> !emoji.getDiscordAliases().isEmpty() ? emoji.getDiscordAliases().get(0) : emoji.getEmoji());
             } catch (Exception e) {
-                if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                    BotController.INSTANCE.getLogger().error("Failed to process reply formatting: {}", e.getMessage());
-                }
+                Debugger.INSTANCE.log("Failed to process reply formatting: {}", e.getMessage());
             }
         }
 
@@ -111,7 +110,7 @@ public final class MessageContext {
         // Parse Discord Content
         parseMessage();
 
-        if (SDLinkConfig.INSTANCE.generalConfig.debugging) SDLinkConstants.LOGGER.info("Got message {} from {}", formattedMessage, sender.getEffectiveName());
+        Debugger.INSTANCE.log("Got message {} from {}", formattedMessage, sender.getEffectiveName());
 
         // Checked linked names, if any
         AtomicReference<String> user = new AtomicReference<>(sender.getEffectiveName());
@@ -121,9 +120,7 @@ public final class MessageContext {
                 accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
             }
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to load account database: {}", e.getMessage());
-            }
+            Debugger.INSTANCE.log("Failed to load account database: {}", e.getMessage());
         }
 
         // Parse Prefix

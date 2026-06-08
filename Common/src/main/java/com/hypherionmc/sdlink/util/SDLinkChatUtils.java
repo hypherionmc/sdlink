@@ -52,9 +52,7 @@ public final class SDLinkChatUtils {
                 }
             }
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to parse mention", e);
-            }
+            Debugger.INSTANCE.log("Failed to parse mention", e);
         }
 
         return finalMessage;

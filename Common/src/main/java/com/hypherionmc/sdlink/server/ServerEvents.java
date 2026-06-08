@@ -237,9 +237,7 @@ public final class ServerEvents {
                 }
             }
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE != null && SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to send Discord Message", e);
-            }
+            Debugger.INSTANCE.log("Failed to send Discord Message", e);
         }
     }
 
@@ -411,9 +409,7 @@ public final class ServerEvents {
                 CraterPacketNetwork.INSTANCE.getPacketRegistry().sendToClient(packet, event.getPlayer());
             }
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to sync Mentions to Client", e);
-            }
+            Debugger.INSTANCE.log("Failed to sync Mentions to Client", e);
         }
 
         SDLinkAccount account = DatabaseManager.INSTANCE.findById(event.getPlayer().getStringUUID(), SDLinkAccount.class);
@@ -646,9 +642,7 @@ public final class ServerEvents {
                 }
             }
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to send advancement to Discord", e);
-            }
+            Debugger.INSTANCE.log("Failed to send advancement to Discord", e);
         }
     }
 
@@ -690,17 +684,13 @@ public final class ServerEvents {
                 return;
         }
 
-        if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-            SDLinkConstants.LOGGER.info("Relaying message from {}", thread);
-        }
+        Debugger.INSTANCE.log("Relaying message from {}", thread);
 
         try {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT).author(DiscordAuthor.getServer()).message(event.getComponent().asString(SDLinkConfig.INSTANCE.chatConfig.formatting)).build();
             message.sendMessage();
         } catch (Exception e) {
-            if (SDLinkConfig.INSTANCE.generalConfig.debugging) {
-                SDLinkConstants.LOGGER.error("Failed to broadcast message", e);
-            }
+            Debugger.INSTANCE.log("Failed to broadcast message", e);
         }
     }
 

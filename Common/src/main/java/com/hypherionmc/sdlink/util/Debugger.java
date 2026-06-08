@@ -18,9 +18,10 @@ public class Debugger {
     }
 
     public void log(String message, Object... args) {
-        if (!SDLinkConfig.INSTANCE.generalConfig.debugging)  return;
+        if (!SDLinkConfig.INSTANCE.generalConfig.debugging) return;
 
-        Optional<StackWalker.StackFrame> caller = STACK_WALKER.walk(stream -> stream.filter(f -> !f.getClassName().equals(getClass().getName())).findFirst());
+        Optional<StackWalker.StackFrame> caller = STACK_WALKER
+                .walk(stream -> stream.filter(f -> !f.getClassName().equals(getClass().getName())).findFirst());
 
         if (caller.isEmpty()) {
             return;
