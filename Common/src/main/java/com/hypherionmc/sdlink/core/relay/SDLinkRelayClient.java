@@ -278,6 +278,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                             .message(msg)
+                            .embedColor(SDLinkConfig.INSTANCE.messageFormatting.chatColor)
                             .author(!dataMessage.isFromServer() ? author : DiscordAuthor.getServer())
                             .build();
 
@@ -296,6 +297,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                             .message(msg)
+                            .embedColor(SDLinkConfig.INSTANCE.messageFormatting.playerJoinedColor)
                             .author(DiscordAuthor.getServer()
                                     .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
@@ -315,6 +317,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.LEAVE)
                             .message(msg)
+                            .embedColor(SDLinkConfig.INSTANCE.messageFormatting.playerLeftColor)
                             .author(DiscordAuthor.getServer()
                                     .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
@@ -343,6 +346,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
                     DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                             .message(finalMessage)
+                            .embedColor(SDLinkConfig.INSTANCE.messageFormatting.deathColor)
                             .author(DiscordAuthor.getServer()
                                     .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
@@ -363,6 +367,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
 
                     DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
                             .message(msg)
+                            .embedColor(SDLinkConfig.INSTANCE.messageFormatting.achievementsColor)
                             .author(DiscordAuthor.getServer()
                                     .setPlayerName(dataMessage.displayName().asString())
                                     .setPlayerAvatar(dataMessage.getUsername(), dataMessage.getUuid().toString()))
