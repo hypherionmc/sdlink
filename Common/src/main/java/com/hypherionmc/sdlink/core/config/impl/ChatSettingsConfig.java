@@ -43,7 +43,7 @@ public final class ChatSettingsConfig {
     public boolean hideIpsInConsoleRelay = true;
 
     @Path("customAvatarService")
-    @SpecComment("Add your own Avatar service URL here. Use {uuid} to replace the player ID in the URL")
+    @SpecComment("Add your own Avatar service URL here. Use {uuid} to replace the player ID and {username} to replace the player name in the URL")
     public String customAvatarService = "https://crafatar.com/avatars/{uuid}";
 
     @Path("playerAvatarType")
