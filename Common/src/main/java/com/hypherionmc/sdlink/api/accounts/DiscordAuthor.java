@@ -111,7 +111,6 @@ public final class DiscordAuthor {
     public void overrideData(String name, String avatar) {
         this.displayName = name;
         this.avatar = avatar;
-        this.realPlayerAvatar = avatar;
         fixDisplayName(name);
     }
 

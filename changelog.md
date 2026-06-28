@@ -9,7 +9,4 @@
 
 **Bug Fixes**:
 
-- Fixed LuckPerms/FTB sync throwing NPE and not assigning roles
-- Fixed Command Relays always using the server as author
-- Fixed Stopping/Stopped/Console Relay causing rare errors during bot shutdown
-- Fixed Starting/Started/Stopping/Stopped messages not sending when they should when using webhooks
+- Fixed %player_avatar% embed placeholder always using linked discord avatars instead of the minecraft avatars
