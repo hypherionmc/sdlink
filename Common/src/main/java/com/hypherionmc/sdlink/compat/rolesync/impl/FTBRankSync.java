@@ -38,7 +38,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
                 sync.ifPresent(s -> {
-                    if (!FTBRanks.getInstance().hasRank(p.getGameProfile(), s.rank)) {
+                    if (!FTBRanks.getInstance().hasRank(p, s.rank)) {
                         ignoreEvent = true;
                         FTBRanks.getInstance().addRank(p.getGameProfile(), s.rank);
                         ignoreEvent = false;
@@ -47,12 +47,12 @@ public final class FTBRankSync extends AbstractRoleSyncer {
             }
 
             // Remove Ranks from Users
-            List<? extends CraterFTBRank> ranks = FTBRanks.getInstance().getPlayerRanks(p.getGameProfile());
+            List<? extends CraterFTBRank> ranks = FTBRanks.getInstance().getPlayerRanks(p);
             for (CraterFTBRank rank : ranks) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.rank.equalsIgnoreCase(rank.name()) || s.rank.equalsIgnoreCase(rank.id())).findFirst();
 
                 sync.ifPresent(s -> {
-                    if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && FTBRanks.getInstance().hasRank(p.getGameProfile(), s.rank)) {
+                    if (roles.stream().noneMatch(r -> r.getId().equalsIgnoreCase(s.role)) && FTBRanks.getInstance().hasRank(p, s.rank)) {
                         ignoreEvent = true;
                         FTBRanks.getInstance().removeRank(p.getGameProfile(), s.rank);
                         ignoreEvent = false;
@@ -63,7 +63,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
 
         // Minecraft to Discord Sync
         if (SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncToDiscord) {
-            List<? extends CraterFTBRank> ranks = FTBRanks.getInstance().getPlayerRanks(p.getGameProfile());
+            List<? extends CraterFTBRank> ranks = FTBRanks.getInstance().getPlayerRanks(p);
 
             // Add Roles to Users
             for (CraterFTBRank rank : ranks) {
@@ -85,7 +85,7 @@ public final class FTBRankSync extends AbstractRoleSyncer {
             for (Role role : roles) {
                 Optional<RoleSyncCompat.Sync> sync = SDLinkCompatConfig.INSTANCE.ftbRanksCompat.syncs.stream().filter(s -> s.role.equalsIgnoreCase(role.getId())).findFirst();
 
-                if (sync.isPresent() && !FTBRanks.getInstance().hasRank(p.getGameProfile(), sync.get().rank)) {
+                if (sync.isPresent() && !FTBRanks.getInstance().hasRank(p, sync.get().rank)) {
                     Optional<Role> r = RoleManager.getFtbRanksRoles().stream().filter(rr -> rr.getId().equalsIgnoreCase(sync.get().role)).findFirst();
                     if (r.isEmpty())
                         return;
