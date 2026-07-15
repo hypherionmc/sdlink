@@ -10,6 +10,7 @@ import com.hypherionmc.craterlib.api.game.world.entity.player.CraterPlayer;
 import com.hypherionmc.craterlib.api.game.world.level.CraterCommonGameRules;
 import com.hypherionmc.craterlib.api.loader.CraterCompat;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
+import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.craterlib.api.loader.LoaderType;
 import com.hypherionmc.craterlib.core.event.annot.CraterEventListener;
 import com.hypherionmc.craterlib.core.networking.CraterPacketNetwork;
@@ -43,14 +44,14 @@ import com.hypherionmc.sdlink.util.LogReader;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlink.util.translations.SDText;
 import io.github.joagar21.guilds.api.GuildsAPI;
-import lombok.Getter;
-import net.dv8tion.jda.api.entities.Member;
-
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import net.dv8tion.jda.api.entities.Member;
 
 @Getter
 @SuppressWarnings("unused")
@@ -62,8 +63,7 @@ public final class ServerEvents {
     private static ServerEvents events;
 
     public static ServerEvents getInstance() {
-        if (events == null)
-            events = new ServerEvents();
+        if (events == null) events = new ServerEvents();
 
         return events;
     }
@@ -93,11 +93,15 @@ public final class ServerEvents {
     public void onServerStarting(CraterServerLifecycleEvent.Starting event) {
         Debugger.INSTANCE.log("Running Starting Event");
         this.minecraftServer = event.getServer();
-        if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarting) {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
-                    .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarting)
-                    .author(DiscordAuthor.getServer())
-                    .build();
+        if (
+            canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarting
+        ) {
+            DiscordMessage message = new DiscordMessageBuilder(
+                MessageType.START
+            )
+                .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarting)
+                .author(DiscordAuthor.getServer())
+                .build();
 
             message.sendMessage();
         }
@@ -106,20 +110,29 @@ public final class ServerEvents {
     @CraterEventListener
     public void onServerStarted(CraterServerLifecycleEvent.Started event) {
         Debugger.INSTANCE.log("Running Started Event");
-        if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarted) {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
-                    .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarted)
-                    .author(DiscordAuthor.getServer())
-                    .build();
+        if (
+            canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarted
+        ) {
+            DiscordMessage message = new DiscordMessageBuilder(
+                MessageType.START
+            )
+                .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarted)
+                .author(DiscordAuthor.getServer())
+                .build();
 
             message.sendMessage();
         }
 
-        if (BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && CacheManager.getDiscordMembers().isEmpty())
-            CacheManager.loadCache();
+        if (
+            BotController.INSTANCE != null &&
+            BotController.INSTANCE.isBotReady() &&
+            CacheManager.getDiscordMembers().isEmpty()
+        ) CacheManager.loadCache();
 
         if (CraterLoader.isModLoaded("utilitarian")) {
-            BotController.INSTANCE.getLogger().warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
+            BotController.INSTANCE.getLogger().warn(
+                "Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks"
+            );
         }
     }
 
@@ -127,19 +140,24 @@ public final class ServerEvents {
     public void onServerStopping(CraterServerLifecycleEvent.Stopping event) {
         Debugger.INSTANCE.log("Running server stopping event");
         Debugger.INSTANCE.log("Can Run: {}", canSendMessage());
-        Debugger.INSTANCE.log("Event Enabled: {}", SDLinkConfig.INSTANCE.chatConfig.serverStopping);
+        Debugger.INSTANCE.log(
+            "Event Enabled: {}",
+            SDLinkConfig.INSTANCE.chatConfig.serverStopping
+        );
 
-        if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopping) {
+        if (
+            canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopping
+        ) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
-                    .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopping)
-                    .author(DiscordAuthor.getServer())
-                    .afterSend(() -> {
-                        // Stop Log Relay
-                        try {
-                            LogReader.destroy();
-                        } catch (Exception ignored) {}
-                    })
-                    .build();
+                .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopping)
+                .author(DiscordAuthor.getServer())
+                .afterSend(() -> {
+                    // Stop Log Relay
+                    try {
+                        LogReader.destroy();
+                    } catch (Exception ignored) {}
+                })
+                .build();
 
             message.sendMessage(true);
         }
@@ -149,14 +167,19 @@ public final class ServerEvents {
     public void onServerStoppedEvent(CraterServerLifecycleEvent.Stopped event) {
         Debugger.INSTANCE.log("Running server stopped event");
         Debugger.INSTANCE.log("Can Run: {}", canSendMessage());
-        Debugger.INSTANCE.log("Event Enabled: {}", SDLinkConfig.INSTANCE.chatConfig.serverStopping);
+        Debugger.INSTANCE.log(
+            "Event Enabled: {}",
+            SDLinkConfig.INSTANCE.chatConfig.serverStopping
+        );
 
-        if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopped) {
+        if (
+            canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopped
+        ) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
-                    .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)
-                    .author(DiscordAuthor.getServer())
-                    .afterSend(() -> BotController.INSTANCE.shutdownBot(false))
-                    .build();
+                .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)
+                .author(DiscordAuthor.getServer())
+                .afterSend(() -> BotController.INSTANCE.shutdownBot(false))
+                .build();
 
             message.sendMessage(true);
         } else {
@@ -170,67 +193,136 @@ public final class ServerEvents {
             return;
         }
 
-        if (ExperimentalFeatures.INSTANCE.IGNORE_CANCELLED_CHAT && event.isUpstreamCancelled())
-            return;
+        if (CraterLoader.isModLoaded("allied")) {
+            try {
+                Class<?> clazz = Class.forName(
+                    "com.bba.allied.teamUtils.teamChatManager"
+                );
+                Method method = clazz.getMethod("isEnabled", UUID.class);
 
-        if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
-            return;
+                if (
+                    (Boolean) method.invoke(null, event.getPlayer().getUUID())
+                ) {
+                    return;
+                }
+            } catch (ReflectiveOperationException ignored) {}
+        }
+
+        if (
+            ExperimentalFeatures.INSTANCE.IGNORE_CANCELLED_CHAT &&
+            event.isUpstreamCancelled()
+        ) return;
+
+        if (
+            HiddenPlayersManager.INSTANCE.isPlayerHidden(
+                event.getPlayer().getStringUUID()
+            )
+        ) return;
 
         // Cobblemon Guilds
-        if (SDLinkCompatConfig.INSTANCE.common.cobblemonguilds && CraterLoader.isModLoaded("guilds")) {
-            if (GuildsAPI.getEnabledGuildChat().contains(event.getPlayer().getUUID())) return;
+        if (
+            SDLinkCompatConfig.INSTANCE.common.cobblemonguilds &&
+            CraterLoader.isModLoaded("guilds")
+        ) {
+            if (
+                GuildsAPI.getEnabledGuildChat().contains(
+                    event.getPlayer().getUUID()
+                )
+            ) return;
         }
 
         // FTB Essentials
-        if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && CraterLoader.isModLoaded("ftbessentials") && CraterCompat.isPlayerMuted(event.getPlayer()))
-            return;
+        if (
+            SDLinkCompatConfig.INSTANCE.common.ftbessentials &&
+            CraterLoader.isModLoaded("ftbessentials") &&
+            CraterCompat.isPlayerMuted(event.getPlayer())
+        ) return;
 
         // Advanced Chat
-        if (CraterLoader.isModLoaded("advanced-chat") && CraterCompat.isPrivateMessage(event.getPlayer()))
-            return;
+        if (
+            CraterLoader.isModLoaded("advanced-chat") &&
+            CraterCompat.isPrivateMessage(event.getPlayer())
+        ) return;
 
-        onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
+        onServerChatEvent(
+            event.getComponent(),
+            event.getPlayer().getDisplayName(),
+            SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()),
+            event.getPlayer().getGameProfile(),
+            false
+        );
     }
 
-    public void onServerChatEvent(Text message, Text user, String uuid, CraterGameProfile gameProfile, boolean fromServer) {
-        if (user == null || message == null)
-            return;
+    public void onServerChatEvent(
+        Text message,
+        Text user,
+        String uuid,
+        CraterGameProfile gameProfile,
+        boolean fromServer
+    ) {
+        if (user == null || message == null) return;
 
-        if (!canSendMessage())
-            return;
+        if (!canSendMessage()) return;
 
         try {
             if (SDLinkConfig.INSTANCE.chatConfig.playerMessages) {
-                String username = user.asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-                String msg = message.asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                String username = user.asString(
+                    SDLinkConfig.INSTANCE.chatConfig.formatting
+                );
+                String msg = message.asString(
+                    SDLinkConfig.INSTANCE.chatConfig.formatting
+                );
 
                 Debugger.INSTANCE.log("Username is {}", username);
                 Debugger.INSTANCE.log("Message is {}", msg);
 
                 if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
                     msg = SDLinkChatUtils.parse(msg);
-                    Debugger.INSTANCE.log("Message after ClientMentionParse is {}", msg);
+                    Debugger.INSTANCE.log(
+                        "Message after ClientMentionParse is {}",
+                        msg
+                    );
                 }
 
                 msg = parseChatMentions(msg);
-                Debugger.INSTANCE.log("Message after ChatMentionParse is {}", msg);
+                Debugger.INSTANCE.log(
+                    "Message after ChatMentionParse is {}",
+                    msg
+                );
 
-                DiscordAuthor author = DiscordAuthor.of(username, uuid, gameProfile.getName())
-                        .setGameProfile(gameProfile).setPlayerName(gameProfile.getName())
-                        .setPlayerAvatar(gameProfile.getName(), uuid);
+                DiscordAuthor author = DiscordAuthor.of(
+                    username,
+                    uuid,
+                    gameProfile.getName()
+                )
+                    .setGameProfile(gameProfile)
+                    .setPlayerName(gameProfile.getName())
+                    .setPlayerAvatar(gameProfile.getName(), uuid);
 
-                DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                        .message(msg)
-                        .author(!fromServer ? author : DiscordAuthor.getServer())
-                        .build();
+                DiscordMessage discordMessage = new DiscordMessageBuilder(
+                    MessageType.CHAT
+                )
+                    .message(msg)
+                    .author(!fromServer ? author : DiscordAuthor.getServer())
+                    .build();
 
                 discordMessage.sendMessage();
 
-                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+                if (
+                    ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+                    SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats
+                ) {
                     RelayMessage newRelay = RelayMessage.of(
-                            RelayMessage.MessageType.CHAT,
-                            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                            DataMessage.of(user, gameProfile.getName(), message, gameProfile.getId(), null, false)
+                        RelayMessage.MessageType.CHAT,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        DataMessage.of(
+                            user,
+                            gameProfile.getName(),
+                            message,
+                            gameProfile.getId(),
+                            null,
+                            false
+                        )
                     );
 
                     SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -243,13 +335,11 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void commandEvent(CraterCommandEvent event) {
-        if (!canSendMessage())
-            return;
+        if (!canSendMessage()) return;
 
         String cmd = event.getCommandString();
 
-        if (cmd.equalsIgnoreCase("reloadbot"))
-            return;
+        if (cmd.equalsIgnoreCase("reloadbot")) return;
 
         CraterPlayer player = null;
         String uuid = null;
@@ -265,30 +355,42 @@ public final class ServerEvents {
             }
         } catch (Exception ignored) {}
 
-        if (player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player))
-            return;
+        if (
+            player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player)
+        ) return;
 
         String command = Text.strip(cmd, "/");
         String cmdName = command.split(" ")[0];
-        String username = user.asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+        String username = user.asString(
+            SDLinkConfig.INSTANCE.chatConfig.formatting
+        );
 
         if (username == null || username.equalsIgnoreCase("unknown")) {
             username = "Server";
         }
 
-        if (username.equalsIgnoreCase("sdlinktriggersystem") || username.equalsIgnoreCase(""))
-            return;
+        if (
+            username.equalsIgnoreCase("sdlinktriggersystem") ||
+            username.equalsIgnoreCase("")
+        ) return;
 
         DiscordAuthor author = DiscordAuthor.of(
-                username,
-                uuid == null ? "" : uuid,
-                profile != null ? profile.getName() : (player != null ? player.getName().asString() : "server")
+            username,
+            uuid == null ? "" : uuid,
+            profile != null
+                ? profile.getName()
+                : player != null
+                  ? player.getName().asString()
+                  : "server"
         );
 
-        if (profile != null)
-            author.setGameProfile(profile);
+        if (profile != null) author.setGameProfile(profile);
 
-        if ((cmdName.equalsIgnoreCase("say") || cmdName.equalsIgnoreCase("me")) && SDLinkConfig.INSTANCE.chatConfig.sendSayCommand) {
+        if (
+            (cmdName.equalsIgnoreCase("say") ||
+                cmdName.equalsIgnoreCase("me")) &&
+            SDLinkConfig.INSTANCE.chatConfig.sendSayCommand
+        ) {
             String msg = command;
 
             if (cmdName.equalsIgnoreCase("me")) {
@@ -299,26 +401,39 @@ public final class ServerEvents {
                 msg = Text.strip(command, "say");
             }
 
-            msg = Text.literal(msg).asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+            msg = Text.literal(msg).asString(
+                SDLinkConfig.INSTANCE.chatConfig.formatting
+            );
 
-            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(author)
-                    .message(msg)
-                    .build();
+            DiscordMessage discordMessage = new DiscordMessageBuilder(
+                MessageType.CHAT
+            )
+                .author(author)
+                .message(msg)
+                .build();
 
             discordMessage.sendMessage();
 
-            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+            if (
+                ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+                SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats
+            ) {
                 RelayMessage newRelay = RelayMessage.of(
-                        RelayMessage.MessageType.CHAT,
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                        DataMessage.of(
-                                event.getPlayer() == null ? Text.literal("Server") : event.getPlayer().getDisplayName(),
-                                event.getPlayer() == null ? "server" : event.getPlayer().getGameProfile().getName(),
-                                Text.literal(msg),
-                                event.getPlayer() == null ? UUID.randomUUID() : event.getPlayer().getUUID(),
-                                event.getPlayer() == null
-                        )
+                    RelayMessage.MessageType.CHAT,
+                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                    DataMessage.of(
+                        event.getPlayer() == null
+                            ? Text.literal("Server")
+                            : event.getPlayer().getDisplayName(),
+                        event.getPlayer() == null
+                            ? "server"
+                            : event.getPlayer().getGameProfile().getName(),
+                        Text.literal(msg),
+                        event.getPlayer() == null
+                            ? UUID.randomUUID()
+                            : event.getPlayer().getUUID(),
+                        event.getPlayer() == null
+                    )
                 );
 
                 SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -326,43 +441,68 @@ public final class ServerEvents {
             return;
         }
 
-        if (cmdName.startsWith("tellraw") && SDLinkConfig.INSTANCE.chatConfig.relayTellRaw) {
+        if (
+            cmdName.startsWith("tellraw") &&
+            SDLinkConfig.INSTANCE.chatConfig.relayTellRaw
+        ) {
             String target = event.getTarget();
 
-            if (!target.equals("@a"))
-                return;
+            if (!target.equals("@a")) return;
 
-            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(author)
-                    .message(event.getMessage().asString(SDLinkConfig.INSTANCE.chatConfig.formatting))
-                    .build();
+            DiscordMessage discordMessage = new DiscordMessageBuilder(
+                MessageType.CHAT
+            )
+                .author(author)
+                .message(
+                    event
+                        .getMessage()
+                        .asString(SDLinkConfig.INSTANCE.chatConfig.formatting)
+                )
+                .build();
 
             discordMessage.sendMessage();
             return;
         }
 
-        if (cmdName.equalsIgnoreCase("ftbteams") && command.split(" ")[1].startsWith("chat") && SDLinkCompatConfig.INSTANCE.common.ftbteams_chat) {
+        if (
+            cmdName.equalsIgnoreCase("ftbteams") &&
+            command.split(" ")[1].startsWith("chat") &&
+            SDLinkCompatConfig.INSTANCE.common.ftbteams_chat
+        ) {
             String msg = Text.strip(command, "ftbteams chat");
-            msg = Text.literal(msg).asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+            msg = Text.literal(msg).asString(
+                SDLinkConfig.INSTANCE.chatConfig.formatting
+            );
 
-            DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
-                    .author(author)
-                    .message(msg)
-                    .build();
+            DiscordMessage discordMessage = new DiscordMessageBuilder(
+                MessageType.CHAT
+            )
+                .author(author)
+                .message(msg)
+                .build();
 
             discordMessage.sendMessage();
 
-            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {
+            if (
+                ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+                SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats
+            ) {
                 RelayMessage newRelay = RelayMessage.of(
-                        RelayMessage.MessageType.CHAT,
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                        DataMessage.of(
-                                event.getPlayer() == null ? Text.literal("Server") : event.getPlayer().getDisplayName(),
-                                event.getPlayer() == null ? "server" : event.getPlayer().getGameProfile().getName(),
-                                Text.literal(msg),
-                                event.getPlayer() == null ? UUID.randomUUID() : event.getPlayer().getUUID(),
-                                event.getPlayer() == null
-                        )
+                    RelayMessage.MessageType.CHAT,
+                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                    DataMessage.of(
+                        event.getPlayer() == null
+                            ? Text.literal("Server")
+                            : event.getPlayer().getDisplayName(),
+                        event.getPlayer() == null
+                            ? "server"
+                            : event.getPlayer().getGameProfile().getName(),
+                        Text.literal(msg),
+                        event.getPlayer() == null
+                            ? UUID.randomUUID()
+                            : event.getPlayer().getUUID(),
+                        event.getPlayer() == null
+                    )
                 );
 
                 SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -372,15 +512,24 @@ public final class ServerEvents {
 
         boolean sendImmediately = cmd.equalsIgnoreCase("stop");
 
-        if (SDLinkConfig.INSTANCE.chatConfig.ignoredCommands.contains(cmdName) || !SDLinkConfig.INSTANCE.chatConfig.broadcastCommands)
-            return;
+        if (
+            SDLinkConfig.INSTANCE.chatConfig.ignoredCommands.contains(
+                cmdName
+            ) ||
+            !SDLinkConfig.INSTANCE.chatConfig.broadcastCommands
+        ) return;
 
         if (!SDLinkConfig.INSTANCE.chatConfig.relayFullCommands) {
             command = command.split(" ")[0];
         }
 
-        if (event.getPlayer() != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
-            MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+        if (
+            event.getPlayer() != null &&
+            SDLinkConfig.INSTANCE.chatConfig.useLinkedNames
+        ) {
+            MinecraftAccount mcAccount = MinecraftAccount.of(
+                event.getPlayer().getGameProfile()
+            );
             DiscordUser discordUser = mcAccount.getDiscordUser();
 
             if (discordUser != null) {
@@ -388,14 +537,16 @@ public final class ServerEvents {
             }
         }
 
-        DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.COMMANDS)
-                .author(author)
-                .message(
-                        SDLinkConfig.INSTANCE.messageFormatting.commands
-                                .replace("%player%", username)
-                                .replace("%command%", command)
-                )
-                .build();
+        DiscordMessage discordMessage = new DiscordMessageBuilder(
+            MessageType.COMMANDS
+        )
+            .author(author)
+            .message(
+                SDLinkConfig.INSTANCE.messageFormatting.commands
+                    .replace("%player%", username)
+                    .replace("%command%", command)
+            )
+            .build();
 
         discordMessage.sendMessage(sendImmediately);
     }
@@ -404,60 +555,104 @@ public final class ServerEvents {
     public void playerJoinEvent(CraterPlayerEvent.PlayerLoggedIn event) {
         // Allow Mentions
         try {
-            if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat && CraterLoader.getLoaderType() != LoaderType.PAPER) {
-                MentionsSyncPacket packet = new MentionsSyncPacket(CacheManager.getServerRoles(), CacheManager.getServerChannels(), CacheManager.getUserCache());
-                CraterPacketNetwork.INSTANCE.getPacketRegistry().sendToClient(packet, event.getPlayer());
+            if (
+                SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat &&
+                CraterLoader.getLoaderType() != LoaderType.PAPER
+            ) {
+                MentionsSyncPacket packet = new MentionsSyncPacket(
+                    CacheManager.getServerRoles(),
+                    CacheManager.getServerChannels(),
+                    CacheManager.getUserCache()
+                );
+                CraterPacketNetwork.INSTANCE.getPacketRegistry().sendToClient(
+                    packet,
+                    event.getPlayer()
+                );
             }
         } catch (Exception e) {
             Debugger.INSTANCE.log("Failed to sync Mentions to Client", e);
         }
 
-        SDLinkAccount account = DatabaseManager.INSTANCE.findById(event.getPlayer().getStringUUID(), SDLinkAccount.class);
+        SDLinkAccount account = DatabaseManager.INSTANCE.findById(
+            event.getPlayer().getStringUUID(),
+            SDLinkAccount.class
+        );
 
         if (account != null) {
-            account.setInGameName(event.getPlayer().getDisplayName().asString());
+            account.setInGameName(
+                event.getPlayer().getDisplayName().asString()
+            );
             DatabaseManager.INSTANCE.updateEntry(account);
         }
 
-        String playerName = event.getPlayer().getDisplayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+        String playerName = event
+            .getPlayer()
+            .getDisplayName()
+            .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-        MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+        MinecraftAccount mcAccount = MinecraftAccount.of(
+            event.getPlayer().getGameProfile()
+        );
         DiscordUser discordUser = mcAccount.getDiscordUser();
 
-        if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+        if (
+            discordUser != null &&
+            SDLinkConfig.INSTANCE.chatConfig.useLinkedNames
+        ) {
             playerName = discordUser.getEffectiveName();
         }
 
         RoleSync.INSTANCE.sync(event.getPlayer());
 
-        if (event.isFromVanish() && !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage)
-            return;
+        if (
+            event.isFromVanish() &&
+            !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage
+        ) return;
 
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerJoin || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
-            return;
+        if (
+            !canSendMessage() ||
+            !SDLinkConfig.INSTANCE.chatConfig.playerJoin ||
+            (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) &&
+                !event.isFromVanish())
+        ) return;
 
-        String msg = SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", playerName);
+        String msg =
+            SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace(
+                "%player%",
+                playerName
+            );
 
-        DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
-                .message(msg)
-                .author(DiscordAuthor.getServer()
-                        .setPlayerName(event.getPlayer().getName().asString()).setGameProfile(event.getPlayer().getGameProfile())
-                        .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
-                .build();
+        DiscordMessage discordMessage = new DiscordMessageBuilder(
+            MessageType.JOIN
+        )
+            .message(msg)
+            .author(
+                DiscordAuthor.getServer()
+                    .setPlayerName(event.getPlayer().getName().asString())
+                    .setGameProfile(event.getPlayer().getGameProfile())
+                    .setPlayerAvatar(
+                        event.getPlayer().getGameProfile().getName(),
+                        event.getPlayer().getStringUUID()
+                    )
+            )
+            .build();
 
         discordMessage.sendMessage();
 
-        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages) {
+        if (
+            ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+            SDLinkRelayConfig.INSTANCE.messageConfig.relayJoinMessages
+        ) {
             RelayMessage newRelay = RelayMessage.of(
-                    RelayMessage.MessageType.JOIN,
-                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                    DataMessage.of(
-                            event.getPlayer().getDisplayName(),
-                            event.getPlayer().getGameProfile().getName(),
-                            null,
-                            event.getPlayer().getUUID(),
-                            false
-                    )
+                RelayMessage.MessageType.JOIN,
+                SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                DataMessage.of(
+                    event.getPlayer().getDisplayName(),
+                    event.getPlayer().getGameProfile().getName(),
+                    null,
+                    event.getPlayer().getUUID(),
+                    false
+                )
             );
 
             SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -466,57 +661,99 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void playerLeaveEvent(CraterPlayerEvent.PlayerLoggedOut event) {
-        if ((SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification)) {
+        if (
+            SDLinkConfig.INSTANCE.accessControl.enabled ||
+            SDLinkConfig.INSTANCE.accessControl.optionalVerification
+        ) {
             try {
-                if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
-                    MinecraftAccount account = MinecraftAccount.of(event.getPlayer().getGameProfile());
-                    if (minecraftServer.isPlayerBanned(event.getPlayer().getGameProfile())) {
+                if (
+                    SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan
+                ) {
+                    MinecraftAccount account = MinecraftAccount.of(
+                        event.getPlayer().getGameProfile()
+                    );
+                    if (
+                        minecraftServer.isPlayerBanned(
+                            event.getPlayer().getGameProfile()
+                        )
+                    ) {
                         account.banDiscordMember();
                         return;
                     }
                 }
             } catch (Exception e) {
-                SDLinkConstants.LOGGER.error("Failed to ban, banned discord user", e);
+                SDLinkConstants.LOGGER.error(
+                    "Failed to ban, banned discord user",
+                    e
+                );
             }
         }
 
-        if (event.isFromVanish() && !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage)
-            return;
+        if (
+            event.isFromVanish() &&
+            !SDLinkCompatConfig.INSTANCE.vanishCompat.sendFakeJoinLeaveMessage
+        ) return;
 
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.playerLeave || (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) && !event.isFromVanish()))
-            return;
+        if (
+            !canSendMessage() ||
+            !SDLinkConfig.INSTANCE.chatConfig.playerLeave ||
+            (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()) &&
+                !event.isFromVanish())
+        ) return;
 
-        String playerName = event.getPlayer().getDisplayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+        String playerName = event
+            .getPlayer()
+            .getDisplayName()
+            .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-        MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+        MinecraftAccount mcAccount = MinecraftAccount.of(
+            event.getPlayer().getGameProfile()
+        );
         DiscordUser discordUser = mcAccount.getDiscordUser();
 
-        if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+        if (
+            discordUser != null &&
+            SDLinkConfig.INSTANCE.chatConfig.useLinkedNames
+        ) {
             playerName = discordUser.getEffectiveName();
         }
 
-        String msg = SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", playerName);
+        String msg = SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace(
+            "%player%",
+            playerName
+        );
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
-                .message(msg)
-                .author(DiscordAuthor.getServer()
-                        .setPlayerName(event.getPlayer().getName().asString()).setGameProfile(event.getPlayer().getGameProfile())
-                        .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
-                .build();
+            .message(msg)
+            .author(
+                DiscordAuthor.getServer()
+                    .setPlayerName(event.getPlayer().getName().asString())
+                    .setGameProfile(event.getPlayer().getGameProfile())
+                    .setPlayerAvatar(
+                        event.getPlayer().getGameProfile().getName(),
+                        SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(
+                            event.getPlayer()
+                        )
+                    )
+            )
+            .build();
 
         message.sendMessage();
 
-        if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages) {
+        if (
+            ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+            SDLinkRelayConfig.INSTANCE.messageConfig.relayLeaveMessages
+        ) {
             RelayMessage newRelay = RelayMessage.of(
-                    RelayMessage.MessageType.LEAVE,
-                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                    DataMessage.of(
-                            event.getPlayer().getDisplayName(),
-                            event.getPlayer().getGameProfile().getName(),
-                            null,
-                            event.getPlayer().getUUID(),
-                            false
-                    )
+                RelayMessage.MessageType.LEAVE,
+                SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                DataMessage.of(
+                    event.getPlayer().getDisplayName(),
+                    event.getPlayer().getGameProfile().getName(),
+                    null,
+                    event.getPlayer().getUUID(),
+                    false
+                )
             );
 
             SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -525,26 +762,44 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onPlayerDeath(CraterPlayerDeathEvent event) {
-        if (event.getPlayer().isServerPlayer() && !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
-            return;
+        if (
+            event.getPlayer().isServerPlayer() &&
+            !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer())
+        ) return;
 
-        if (!minecraftServer.getGameRules().getBoolean(CraterCommonGameRules.RULE_SHOWDEATHMESSAGES) && SDLinkConfig.INSTANCE.chatConfig.deathMessages.followGameRule())
-            return;
+        if (
+            !minecraftServer
+                .getGameRules()
+                .getBoolean(CraterCommonGameRules.RULE_SHOWDEATHMESSAGES) &&
+            SDLinkConfig.INSTANCE.chatConfig.deathMessages.followGameRule()
+        ) return;
 
         CraterPlayer player = event.getPlayer();
 
         if (canSendMessage()) {
-            String name = player.getDisplayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-            String msg = event.getDamageSource().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+            String name = player
+                .getDisplayName()
+                .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+            String msg = event
+                .getDamageSource()
+                .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
             String finalMessage = SDLinkConfig.INSTANCE.messageFormatting.death;
 
-            if (SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled && CraterLoader.isModLoaded("playerrevive")) {
-                if (!CraterCompat.isPlayerBleeding(player) && !CraterCompat.playerBledOut(player)) {
-                    finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.reviveWaitingMessage;
+            if (
+                SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled &&
+                CraterLoader.isModLoaded("playerrevive")
+            ) {
+                if (
+                    !CraterCompat.isPlayerBleeding(player) &&
+                    !CraterCompat.playerBledOut(player)
+                ) {
+                    finalMessage =
+                        SDLinkCompatConfig.INSTANCE.playerReviveCompat.reviveWaitingMessage;
                 }
 
                 if (CraterCompat.playerBledOut(player)) {
-                    finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.playerBledOutMessage;
+                    finalMessage =
+                        SDLinkCompatConfig.INSTANCE.playerReviveCompat.playerBledOutMessage;
                 }
             }
 
@@ -556,35 +811,53 @@ public final class ServerEvents {
                 return;
             }
 
-            MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+            MinecraftAccount mcAccount = MinecraftAccount.of(
+                event.getPlayer().getGameProfile()
+            );
             DiscordUser discordUser = mcAccount.getDiscordUser();
 
-            if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+            if (
+                discordUser != null &&
+                SDLinkConfig.INSTANCE.chatConfig.useLinkedNames
+            ) {
                 name = discordUser.getEffectiveName();
             }
 
-            finalMessage = finalMessage.replace("%player%", name).replace("%message%", msg);
+            finalMessage = finalMessage
+                .replace("%player%", name)
+                .replace("%message%", msg);
 
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
-                    .message(finalMessage)
-                    .author(DiscordAuthor.getServer()
-                            .setGameProfile(event.getPlayer().getGameProfile())
-                            .setPlayerName(player.getDisplayName().asString())
-                            .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
-                    .build();
+            DiscordMessage message = new DiscordMessageBuilder(
+                MessageType.DEATH
+            )
+                .message(finalMessage)
+                .author(
+                    DiscordAuthor.getServer()
+                        .setGameProfile(event.getPlayer().getGameProfile())
+                        .setPlayerName(player.getDisplayName().asString())
+                        .setPlayerAvatar(
+                            player.getGameProfile().getName(),
+                            player.getStringUUID()
+                        )
+                )
+                .build();
 
             message.sendMessage();
 
-            if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages) {
+            if (
+                ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+                SDLinkRelayConfig.INSTANCE.messageConfig.relayDeathMessages
+            ) {
                 RelayMessage newRelay = RelayMessage.of(
-                        RelayMessage.MessageType.DEATH,
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                        DataMessage.of(
-                                event.getPlayer().getDisplayName(),
-                                event.getPlayer().getGameProfile().getName(),
-                                event.getDamageSource(),
-                                event.getPlayer().getUUID(),
-                                false)
+                    RelayMessage.MessageType.DEATH,
+                    SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                    DataMessage.of(
+                        event.getPlayer().getDisplayName(),
+                        event.getPlayer().getGameProfile().getName(),
+                        event.getDamageSource(),
+                        event.getPlayer().getUUID(),
+                        false
+                    )
                 );
 
                 SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -594,48 +867,85 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onPlayerAdvancement(CraterAdvancementEvent event) {
-        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer()))
-            return;
+        if (
+            !SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer())
+        ) return;
 
-        if (!minecraftServer.getGameRules().getBoolean(CraterCommonGameRules.RULE_ANNOUNCE_ADVANCEMENTS) && SDLinkConfig.INSTANCE.chatConfig.advancementMessages.followGameRule())
-            return;
+        if (
+            !minecraftServer
+                .getGameRules()
+                .getBoolean(CraterCommonGameRules.RULE_ANNOUNCE_ADVANCEMENTS) &&
+            SDLinkConfig.INSTANCE.chatConfig.advancementMessages.followGameRule()
+        ) return;
 
         try {
-            if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.advancementMessages.isTrue()) {
-                String username = event.getPlayer().getDisplayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-                String finalAdvancement = event.getTitle().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-                String advancementBody = event.getDescription().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+            if (
+                canSendMessage() &&
+                SDLinkConfig.INSTANCE.chatConfig.advancementMessages.isTrue()
+            ) {
+                String username = event
+                    .getPlayer()
+                    .getDisplayName()
+                    .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                String finalAdvancement = event
+                    .getTitle()
+                    .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+                String advancementBody = event
+                    .getDescription()
+                    .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-                MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+                MinecraftAccount mcAccount = MinecraftAccount.of(
+                    event.getPlayer().getGameProfile()
+                );
                 DiscordUser discordUser = mcAccount.getDiscordUser();
 
-                if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+                if (
+                    discordUser != null &&
+                    SDLinkConfig.INSTANCE.chatConfig.useLinkedNames
+                ) {
                     username = discordUser.getEffectiveName();
                 }
 
-                String msg = SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody);
+                String msg =
+                    SDLinkConfig.INSTANCE.messageFormatting.achievements
+                        .replace("%player%", username)
+                        .replace("%title%", finalAdvancement)
+                        .replace("%description%", advancementBody);
 
-                DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
-                        .message(msg)
-                        .author(DiscordAuthor.getServer()
-                                .setGameProfile(event.getPlayer().getGameProfile())
-                                .setPlayerName(event.getPlayer().getDisplayName().asString())
-                                .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
-                        .build();
+                DiscordMessage discordMessage = new DiscordMessageBuilder(
+                    MessageType.ADVANCEMENTS
+                )
+                    .message(msg)
+                    .author(
+                        DiscordAuthor.getServer()
+                            .setGameProfile(event.getPlayer().getGameProfile())
+                            .setPlayerName(
+                                event.getPlayer().getDisplayName().asString()
+                            )
+                            .setPlayerAvatar(
+                                event.getPlayer().getGameProfile().getName(),
+                                event.getPlayer().getStringUUID()
+                            )
+                    )
+                    .build();
 
                 discordMessage.sendMessage();
 
-                if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages) {
+                if (
+                    ExperimentalFeatures.INSTANCE.RELAY_SERVER &&
+                    SDLinkRelayConfig.INSTANCE.messageConfig.relayAdvancementMessages
+                ) {
                     RelayMessage newRelay = RelayMessage.of(
-                            RelayMessage.MessageType.ADVANCEMENT,
-                            SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                            DataMessage.of(
-                                    event.getPlayer().getDisplayName(),
-                                    event.getPlayer().getGameProfile().getName(),
-                                    event.getTitle(),
-                                    event.getPlayer().getUUID(),
-                                    event.getDescription(),
-                                    false)
+                        RelayMessage.MessageType.ADVANCEMENT,
+                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        DataMessage.of(
+                            event.getPlayer().getDisplayName(),
+                            event.getPlayer().getGameProfile().getName(),
+                            event.getTitle(),
+                            event.getPlayer().getUUID(),
+                            event.getDescription(),
+                            false
+                        )
                     );
 
                     SDLinkRelayClient.INSTANCE.relayMessage(newRelay);
@@ -648,27 +958,42 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void preLoginEvent(PlayerPreLoginEvent event) {
-        if (BotController.INSTANCE == null || !BotController.INSTANCE.isBotReady())
-            return;
+        if (
+            BotController.INSTANCE == null ||
+            !BotController.INSTANCE.isBotReady()
+        ) return;
 
-        if (SDLinkConfig.INSTANCE.accessControl.enabled || SDLinkConfig.INSTANCE.accessControl.optionalVerification) {
-            MinecraftAccount account = MinecraftAccount.of(event.getGameProfile());
+        if (
+            SDLinkConfig.INSTANCE.accessControl.enabled ||
+            SDLinkConfig.INSTANCE.accessControl.optionalVerification
+        ) {
+            MinecraftAccount account = MinecraftAccount.of(
+                event.getGameProfile()
+            );
 
             try {
-                if (SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan) {
-                    if (minecraftServer.isPlayerBanned(event.getGameProfile())) {
+                if (
+                    SDLinkConfig.INSTANCE.accessControl.banMemberOnMinecraftBan
+                ) {
+                    if (
+                        minecraftServer.isPlayerBanned(event.getGameProfile())
+                    ) {
                         account.banDiscordMember();
                         return;
                     }
                 }
             } catch (Exception e) {
-                SDLinkConstants.LOGGER.error("Failed to ban, banned discord user", e);
+                SDLinkConstants.LOGGER.error(
+                    "Failed to ban, banned discord user",
+                    e
+                );
             }
 
             var result = account.canLogin();
 
-            if (result.isError())
-                event.setMessage(Text.formatted(result.getMessage()));
+            if (result.isError()) event.setMessage(
+                Text.formatted(result.getMessage())
+            );
         }
     }
 
@@ -676,18 +1001,30 @@ public final class ServerEvents {
     public void serverBroadcastEvent(MessageBroadcastEvent event) {
         String thread = event.getThreadName();
 
-        if (thread.startsWith("net.minecraft") || thread.contains("com.hypherionmc"))
-            return;
+        if (
+            thread.startsWith("net.minecraft") ||
+            thread.contains("com.hypherionmc")
+        ) return;
 
         if (SDLinkConfig.INSTANCE.ignoreConfig.enabled) {
-            if (SDLinkConfig.INSTANCE.ignoreConfig.ignoredThread.stream().anyMatch(thread::startsWith))
-                return;
+            if (
+                SDLinkConfig.INSTANCE.ignoreConfig.ignoredThread
+                    .stream()
+                    .anyMatch(thread::startsWith)
+            ) return;
         }
 
         Debugger.INSTANCE.log("Relaying message from {}", thread);
 
         try {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT).author(DiscordAuthor.getServer()).message(event.getComponent().asString(SDLinkConfig.INSTANCE.chatConfig.formatting)).build();
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT)
+                .author(DiscordAuthor.getServer())
+                .message(
+                    event
+                        .getComponent()
+                        .asString(SDLinkConfig.INSTANCE.chatConfig.formatting)
+                )
+                .build();
             message.sendMessage();
         } catch (Exception e) {
             Debugger.INSTANCE.log("Failed to broadcast message", e);
@@ -696,89 +1033,141 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void sdlinkReadyEvent(SDLinkReadyEvent event) {
-        if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
-            LogReader.init(CraterLoader.isDevEnv());
+        if (
+            SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages
+        ) LogReader.init(CraterLoader.isDevEnv());
     }
 
     @CraterEventListener
     public void playerVerified(VerificationEvent.PlayerVerified event) {
-        if (!minecraftServer.isUsingWhitelist())
-            return;
+        if (!minecraftServer.isUsingWhitelist()) return;
 
         try {
-            CraterGameProfile p = CraterGameProfile.fromGame(event.getAccount().getUsername(), event.getAccount().getUuid());
+            CraterGameProfile p = CraterGameProfile.fromGame(
+                event.getAccount().getUsername(),
+                event.getAccount().getUuid()
+            );
             minecraftServer.whitelistPlayer(p);
         } catch (Exception e) {
-            SDLinkConstants.LOGGER.error("Failed to whitelist verified player", e);
+            SDLinkConstants.LOGGER.error(
+                "Failed to whitelist verified player",
+                e
+            );
         }
     }
 
     @CraterEventListener
     public void playerUnVerified(VerificationEvent.PlayerUnverified event) {
-        if (!minecraftServer.isUsingWhitelist())
-            return;
+        if (!minecraftServer.isUsingWhitelist()) return;
 
         try {
-            CraterGameProfile p = CraterGameProfile.fromGame(event.getAccount().getUsername(), event.getAccount().getUuid());
+            CraterGameProfile p = CraterGameProfile.fromGame(
+                event.getAccount().getUsername(),
+                event.getAccount().getUuid()
+            );
             minecraftServer.unWhitelistPlayer(p);
         } catch (Exception e) {
-            SDLinkConstants.LOGGER.error("Failed to unwhitelist verified player", e);
+            SDLinkConstants.LOGGER.error(
+                "Failed to unwhitelist verified player",
+                e
+            );
         }
     }
 
     public boolean canSendMessage() {
-        return BotController.INSTANCE != null && BotController.INSTANCE.isBotReady() && SDLinkConfig.INSTANCE != null;
+        return (
+            BotController.INSTANCE != null &&
+            BotController.INSTANCE.isBotReady() &&
+            SDLinkConfig.INSTANCE != null
+        );
     }
 
     @CraterEventListener
     public void playerRevivedEvent(PlayerRevivedEvent event) {
-        if (!canSendMessage() || !SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled)
-            return;
+        if (
+            !canSendMessage() ||
+            !SDLinkCompatConfig.INSTANCE.playerReviveCompat.enabled
+        ) return;
 
         CraterPlayer player = event.getPlayer();
-        String name = player.getDisplayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-        String finalMessage = SDLinkCompatConfig.INSTANCE.playerReviveCompat.revivedMessage;
+        String name = player
+            .getDisplayName()
+            .asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
+        String finalMessage =
+            SDLinkCompatConfig.INSTANCE.playerReviveCompat.revivedMessage;
 
-        MinecraftAccount mcAccount = MinecraftAccount.of(event.getPlayer().getGameProfile());
+        MinecraftAccount mcAccount = MinecraftAccount.of(
+            event.getPlayer().getGameProfile()
+        );
         DiscordUser discordUser = mcAccount.getDiscordUser();
 
-        if (discordUser != null && SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
+        if (
+            discordUser != null &&
+            SDLinkConfig.INSTANCE.chatConfig.useLinkedNames
+        ) {
             name = discordUser.getEffectiveName();
         }
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
-                .message(finalMessage.replace("%player%", name))
-                .author(DiscordAuthor.getServer()
-                        .setGameProfile(event.getPlayer().getGameProfile())
-                        .setPlayerName(player.getDisplayName().asString())
-                        .setPlayerAvatar(player.getGameProfile().getName(), player.getStringUUID()))
-                .build();
+            .message(finalMessage.replace("%player%", name))
+            .author(
+                DiscordAuthor.getServer()
+                    .setGameProfile(event.getPlayer().getGameProfile())
+                    .setPlayerName(player.getDisplayName().asString())
+                    .setPlayerAvatar(
+                        player.getGameProfile().getName(),
+                        player.getStringUUID()
+                    )
+            )
+            .build();
 
         message.sendMessage();
     }
 
     @CraterEventListener
     public void userWhitelisted(WhitelistChangedEvent.EntryAdded event) {
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.whitelistChanged)
-            return;
+        if (
+            !canSendMessage() ||
+            !SDLinkConfig.INSTANCE.chatConfig.whitelistChanged
+        ) return;
 
-        DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
-                .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistAdded.replace("%player%", event.getProfile().getName()))
-                .author(DiscordAuthor.getServer().setGameProfile(event.getProfile()))
-                .build();
+        DiscordMessage message = new DiscordMessageBuilder(
+            MessageType.WHITELIST
+        )
+            .message(
+                SDLinkConfig.INSTANCE.messageFormatting.whitelistAdded.replace(
+                    "%player%",
+                    event.getProfile().getName()
+                )
+            )
+            .author(
+                DiscordAuthor.getServer().setGameProfile(event.getProfile())
+            )
+            .build();
 
         message.sendMessage();
     }
 
     @CraterEventListener
     public void userWhitelisted(WhitelistChangedEvent.EntryRemoved event) {
-        if (!canSendMessage() || !SDLinkConfig.INSTANCE.chatConfig.whitelistChanged)
-            return;
+        if (
+            !canSendMessage() ||
+            !SDLinkConfig.INSTANCE.chatConfig.whitelistChanged
+        ) return;
 
-        DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
-                .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistRemoved.replace("%player%", event.getProfile().getName()))
-                .author(DiscordAuthor.getServer().setGameProfile(event.getProfile()))
-                .build();
+        DiscordMessage message = new DiscordMessageBuilder(
+            MessageType.WHITELIST
+        )
+            .message(
+                SDLinkConfig.INSTANCE.messageFormatting.whitelistRemoved.replace(
+                    "%player%",
+                    event.getProfile().getName()
+                )
+            )
+            .author(
+                DiscordAuthor.getServer().setGameProfile(event.getProfile())
+            )
+            .build();
 
         message.sendMessage();
     }
@@ -793,20 +1182,48 @@ public final class ServerEvents {
                 String group = matcher.group(2);
 
                 if (type.equals("@")) {
-                    Optional<Member> member = CacheManager.getDiscordMembers().stream().filter(m -> m.getEffectiveName().equalsIgnoreCase(group) || m.getUser().getName().equalsIgnoreCase(group)).findFirst();
+                    Optional<Member> member = CacheManager.getDiscordMembers()
+                        .stream()
+                        .filter(
+                            m ->
+                                m.getEffectiveName().equalsIgnoreCase(group) ||
+                                m.getUser().getName().equalsIgnoreCase(group)
+                        )
+                        .findFirst();
 
                     if (member.isPresent()) {
-                        input = input.replace(matcher.group(0), member.get().getAsMention());
+                        input = input.replace(
+                            matcher.group(0),
+                            member.get().getAsMention()
+                        );
                     } else {
-                        if (CacheManager.getServerRoles().containsKey(matcher.group(0))) {
-                            input = input.replace(matcher.group(0), CacheManager.getServerRoles().get(matcher.group(0)));
+                        if (
+                            CacheManager.getServerRoles().containsKey(
+                                matcher.group(0)
+                            )
+                        ) {
+                            input = input.replace(
+                                matcher.group(0),
+                                CacheManager.getServerRoles().get(
+                                    matcher.group(0)
+                                )
+                            );
                         }
                     }
                 }
 
                 if (type.equals("#")) {
-                    if (CacheManager.getServerChannels().containsKey(matcher.group(0))) {
-                        input = input.replace(matcher.group(0), CacheManager.getServerChannels().get(matcher.group(0)));
+                    if (
+                        CacheManager.getServerChannels().containsKey(
+                            matcher.group(0)
+                        )
+                    ) {
+                        input = input.replace(
+                            matcher.group(0),
+                            CacheManager.getServerChannels().get(
+                                matcher.group(0)
+                            )
+                        );
                     }
                 }
             }
@@ -819,8 +1236,7 @@ public final class ServerEvents {
         Pattern pattern = Pattern.compile(":[a-zA-Z0-9_]+:");
         Matcher matcher = pattern.matcher(input);
 
-        if (CacheManager.getCustomEmotes().isEmpty())
-            return input;
+        if (CacheManager.getCustomEmotes().isEmpty()) return input;
 
         StringBuilder result = new StringBuilder();
 
@@ -828,12 +1244,14 @@ public final class ServerEvents {
             String emoji = matcher.group();
 
             if (CacheManager.getCustomEmotes().containsKey(emoji)) {
-                String replacement = CacheManager
-                        .getCustomEmotes()
-                        .get(emoji)
-                        .getAsMention();
+                String replacement = CacheManager.getCustomEmotes()
+                    .get(emoji)
+                    .getAsMention();
 
-                matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+                matcher.appendReplacement(
+                    result,
+                    Matcher.quoteReplacement(replacement)
+                );
             } else {
                 matcher.appendReplacement(result, emoji);
             }
@@ -842,5 +1260,4 @@ public final class ServerEvents {
         matcher.appendTail(result);
         return result.toString();
     }
-
 }
