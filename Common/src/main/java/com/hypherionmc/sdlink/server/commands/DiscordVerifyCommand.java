@@ -35,6 +35,11 @@ public final class DiscordVerifyCommand {
                         return 1;
                     }
 
+                    if (account.isAccountVerified()) {
+                        ctx.sendSuccess(() -> Text.literal("Account already verified"), false);
+                        return 1;
+                    }
+
                     if (SDLinkUtils.isNullOrEmpty(sdLinkAccount.getVerifyCode())) {
                         int code = SDLinkUtils.intInRange(1000, 9999);
                         sdLinkAccount.setVerifyCode(String.valueOf(code));
