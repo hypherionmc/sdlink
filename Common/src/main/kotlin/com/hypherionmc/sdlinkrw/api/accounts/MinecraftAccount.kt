@@ -126,7 +126,7 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
             DatabaseManager.INSTANCE.updateEntry(account)
         } catch (_: Exception) {}
 
-        SDLCache.updateVerifiedRoles(member, false)
+        SDLCache.updateVerifiedRoles(member, true)
         SDLCache.updateNickname(member, account.effectiveInGameName, true)
 
         CraterEventBus.INSTANCE.postEvent(VerificationEvent.PlayerVerified(this))

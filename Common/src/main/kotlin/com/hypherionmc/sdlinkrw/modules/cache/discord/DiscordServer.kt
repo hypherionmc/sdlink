@@ -160,8 +160,10 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
         for (role in roles) {
             try {
                 if (added) {
+                    Debugger.log("Adding verified role ${role.name} to ${member.effectiveName} in ${guild.name}")
                     guild.addRoleToMember(member, role).queue()
                 } else {
+                    Debugger.log("Removing verified role ${role.name} to ${member.effectiveName} in ${guild.name}")
                     guild.removeRoleFromMember(member, role).queue()
                 }
             } catch (e: Exception) {
@@ -182,9 +184,11 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
 
         try {
             if (added) {
-                guild.modifyNickname(member, member.effectiveName).queue()
+                Debugger.log("Updating nickname for ${member.effectiveName} in ${guild.name}")
+                guild.modifyNickname(member, accountName).queue()
             } else {
                 if (member.nickname == null || member.nickname!! != accountName) return
+                Debugger.log("Removing nickname for ${member.effectiveName} in ${guild.name}")
                 guild.modifyNickname(member, null).queue()
             }
         } catch (e: Exception) {
