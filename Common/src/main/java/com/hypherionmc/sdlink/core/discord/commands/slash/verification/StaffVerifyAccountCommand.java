@@ -57,7 +57,7 @@ public final class StaffVerifyAccountCommand extends SDLinkSlashCommand {
         SDLinkAccount account = accounts.stream().filter(a -> a.getUsername().equalsIgnoreCase(mcname) || a.getInGameName().equalsIgnoreCase(mcname)).findFirst().orElse(null);
 
         if (account == null) {
-            event.getHook().editOriginal(SDText.translate("error.not_match_found", mcname).toString()).queue();
+            event.getHook().editOriginal(SDText.translate("error.no_match_found", mcname).toString()).queue();
             return;
         }
 
