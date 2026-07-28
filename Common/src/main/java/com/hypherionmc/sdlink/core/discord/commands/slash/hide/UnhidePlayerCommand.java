@@ -40,7 +40,7 @@ public final class UnhidePlayerCommand extends SDLinkSlashCommand {
                 return;
             }
 
-            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class).stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(user.getId())).toList();
+            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class).stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(user.getId())).toList();
             if (accounts.isEmpty()) {
                 event.getHook().editOriginal(SDText.translate("command.hideplayer.account_not_found", user.getAsMention()).toString()).queue();
             } else {

@@ -8,7 +8,7 @@ data class SDLinkAccount(
     @Id var uuid: String,
     var username: String,
     var inGameName: String,
-    var discordId: String?,
+    var discordID: String?,
     var verifyCode: String?,
     var isOffline: Boolean
 ) {

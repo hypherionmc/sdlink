@@ -172,7 +172,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
 
         try {
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(event.getUser().getId())).findFirst();
+            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
             account.ifPresent(a -> DatabaseManager.INSTANCE.deleteEntry(a, SDLinkAccount.class));
         } catch (Exception e) {
             SDLinkConstants.LOGGER.error("Failed to remove linked account", e);
@@ -226,7 +226,7 @@ public final class DiscordEventHandler extends ListenerAdapter {
 
         try {
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equalsIgnoreCase(event.getUser().getId())).findFirst();
+            Optional<SDLinkAccount> account = accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equalsIgnoreCase(event.getUser().getId())).findFirst();
 
             account.ifPresent(a -> {
                 MinecraftAccount acc = MinecraftAccount.of(a);

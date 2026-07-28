@@ -71,7 +71,7 @@ public final class VerifyAccountCommand extends SDLinkSlashCommand {
             if (account.getVerifyCode() == null)
                 continue;
 
-            if (accounts.stream().anyMatch(a -> a.getDiscordId() != null && a.getDiscordId().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
+            if (accounts.stream().anyMatch(a -> a.getDiscordID() != null && a.getDiscordID().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
                 event.getHook().sendMessage(SDText.translate("command.verify.already_verified").toString()).queue();
                 return;
             }

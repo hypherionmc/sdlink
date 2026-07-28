@@ -9,7 +9,6 @@ import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.TextColor;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
@@ -118,7 +117,7 @@ public final class MessageContext {
         try {
             if (SDLinkConfig.INSTANCE.chatConfig.useLinkedNames) {
                 List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.getCollection(SDLinkAccount.class);
-                accounts.stream().filter(a -> a.getDiscordId() != null && a.getDiscordId().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
+                accounts.stream().filter(a -> a.getDiscordID() != null && a.getDiscordID().equals(sender.getId())).findFirst().ifPresent(u -> user.set(u.getInGameName()));
             }
         } catch (Exception e) {
             if (SDLinkConfig.INSTANCE.generalConfig.debugging) {

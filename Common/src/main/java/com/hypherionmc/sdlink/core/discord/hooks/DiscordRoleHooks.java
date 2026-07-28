@@ -3,7 +3,6 @@ package com.hypherionmc.sdlink.core.discord.hooks;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.TriggerCommandsConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
@@ -43,7 +42,7 @@ public final class DiscordRoleHooks {
             if (accounts.isEmpty())
                 return;
 
-            Optional<SDLinkAccount> account = accounts.stream().filter(d -> d.getDiscordId() != null && d.getDiscordId().equalsIgnoreCase(memberId)).findFirst();
+            Optional<SDLinkAccount> account = accounts.stream().filter(d -> d.getDiscordID() != null && d.getDiscordID().equalsIgnoreCase(memberId)).findFirst();
 
             account.ifPresent(acc -> {
                 MinecraftAccount mcAccount = MinecraftAccount.of(acc);

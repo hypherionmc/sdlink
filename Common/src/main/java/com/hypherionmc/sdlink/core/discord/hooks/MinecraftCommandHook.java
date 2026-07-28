@@ -42,7 +42,7 @@ public final class MinecraftCommandHook {
         roles.addAll(event.getMember().getRoles().stream().sorted((r1, r2) -> Long.compare(r2.getPositionRaw(), r1.getPositionRaw())).map(ISnowflake::getIdLong).toList());
 
         List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);
-        Optional<SDLinkAccount> account = accounts.stream().filter(u -> u.getDiscordId() != null && u.getDiscordId().equals(event.getMember().getId())).findFirst();
+        Optional<SDLinkAccount> account = accounts.stream().filter(u -> u.getDiscordID() != null && u.getDiscordID().equals(event.getMember().getId())).findFirst();
 
         MinecraftCommands.Command allowedCommand = null;
         for (long roleId : roles) {

@@ -5,7 +5,6 @@
 package com.hypherionmc.sdlink.core.discord.commands.slash.verification;
 
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.MessageUtil;
@@ -63,8 +62,8 @@ public final class ViewVerifiedAccounts extends SDLinkSlashCommand {
                 itm.forEach(v -> {
                     Member member = null;
 
-                    if (v.getDiscordId() != null && !v.getDiscordId().isEmpty()) {
-                        member = event.getGuild().getMemberById(v.getDiscordId());
+                    if (v.getDiscordID() != null && !v.getDiscordID().isEmpty()) {
+                        member = event.getGuild().getMemberById(v.getDiscordID());
                     }
 
                     sBuilder.append(v.getUsername()).append(!v.getInGameName().equalsIgnoreCase(v.getUsername()) ? " (" + v.getInGameName() + " )" : "").append(" -> ").append(member == null ? "Unlinked" : member.getAsMention()).append("\r\n");

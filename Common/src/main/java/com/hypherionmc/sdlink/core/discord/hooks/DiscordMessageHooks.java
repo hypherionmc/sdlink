@@ -9,7 +9,6 @@ import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.MessageDestination;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
@@ -155,7 +154,7 @@ public final class DiscordMessageHooks {
             if (account.getVerifyCode() == null)
                 continue;
 
-            if (accounts.stream().anyMatch(a -> a.getDiscordId() != null && a.getDiscordId().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
+            if (accounts.stream().anyMatch(a -> a.getDiscordID() != null && a.getDiscordID().equals(m.getId())) && !SDLinkConfig.INSTANCE.accessControl.allowMultipleAccounts) {
                 event.getMessage().reply(SDText.translate("command.verify.already_verified")).queue();
                 return;
             }

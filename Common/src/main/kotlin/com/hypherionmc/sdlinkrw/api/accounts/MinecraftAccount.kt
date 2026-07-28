@@ -1,5 +1,6 @@
 package com.hypherionmc.sdlinkrw.api.accounts
 
+import com.google.gson.Gson
 import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile
 import com.hypherionmc.craterlib.core.event.CraterEventBus
 import com.hypherionmc.sdlink.api.messaging.Result
@@ -42,7 +43,7 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
      */
     fun isAccountVerified(): Boolean {
         val account = getStoredAccount()
-        return !account.discordId.isNullOrBlank()
+        return !account.discordID.isNullOrBlank()
     }
 
     /**
@@ -81,9 +82,9 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
      */
     fun getDiscordName(): String {
         val account = getStoredAccount()
-        if (account.discordId.isNullOrEmpty()) return "account.unlinked".translate()
+        if (account.discordID.isNullOrEmpty()) return "account.unlinked".translate()
 
-        return SDLCache.getUserById(account.discordId!!)?.user?.name ?: "account.unlinked".translate()
+        return SDLCache.getUserById(account.discordID!!)?.user?.name ?: "account.unlinked".translate()
     }
 
     /**
@@ -94,9 +95,9 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
      */
     fun getDiscordUser(guild: Guild): DiscordUser? {
         val account = getStoredAccount()
-        if (account.discordId.isNullOrEmpty()) return null
+        if (account.discordID.isNullOrEmpty()) return null
 
-        val member: Member = guild.memberFromCache(account.discordId!!) ?: return null
+        val member: Member = guild.memberFromCache(account.discordID!!) ?: return null
         return DiscordUser(member.effectiveName, member.effectiveAvatarUrl, member.idLong, member.asMention, member.colorRaw)
     }
 
@@ -104,9 +105,9 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
     @Deprecated("Use getDiscordUser(Guild)")
     fun getDiscordUser(): DiscordUser? {
         val account = getStoredAccount()
-        if (account.discordId.isNullOrEmpty()) return null
+        if (account.discordID.isNullOrEmpty()) return null
 
-        val member: Member = SDLCache.findMemberByDiscordID(account.discordId!!) ?: return null
+        val member: Member = SDLCache.findMemberByDiscordID(account.discordID!!) ?: return null
         return DiscordUser(member.effectiveName, member.effectiveAvatarUrl, member.idLong, member.asMention, member.colorRaw)
     }
 
@@ -118,7 +119,7 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
      */
     fun verifyAccount(member: Member): Result {
         val account = getStoredAccount()
-        account.discordId = member.id
+        account.discordID = member.id
         account.verifyCode = null
 
         try {
@@ -141,7 +142,7 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
     fun unverifyAccount(member: Member, guild: Guild): Result {
         val account = getStoredAccount()
         val oldAccount = this
-        account.discordId = null
+        account.discordID = null
         account.verifyCode = null
 
         try {
@@ -242,19 +243,19 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
             return Result.success("")
 
         val account = getStoredAccount()
-        if (account.discordId.isNullOrEmpty() && SDLinkConfig.INSTANCE.accessControl.enabled)
+        if (account.discordID.isNullOrEmpty() && SDLinkConfig.INSTANCE.accessControl.enabled)
             return Result.error("notVerified")
 
         // TODO: Limit membership requirements to specific discord servers
         if (SDLinkConfig.INSTANCE.accessControl.requireDiscordMembership) {
-            SDLCache.findMemberByDiscordID(account.discordId!!) ?: return Result.error("memberNotFound")
+            SDLCache.findMemberByDiscordID(account.discordID!!) ?: return Result.error("memberNotFound")
         }
 
         if (!SDLinkConfig.INSTANCE.accessControl.requiredRoles.isEmpty() || !SDLinkConfig.INSTANCE.accessControl.deniedRoles.isEmpty()) {
             val anyFound = AtomicBoolean(false)
             val deniedFound = AtomicBoolean(false)
 
-            val member = SDLCache.findMemberByDiscordID(account.discordId!!) ?: return Result.success("pass")
+            val member = SDLCache.findMemberByDiscordID(account.discordID!!) ?: return Result.success("pass")
 
             Debugger.log("${member.effectiveName} has roles: ${member.getAllRoles().stream().map { obj: Role -> obj.name }.toList()}")
 
@@ -281,8 +282,8 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
      */
     fun banDiscordMember() {
         val account = getStoredAccount()
-        if (account.discordId.isNullOrEmpty()) return
-        SDLCache.banMember(account.discordId!!)
+        if (account.discordID.isNullOrEmpty()) return
+        SDLCache.banMember(account.discordID!!)
     }
 
     companion object {
@@ -320,7 +321,7 @@ class MinecraftAccount private constructor(val username: String, val uuid: UUID)
             val account: SDLinkAccount? = DatabaseManager.INSTANCE
                 .getCollection(SDLinkAccount::class.java)
                 .stream()
-                .filter { !it.discordId.isNullOrBlank() && it.discordId == discordId }
+                .filter { !it.discordID.isNullOrBlank() && it.discordID == discordId }
                 .findFirst()
                 .orElse(null)
 
