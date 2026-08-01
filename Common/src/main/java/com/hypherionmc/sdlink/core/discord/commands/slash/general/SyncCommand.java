@@ -35,6 +35,8 @@ public class SyncCommand extends SDLinkSlashCommand {
     protected void execute(SlashCommandEvent event){
         event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
+        // TODO: Add logic for multiple discord servers
+
         if (!SDLinkConfig.INSTANCE.accessControl.enabled) {
             event.getHook().sendMessage(SDText.translate("command.sync.access_control_disabled").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
             return;
@@ -56,7 +58,7 @@ public class SyncCommand extends SDLinkSlashCommand {
                     minecraftAccount.verifyAccount(discordMember);
                 }
 
-                // TODO: Add logic for multiple discord servers
+
 
                 List<String> memberRoles = discordMember.getRoles().stream()
                         .map(Role::getId)
