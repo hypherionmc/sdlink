@@ -10,8 +10,12 @@ import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author SuperficialCake
@@ -52,7 +56,11 @@ public class SyncCommand extends SDLinkSlashCommand {
                     minecraftAccount.verifyAccount(discordMember);
                 }
 
-                if (discordMember.getRoles().contains(SDLinkConfig.INSTANCE.accessControl.verifiedRole.toString())) {
+                List<String> memberRoles = discordMember.getRoles().stream()
+                        .map(Role::getId)
+                        .toList();
+
+                if (!memberRoles.containsAll(SDLinkConfig.INSTANCE.accessControl.verifiedRole)) {
                     MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
                     minecraftAccount.verifyAccount(discordMember);
                 }
