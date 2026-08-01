@@ -30,7 +30,13 @@ public class SyncCommand extends SDLinkSlashCommand {
     protected void execute(SlashCommandEvent event){
         event.deferReply(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
 
+        if (!SDLinkConfig.INSTANCE.accessControl.enabled) {
+            event.getHook().sendMessage(SDText.translate("command.sync.access_control_disabled").toString()).setEphemeral(SDLinkConfig.INSTANCE.botConfig.silentReplies).queue();
+            return;
+        }
+
         try {
+
             List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);
 
             if (accounts.isEmpty()) {
@@ -45,12 +51,12 @@ public class SyncCommand extends SDLinkSlashCommand {
                     discordMember = event.getGuild().getMemberById(itm.getDiscordID());
                 }
 
-                if (discordMember.getNickname() == null || discordMember.getNickname() != itm.getInGameName() && SDLinkConfig.INSTANCE.accessControl.enabled) {
+                if (discordMember.getNickname() == null || discordMember.getNickname() != itm.getInGameName()) {
                     MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
                     minecraftAccount.verifyAccount(discordMember);
                 }
 
-                if (discordMember.getRoles().contains(SDLinkConfig.INSTANCE.accessControl.verifiedRole.toString()) && SDLinkConfig.INSTANCE.accessControl.enabled) {
+                if (discordMember.getRoles().contains(SDLinkConfig.INSTANCE.accessControl.verifiedRole.toString())) {
                     MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
                     minecraftAccount.verifyAccount(discordMember);
                 }
