@@ -56,6 +56,8 @@ public class SyncCommand extends SDLinkSlashCommand {
                     minecraftAccount.verifyAccount(discordMember);
                 }
 
+                // TODO: Add logic for multiple discord servers
+
                 List<String> memberRoles = discordMember.getRoles().stream()
                         .map(Role::getId)
                         .toList();
