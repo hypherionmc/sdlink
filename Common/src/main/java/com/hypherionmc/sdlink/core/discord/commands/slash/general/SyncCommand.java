@@ -3,6 +3,7 @@ package com.hypherionmc.sdlink.core.discord.commands.slash.general;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.commands.slash.SDLinkSlashCommand;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
+import com.hypherionmc.sdlink.util.SDLinkUtils;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import java.util.List;
 
 /**
- * @Author SuperficialCake
+ * @author SuperficialCake
  * Staff command to resync Discord with Minecraft
  */
 public class SyncCommand extends SDLinkSlashCommand {
@@ -36,8 +37,7 @@ public class SyncCommand extends SDLinkSlashCommand {
         }
 
         try {
-
-            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class);
+            List<SDLinkAccount> accounts = DatabaseManager.INSTANCE.findAll(SDLinkAccount.class).stream().filter(account -> !SDLinkUtils.isNullOrEmpty(account.getDiscordID())).toList();
 
             if (accounts.isEmpty()) {
                 event.getHook().sendMessage(SDText.translate("command.verifiedaccounts.no_accounts").toString()).setEphemeral(true).queue();
@@ -45,11 +45,7 @@ public class SyncCommand extends SDLinkSlashCommand {
             }
 
             for (SDLinkAccount itm : accounts) {
-                Member discordMember = null;
-
-                if (itm.getDiscordID() != null && !itm.getDiscordID().isBlank()){
-                    discordMember = event.getGuild().getMemberById(itm.getDiscordID());
-                }
+                Member discordMember = event.getGuild().getMemberById(itm.getDiscordID());
 
                 if (discordMember.getNickname() == null || discordMember.getNickname() != itm.getInGameName()) {
                     MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
