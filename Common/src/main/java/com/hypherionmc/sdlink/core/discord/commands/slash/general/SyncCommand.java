@@ -47,22 +47,29 @@ public class SyncCommand extends SDLinkSlashCommand {
             }
 
             for (SDLinkAccount itm : accounts) {
-                Member discordMember = event.getGuild().getMemberById(itm.getDiscordID());
+                try {
 
-                if (discordMember.getNickname() == null || discordMember.getNickname() != itm.getInGameName()) {
-                    MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
-                    minecraftAccount.verifyAccount(discordMember);
-                }
+                    Member discordMember = event.getGuild().getMemberById(itm.getDiscordID());
 
+                    if (discordMember == null) {
+                        continue;
+                    }
 
+                    if (discordMember.getNickname() == null || !discordMember.getNickname().equals(itm.getInGameName())) {
+                        MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
+                        minecraftAccount.verifyAccount(discordMember);
+                    }
 
-                List<String> memberRoles = discordMember.getRoles().stream()
-                        .map(Role::getId)
-                        .toList();
+                    List<String> memberRoles = discordMember.getRoles().stream()
+                            .map(Role::getId)
+                            .toList();
 
-                if (!memberRoles.containsAll(SDLinkConfig.INSTANCE.accessControl.verifiedRole)) {
-                    MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
-                    minecraftAccount.verifyAccount(discordMember);
+                    if (!memberRoles.containsAll(SDLinkConfig.INSTANCE.accessControl.verifiedRole)) {
+                        MinecraftAccount minecraftAccount = MinecraftAccount.of(itm);
+                        minecraftAccount.verifyAccount(discordMember);
+                    }
+                } catch (Exception e) {
+                    SDLinkConstants.LOGGER.error("Failed to sync one or more accounts", e);
                 }
             }
 
