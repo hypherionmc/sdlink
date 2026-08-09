@@ -5,6 +5,10 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 
 public final class CommonCompat {
 
+    @Path("ignoreCancelled")
+    @SpecComment("Ignore cancelled chat events. Fixes compat with some mods like FTB Teams")
+    public boolean ignoreCancelled = false;
+
     @Path("vanish")
     @SpecComment("Should SDLink integrate with Vanish Mod")
     public boolean vanish = true;

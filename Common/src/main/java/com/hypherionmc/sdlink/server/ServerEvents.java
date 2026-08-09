@@ -121,6 +121,10 @@ public final class ServerEvents {
         if (CraterLoader.isModLoaded("utilitarian")) {
             BotController.INSTANCE.getLogger().warn("Utilitarian Mod Detected. If your discord messages are missing from in-game, please check that the word Discord is not blocked in config/utilitarian.json. This applies mostly to newer FTB Modpacks");
         }
+
+        if (SDLinkCompatConfig.INSTANCE.common.ignoreCancelled) {
+            BotController.INSTANCE.getLogger().warn("Cancelled chat events are set to be ignored. If you are missing chat messages from Minecraft -> Discord, this is probably why.");
+        }
     }
 
     @CraterEventListener
@@ -166,15 +170,27 @@ public final class ServerEvents {
 
     @CraterEventListener
     public void onServerChatEvent(CraterServerChatEvent event) {
-        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer())) {
+        boolean ignoreCancelled = ExperimentalFeatures.INSTANCE.IGNORE_CANCELLED_CHAT || SDLinkCompatConfig.INSTANCE.common.ignoreCancelled;
+
+        if (event.getSource() == CraterServerChatEvent.MessageSource.MAIN && ignoreCancelled) {
+            Debugger.INSTANCE.log("Ignoring Chat Event due to config");
             return;
         }
 
-        if (ExperimentalFeatures.INSTANCE.IGNORE_CANCELLED_CHAT && event.isUpstreamCancelled())
+        if (event.getSource() == CraterServerChatEvent.MessageSource.BACKUP && !ignoreCancelled) {
+            Debugger.INSTANCE.log("Ignoring Backup Chat Event due to config");
             return;
+        }
 
-        if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID()))
+        if (!SDLinkMCPlatform.INSTANCE.playerIsActive(event.getPlayer())) {
+            Debugger.INSTANCE.log("Ignoring chat because player is vanished");
             return;
+        }
+
+        if (HiddenPlayersManager.INSTANCE.isPlayerHidden(event.getPlayer().getStringUUID())) {
+            Debugger.INSTANCE.log("Ignoring chat because hidden player is muted");
+            return;
+        }
 
         // Cobblemon Guilds
         if (SDLinkCompatConfig.INSTANCE.common.cobblemonguilds && CraterLoader.isModLoaded("guilds")) {
@@ -182,12 +198,16 @@ public final class ServerEvents {
         }
 
         // FTB Essentials
-        if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && CraterLoader.isModLoaded("ftbessentials") && CraterCompat.isPlayerMuted(event.getPlayer()))
+        if (SDLinkCompatConfig.INSTANCE.common.ftbessentials && CraterLoader.isModLoaded("ftbessentials") && CraterCompat.isPlayerMuted(event.getPlayer())) {
+            Debugger.INSTANCE.log("Ignoring chat because player is FTB Essentials Muted");
             return;
+        }
 
         // Advanced Chat
-        if (CraterLoader.isModLoaded("advanced-chat") && CraterCompat.isPrivateMessage(event.getPlayer()))
+        if (CraterLoader.isModLoaded("advanced-chat") && CraterCompat.isPrivateMessage(event.getPlayer())) {
+            Debugger.INSTANCE.log("Ignoring chat because message is Advanced Chat private message");
             return;
+        }
 
         onServerChatEvent(event.getComponent(), event.getPlayer().getDisplayName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer()), event.getPlayer().getGameProfile(), false);
     }
@@ -224,6 +244,7 @@ public final class ServerEvents {
                         .author(!fromServer ? author : DiscordAuthor.getServer())
                         .build();
 
+                Debugger.INSTANCE.log("Now Sending Message");
                 discordMessage.sendMessage();
 
                 if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftChats) {

@@ -28,6 +28,10 @@ public final class ExperimentalFeatures {
 
             RELAY_SERVER = Boolean.parseBoolean(props.getProperty("RELAY_SERVER", "false"));
             IGNORE_CANCELLED_CHAT = Boolean.parseBoolean(props.getProperty("IGNORE_CANCELLED_CHAT", "false"));
+
+            BotController.INSTANCE.getLogger().warn("Experimental features are enabled");
+            BotController.INSTANCE.getLogger().warn("RELAY_SERVER: {}", RELAY_SERVER);
+            BotController.INSTANCE.getLogger().warn("IGNORE_CANCELLED_CHAT: {}", IGNORE_CANCELLED_CHAT);
         } catch (Exception e) {
             BotController.INSTANCE.getLogger().error("Failed to load Experimental Features", e);
         }

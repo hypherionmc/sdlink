@@ -3,10 +3,14 @@
 - [Documentation](https://sdlink.fdd-docs.com)
 - This single jar works on 1.18.2-26.2
 
-*Requires CraterLib 3.1.2 or newer*
+*Requires CraterLib 3.1.3 or newer*
 
 ### If you find a bug please report it. If nobody reports issues, they can't be fixed
 
+**Changes**:
+
+- Added official config toggle to ignore canceled chat events (fixes compat with mods like FTB Teams, etc). Requires CraterLib update - HypherionSA
+
 **Bug Fixes**:
 
-- Fixed %player_avatar% embed placeholder always using linked discord avatars instead of the minecraft avatars
+- FTB Ranks that do not include conditionally assigned ranks in rank sync - John Clardy
