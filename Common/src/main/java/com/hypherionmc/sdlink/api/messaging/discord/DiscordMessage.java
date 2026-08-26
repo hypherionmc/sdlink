@@ -48,6 +48,7 @@ public final class DiscordMessage {
     private final MessageType messageType;
     private final DiscordAuthor author;
     private final String message;
+    private final String embedColor;
     private final Runnable afterSend;
 
     /**
@@ -57,6 +58,7 @@ public final class DiscordMessage {
         this.messageType = builder.getMessageType();
         this.author = builder.getAuthor();
         this.message = builder.getMessage();
+        this.embedColor = builder.getEmbedColor();
         this.afterSend = builder.getAfterSend();
     }
 
@@ -277,6 +279,9 @@ public final class DiscordMessage {
             }
 
             builder.setDescription(message);
+            if (!getOrElse(embedColor, "").isEmpty()) {
+                setEmbedColor(builder, embedColor);
+            }
             return builder;
         }
 
@@ -322,11 +327,7 @@ public final class DiscordMessage {
             builder.setTimestamp(OffsetDateTime.parse(String.valueOf(data.timestamp)));
         }
 
-        if (getOrElse(data.color, "#000000").startsWith("#")) {
-            builder.setColor(Color.decode(getOrElse(data.color, "#000000")));
-        } else {
-            builder.setColor(Integer.parseInt(getOrElse(data.color, "#000000"), 16));
-        }
+        setEmbedColor(builder, getOrElse(embedColor, data.color));
 
         if (data.thumbnail != null) {
             builder.setThumbnail(getOrElse(data.thumbnail.url, null));
@@ -358,5 +359,18 @@ public final class DiscordMessage {
         }
 
         return builder;
+    }
+
+    private void setEmbedColor(EmbedBuilder builder, String color) {
+        String configuredColor = getOrElse(color, "#000000").trim();
+        if (configuredColor.isEmpty()) {
+            configuredColor = "#000000";
+        }
+
+        if (configuredColor.startsWith("#")) {
+            builder.setColor(Color.decode(configuredColor));
+        } else {
+            builder.setColor(Integer.parseInt(configuredColor, 16));
+        }
     }
 }
