@@ -14,3 +14,4 @@
 **Bug Fixes**:
 
 - FTB Ranks that do not include conditionally assigned ranks in rank sync - John Clardy
+- Topic updates should update thread channel parent topic - HypherionSA

@@ -18,6 +18,7 @@ import com.hypherionmc.sdlink.util.SystemUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -90,6 +91,11 @@ public final class BotReadyHooks {
             try {
                 if (BotController.INSTANCE.isBotReady() && (SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic != null && !SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic.isEmpty())) {
                     MessageChannel channel = ChannelManager.getDestinationChannel(MessageDestination.CHAT);
+
+                    if (channel instanceof ThreadChannel tc) {
+                        channel = tc.getParentChannel().asTextChannel();
+                    }
+
                     if (channel instanceof StandardGuildMessageChannel mc) {
                         if (SDLinkCompatConfig.INSTANCE.maintenanceModeCompat.enabled
                                 && CraterLoader.isModLoaded("mmode")
