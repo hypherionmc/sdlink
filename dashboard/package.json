@@ -1,0 +1,35 @@
+{
+  "name": "frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "typecheck": "vue-tsc -p ./tsconfig.app.json"
+  },
+  "dependencies": {
+    "@discord-message-components/vue": "^0.2.1",
+    "@highlightjs/vue-plugin": "^2.1.0",
+    "@nuxt/ui": "^4.7.1",
+    "@types/markdown-it": "^14.1.2",
+    "@unhead/vue": "^2.1.15",
+    "@vueuse/core": "^14.3.0",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.1",
+    "pinia": "^3.0.4",
+    "tailwindcss": "^4.3.0",
+    "vue": "^3.5.34",
+    "vue-router": "^5.0.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.6",
+    "eslint": "^10.3.0",
+    "eslint-plugin-vue": "^10.9.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^7.3.3",
+    "vue-tsc": "^3.2.8"
+  }
+}

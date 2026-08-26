@@ -7,11 +7,11 @@ import com.hypherionmc.craterlib.libs.kyori.adventure.text.event.HoverEvent;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.NamedTextColor;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.TextColor;
-import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
 import com.hypherionmc.sdlink.core.managers.DatabaseManager;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
 import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import lombok.Getter;
@@ -126,7 +126,7 @@ public final class MessageContext {
         }
 
         // Parse Prefix
-        String mainPrefix = SDLinkConfig.INSTANCE.messageFormatting.mcPrefix
+        String mainPrefix = SDLinkConfig.INSTANCE.channels.chatMessages.mcPrefix
                 .replace("%user%", user.get()).replace("%role%", sender.getRoles().isEmpty()
                         ? "No Role" : sender.getRoles().get(0).getName());
 
@@ -154,7 +154,7 @@ public final class MessageContext {
             }
 
             finalComponent = parsePlaceholders(
-                    Text.formatted(SDLinkConfig.INSTANCE.messageFormatting.mcReplyFormatting),
+                    Text.formatted(SDLinkConfig.INSTANCE.channels.chatMessages.mcReplyFormatting),
                     Style.style().build(),
                     replyMember,
                     formattedReply
@@ -171,7 +171,7 @@ public final class MessageContext {
             } catch (Exception ignored) {}
         }
 
-        if ((formattedReply == null || formattedReply.isEmpty()) && SDLinkConfig.INSTANCE.chatConfig.showDiscordInfo) {
+        if ((formattedReply == null || formattedReply.isEmpty()) && SDLinkConfig.INSTANCE.channels.chatMessages.showDiscordInfo) {
             appendDiscordInfo(sender, finalComponent);
         }
 

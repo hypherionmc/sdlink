@@ -6,7 +6,7 @@ package com.hypherionmc.sdlink.core.discord.hooks;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
-import com.hypherionmc.sdlink.api.messaging.MessageDestination;
+import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.discord.SDLWebhookServerMember;
@@ -15,11 +15,11 @@ import com.hypherionmc.sdlink.core.managers.HiddenPlayersManager;
 import com.hypherionmc.sdlink.server.SDLinkMinecraftBridge;
 import com.hypherionmc.sdlink.util.PKUtil;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
-import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import com.hypherionmc.sdlinkrw.util.Debugger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -43,13 +43,13 @@ public final class DiscordMessageHooks {
      */
     public static void discordMessageEvent(MessageReceivedEvent event) {
         try {
-            if (!SDLinkConfig.INSTANCE.chatConfig.discordMessages)
+            if (!SDLinkConfig.INSTANCE.channels.chatMessages.sendToMinecraft)
                 return;
 
-            if (!SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID.contains(event.getChannel().getId())) return;
+            if (!SDLCache.INSTANCE.getAllChannels(MessageType.CHAT).contains(event.getChannel().getIdLong())) return;
 
-            if (SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT).isEmpty()) {
-                SDLinkConstants.LOGGER.warn("There are no chat channels set up! Cannot relay messages.");
+            if (SDLCache.INSTANCE.getChannelDestinations(MessageType.CHAT).isEmpty()) {
+                SDLinkConstants.LOGGER.warn("There are no channels channels set up! Cannot relay messages.");
                 return;
             }
 
@@ -62,13 +62,13 @@ public final class DiscordMessageHooks {
                 return;
 
             if (event.isWebhookMessage() || event.getAuthor().isBot()) {
-                boolean pluralKitHandled = SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event);
-                if (!pluralKitHandled && SDLinkConfig.INSTANCE.chatConfig.ignoreBots) {
+                boolean pluralKitHandled = SDLinkConfig.INSTANCE.channels.chatMessages.pluralKitCompat && PKUtil.isPK(event);
+                if (!pluralKitHandled && SDLinkConfig.INSTANCE.channels.chatMessages.ignoreBots) {
                     return;
                 }
             }
 
-            if (!(event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.isPK(event))
+            if (!(event.isWebhookMessage() || event.getAuthor().isBot()) && SDLinkConfig.INSTANCE.channels.chatMessages.pluralKitCompat && PKUtil.isPK(event))
                 return;
 
             if (SDLinkConfig.INSTANCE.linkedCommands.enabled && !SDLinkConfig.INSTANCE.linkedCommands.permissions.isEmpty() && event.getMessage().getContentRaw().startsWith(SDLinkConfig.INSTANCE.linkedCommands.prefix))
@@ -77,9 +77,9 @@ public final class DiscordMessageHooks {
             var cloned = cloneMessage(event.getMessage());
 
             if (!(cloned.getEmbeds().isEmpty() && cloned.getContent().isBlank())) {
-                SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT).stream().filter(chan -> chan.getIdLong() != event.getChannel().getIdLong()).forEach(channel -> {
+                SDLCache.INSTANCE.getChannelDestinations(MessageType.CHAT).stream().filter(chan -> chan.getIdLong() != event.getChannel().getIdLong()).forEach(channel -> {
                     Debugger.INSTANCE.log("Relaying message to " + channel.getName() + " (" + channel.getId() + ")");
-                    var client = WebhookCluster.INSTANCE.getClient(MessageDestination.CHAT, channel.getIdLong());
+                    var client = WebhookCluster.INSTANCE.getClient(MessageType.CHAT, channel.getIdLong());
 
                     if (client != null) {
                         var relayMessage = WebhookMessageBuilder.fromJDA(cloned);

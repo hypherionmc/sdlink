@@ -9,7 +9,6 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 import com.hypherionmc.sdlink.core.config.impl.RelayMessageConfig;
 import com.hypherionmc.sdlink.core.config.impl.RelayServerConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.commons.io.FileUtils;

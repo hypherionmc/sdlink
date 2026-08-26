@@ -6,15 +6,12 @@ package com.hypherionmc.sdlink.api.messaging.discord;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.hypherionmc.sdlink.api.accounts.DiscordAuthor;
-import com.hypherionmc.sdlink.api.messaging.MessageDestination;
 import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
-import com.hypherionmc.sdlink.core.config.impl.MessageChannelConfig;
+import com.hypherionmc.sdlink.core.config.impl.channels.IChannelContainer;
 import com.hypherionmc.sdlink.core.discord.BotController;
-import com.hypherionmc.sdlink.core.managers.CacheManager;
 import com.hypherionmc.sdlink.core.managers.EmbedManager;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
-import com.hypherionmc.sdlink.util.DestinationHolder;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
@@ -100,12 +97,12 @@ public final class DiscordMessage {
      */
     private void sendNormalMessage() {
         Debugger.INSTANCE.log("Sending message of type " + messageType.name());
-        DestinationHolder channel = resolveDestination();
+        IChannelContainer channel = resolveDestination();
 
         try {
-            if (channel.channel() == null) {
+            if (channel.channels().isEmpty()) {
                 if (SDLinkConfig.INSTANCE.generalConfig.debugging)
-                    SDLinkConstants.LOGGER.warn("Expected to get Channel for {}, but got null", messageType.name());
+                    SDLinkConstants.LOGGER.warn("Expected to get Channel for {}, but got nothing", messageType.name());
                 runAfterSend();
                 return;
             }
@@ -113,7 +110,7 @@ public final class DiscordMessage {
 
             if (messageType == MessageType.START || messageType == MessageType.STOP) {
                 builder.setAllowedMentions(EnumSet.allOf(Message.MentionType.class));
-            } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+            } else if (messageType == MessageType.CHAT && SDLinkConfig.INSTANCE.channels.chatMessages.allowMentionsFromChat) {
                 builder.setAllowedMentions(EnumSet.of(Message.MentionType.USER));
                 builder.mentionRoles(getMentionableRoles(message));
             } else {
@@ -126,7 +123,7 @@ public final class DiscordMessage {
                 builder.setEmbeds(eb.build());
             } else {
                 String content = this.messageType == MessageType.CHAT ?
-                        SDLinkConfig.INSTANCE.messageFormatting.chat
+                        SDLinkConfig.INSTANCE.channels.chatMessages.format
                                 .replace("%player%", author.getDisplayName())
                                 .replace("%mcname%", author.getProfile() == null ? "Unknown" : author.getProfile().getName())
                                 .replace("%message%", message)
@@ -138,14 +135,14 @@ public final class DiscordMessage {
 
             // TODO: This needs to be cleaned up
             if (messageType == MessageType.STOP) {
-                for (MessageChannel cc : channel.channel()) {
-                    sendMessage(channel.destination(), cc, builder, true, message);
+                for (MessageChannel cc : channel.channels()) {
+                    sendMessage(channel.type(), cc, builder, true, message);
                 }
 
                 BotController.INSTANCE.shutdownBot(false);
             } else {
-                channel.channel().forEach(cc -> {
-                    sendMessage(channel.destination(), cc, builder, false, message);
+                channel.channels().forEach(cc -> {
+                    sendMessage(channel.type(), cc, builder, false, message);
                 });
             }
         } catch (Exception e) {
@@ -153,9 +150,9 @@ public final class DiscordMessage {
         }
     }
 
-    private void sendMessage(MessageDestination destination, MessageChannel channel, MessageCreateBuilder data, boolean isStopMessage, String rawMessage) {
+    private void sendMessage(MessageType destination, MessageChannel channel, MessageCreateBuilder data, boolean isStopMessage, String rawMessage) {
         Debugger.INSTANCE.log("Sending message to " + destination + " in " + channel.getIdLong());
-        var client = !SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled ? null : WebhookCluster.INSTANCE.getClient(destination, channel.getIdLong());
+        var client = !SDLCache.INSTANCE.getMessageDestinations().get(messageType).useWebhook() ? null : WebhookCluster.INSTANCE.getClient(destination, channel.getIdLong());
         Debugger.INSTANCE.log("Client: " + (client == null ? "null" : client.isShutdown()));
 
         if (client != null && !client.isShutdown()) {
@@ -163,7 +160,7 @@ public final class DiscordMessage {
             var message = WebhookMessageBuilder.fromJDA(data.build());
 
             if (messageType == MessageType.CHAT) {
-                message.setUsername(SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.webhookNameFormat.replace("%display_name%", this.author.getDisplayName().replace("\\_", "_")).replace("%mc_name%", this.author.getUsername()));
+                message.setUsername(SDLinkConfig.INSTANCE.channels.chatMessages.webhookNameFormat.replace("%display_name%", this.author.getDisplayName().replace("\\_", "_")).replace("%mc_name%", this.author.getUsername()));
             } else {
                 message.setUsername(this.author.getDisplayName());
             }
@@ -223,10 +220,10 @@ public final class DiscordMessage {
      */
     private void sendConsoleMessage() {
         try {
-            if (!BotController.INSTANCE.isBotReady() || !SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages)
+            if (!BotController.INSTANCE.isBotReady() || !SDLinkConfig.INSTANCE.channels.consoleMessages.enabled)
                 return;
 
-            List<GuildMessageChannel> channel =SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CONSOLE);
+            List<GuildMessageChannel> channel = SDLCache.INSTANCE.getChannelDestinations(MessageType.CONSOLE);
             channel.forEach(cc -> cc.sendMessage(
                     new MessageCreateBuilder()
                             .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
@@ -284,14 +281,14 @@ public final class DiscordMessage {
     /**
      * Figure out where the message must be delivered to, based on the config values
      */
-    private DestinationHolder resolveDestination() {
-        MessageChannelConfig.DestinationObject destinationObject = CacheManager.messageDestinations.get(messageType);
+    private IChannelContainer resolveDestination() {
+        IChannelContainer destinationObject = SDLCache.INSTANCE.getMessageDestinations().get(messageType);
         if (destinationObject != null) {
-            return destinationObject.toHolder(messageType);
+            return destinationObject;
         }
 
         // This code should never be reached, but it's added here as a fail-safe
-        return SDLinkConfig.INSTANCE.messageDestinations.chat.toHolder(MessageType.CHAT);
+        return SDLinkConfig.INSTANCE.channels.chatMessages;
     }
 
     @NotNull

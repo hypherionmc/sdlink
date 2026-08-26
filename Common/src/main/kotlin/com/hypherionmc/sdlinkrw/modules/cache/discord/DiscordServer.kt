@@ -1,8 +1,7 @@
 package com.hypherionmc.sdlinkrw.modules.cache.discord
 
-import com.hypherionmc.sdlink.api.messaging.MessageDestination
+import com.hypherionmc.sdlink.api.messaging.MessageType
 import com.hypherionmc.sdlink.core.config.SDLinkConfig
-import com.hypherionmc.sdlink.core.discord.BotController
 import com.hypherionmc.sdlink.core.managers.DatabaseManager
 import com.hypherionmc.sdlinkrw.SDLinkConstants
 import com.hypherionmc.sdlinkrw.modules.database.SDLWebhooks
@@ -31,7 +30,7 @@ import java.util.function.Consumer
 class DiscordServer(val guild: Guild, val jda: JDA) {
 
     //region Cache
-    val channelMap: MutableMap<MessageDestination, List<GuildMessageChannel>> = mutableMapOf()
+    val channelMap: MutableMap<MessageType, List<GuildMessageChannel>> = mutableMapOf()
     val webhookCache: MutableMap<Long, Webhook> = mutableMapOf()
 
     val guildChannels: MutableSet<GuildChannel> = mutableSetOf()
@@ -230,42 +229,40 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
 
         val bot = guild.selfMember
         val currentBotPerms = bot.permissionsExplicit
-        if (currentBotPerms.contains(Permission.ADMINISTRATOR)) return
+        if (!currentBotPerms.contains(Permission.ADMINISTRATOR)) {
+            checkBotPerms(errCount, builder, currentBotPerms)
+        }
 
-        checkBotPerms(errCount, builder, currentBotPerms)
+        val fallbackChat = fetchChannels(SDLinkConfig.INSTANCE.channels.chatMessages.channels)
 
-        val chatChannels = fetchChannels(SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.chatChannelID)
-        val eventChannels = fetchChannels(SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.eventsChannelID)
-        val consoleChannel = fetchChannels(SDLinkConfig.INSTANCE.channelsAndWebhooks.channels.consoleChannelID)
-
-        for (channel in chatChannels) {
+        for (channel in fallbackChat) {
             checkChannelPerms(channel.id, "Chat Channel", errCount, builder, bot, true)
         }
 
-        for (channel in eventChannels) {
-            checkChannelPerms(channel.id, "Events Channel", errCount, builder, bot, false)
-
+        if (fallbackChat.isNotEmpty()) {
+            channelMap[MessageType.CHAT] = fallbackChat
         }
 
-        for (channel in consoleChannel) {
-            checkChannelPerms(channel.id, "Console Channel", errCount, builder, bot, false)
+        for (channel in SDLCache.messageDestinations) {
+            if (channel.key == MessageType.CHAT) continue
+
+            val channels = fetchChannels(channel.value.channelsRaw())
+
+            if (channels.isEmpty()) {
+                if (channel.key != MessageType.CONSOLE && !fallbackChat.isEmpty()) {
+                    SDLinkConstants.LOGGER.warn("No ${channel.key.name} Channels set for ${guild.name}. Defaulting to Chat Channels")
+                    channelMap[channel.key] = fallbackChat
+                }
+            } else {
+                channelMap[channel.key] = channels
+
+                for (chan in channelMap[channel.key]!!) {
+                    checkChannelPerms(chan.id, "${channel.key.name} Channel", errCount, builder, bot, false)
+                }
+            }
         }
 
-        channelMap[MessageDestination.CHAT] = chatChannels
-        channelMap[MessageDestination.EVENT] = eventChannels
-        channelMap[MessageDestination.CONSOLE] = consoleChannel
-
-        if (eventChannels.isEmpty() && !chatChannels.isEmpty()) {
-            channelMap[MessageDestination.EVENT] = chatChannels
-            SDLinkConstants.LOGGER.warn("No Events Channels set for ${guild.name}. Defaulting to Chat Channels")
-        }
-
-        if (consoleChannel.isEmpty() && !chatChannels.isEmpty()) {
-            channelMap[MessageDestination.CONSOLE] = chatChannels
-            SDLinkConstants.LOGGER.warn("No Console Channels set for ${guild.name}. Defaulting to Chat Channels")
-        }
-
-        if (eventChannels.isEmpty() && consoleChannel.isEmpty() && chatChannels.isEmpty()) {
+        if (channelMap.isEmpty()) {
             errCount.incrementAndGet()
             builder.append("${errCount.get()}) No Channels set for ${guild.name}. No messages will be relayed to or from it\r\n")
         }
@@ -277,7 +274,22 @@ class DiscordServer(val guild: Guild, val jda: JDA) {
      * @param filter The list of channel IDs to fetch
      * @return The list of channels that were fetched
      */
-    private fun fetchChannels(filter: List<String>): List<StandardGuildMessageChannel> {
+    private fun fetchChannels(filter: MutableList<String>): List<StandardGuildMessageChannel> {
+        if (filter.contains("default_chat")) {
+            filter.addAll(SDLinkConfig.INSTANCE.botConfig.defaultChannels.default_chat)
+            filter.remove("default_chat")
+        }
+
+        if (filter.contains("default_event")) {
+            filter.addAll(SDLinkConfig.INSTANCE.botConfig.defaultChannels.default_event)
+            filter.remove("default_event")
+        }
+
+        if (filter.contains("default_console")) {
+            filter.addAll(SDLinkConfig.INSTANCE.botConfig.defaultChannels.default_console)
+            filter.remove("default_console")
+        }
+
         return guildChannels
             .filter { it.id in filter && it.type == ChannelType.TEXT }
             .map { it as StandardGuildMessageChannel }

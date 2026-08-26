@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Public Sans', sans-serif;
+
+  --ct-dark-primary: #04002A;
+  --ct-dark-secondary: rgba(112, 125, 155, .05);
+  --ct-light-primary: #ECEDF0;
+  --ct-light-secondary: #FAFAFA;
+  --ct-card-dark: rgba(112, 125, 155, .1);
+  --ct-card-light: rgba(255, 255, 255, .7);
+}
+
+.dark {
+  --ui-bg: var(--ct-dark-primary);
+  --ui-bg-elevated: var(--ct-card-dark);
+}
+
+.light {
+  --ui-bg: var(--ct-light-primary);
+  --ui-bg-elevated: var(--ct-card-light);
+}
+
+@utility ct-bg {
+  background-color: var(--ct-light-primary);
+
+  .dark & {
+    background-color: var(--ct-dark-primary);
+  }
+}
+
+@utility ct-card {
+  background-color: var(--ct-card-light);
+
+  .dark & {
+    background-color: var(--ct-card-dark);
+  }
+}
+
+.content-container {
+  padding: 0 20px 20px 20px;
+}
+
+.dark .discord-message:hover {
+  background-color: transparent !important;
+}
+
+.fill-black {
+  fill: black;
+}

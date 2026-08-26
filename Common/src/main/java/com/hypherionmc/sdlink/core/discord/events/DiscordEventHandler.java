@@ -100,10 +100,10 @@ public final class DiscordEventHandler extends ListenerAdapter {
             MinecraftCommandHook.discordMessageEvent(event);
         }
 
-        if (SDLinkConfig.INSTANCE.chatConfig.pluralKitCompat && PKUtil.PK_USERS.contains(event.getAuthor().getId())) {
+        if (SDLinkConfig.INSTANCE.channels.chatMessages.pluralKitCompat && PKUtil.PK_USERS.contains(event.getAuthor().getId())) {
             new Thread(() -> {
                 try {
-                    Thread.sleep(SDLinkConfig.INSTANCE.chatConfig.pluralKitCompatMessageDelay);
+                    Thread.sleep(SDLinkConfig.INSTANCE.channels.chatMessages.pluralKitCompatMessageDelay);
                 } catch (InterruptedException e) {
                     SDLinkConstants.LOGGER.error("Unexpected InterruptedException", e);
                 }

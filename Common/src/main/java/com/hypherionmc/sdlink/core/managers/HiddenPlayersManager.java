@@ -1,9 +1,9 @@
 package com.hypherionmc.sdlink.core.managers;
 
-import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.api.messaging.Result;
-import com.hypherionmc.sdlinkrw.modules.translations.SDText;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.database.HiddenPlayers;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import lombok.Getter;
 
 import java.util.HashMap;

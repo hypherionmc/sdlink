@@ -4,7 +4,6 @@ import com.hypherionmc.craterlib.api.game.authlib.CraterGameProfile;
 import com.hypherionmc.craterlib.api.game.server.CraterGameServer;
 import com.hypherionmc.craterlib.api.game.text.Text;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
-import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlink.api.messaging.MessageContext;
 import com.hypherionmc.sdlink.api.messaging.Result;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -13,9 +12,10 @@ import com.hypherionmc.sdlink.core.experimental.ExperimentalFeatures;
 import com.hypherionmc.sdlink.core.relay.RelayMessage;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlink.platform.SDLinkMCPlatform;
-import com.hypherionmc.sdlinkrw.modules.translations.SDText;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.api.accounts.MinecraftAccount;
 import com.hypherionmc.sdlinkrw.modules.database.SDLinkAccount;
+import com.hypherionmc.sdlinkrw.modules.translations.SDText;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,14 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class SDLinkMinecraftBridge {
 
     public static final SDLinkMinecraftBridge INSTANCE = new SDLinkMinecraftBridge();
-
-    final Pattern patternStart = Pattern.compile("%(.*?)(?:\\|(.*?))?%", Pattern.CASE_INSENSITIVE);
 
     public void discordMessageReceived(MessageContext context) {
         try {
@@ -42,7 +39,7 @@ public final class SDLinkMinecraftBridge {
             if (ExperimentalFeatures.INSTANCE.RELAY_SERVER && SDLinkRelayConfig.INSTANCE.messageConfig.relayDiscordChats) {
                 RelayMessage relayMessage = RelayMessage.of(
                         RelayMessage.MessageType.DISCORD,
-                        SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
+                        SDLinkConfig.INSTANCE.botConfig.serverName,
                         null,
                         component.toJsonString()
                 );
@@ -110,7 +107,7 @@ public final class SDLinkMinecraftBridge {
         command = command.replace("%role%", event.getMember().getRoles().stream().map(Role::getName).collect(Collectors.joining()));
 
         if (!SDLinkConfig.INSTANCE.chatConfig.useLinkedNames)
-            name = SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName;
+            name = SDLinkConfig.INSTANCE.botConfig.serverName;
 
         SDLinkMCPlatform.INSTANCE.executeCommand(command, permLevel, name, replier);
     }

@@ -1,6 +1,5 @@
 package com.hypherionmc.sdlink.util;
 
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.Nullable;

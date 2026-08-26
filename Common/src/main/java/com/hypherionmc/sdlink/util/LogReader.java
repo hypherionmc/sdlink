@@ -112,7 +112,7 @@ public final class LogReader extends AbstractAppender {
                                 .author(DiscordAuthor.getServer())
                                 .build();
 
-                        if (SDLinkConfig.INSTANCE.chatConfig.sendConsoleMessages) {
+                        if (SDLinkConfig.INSTANCE.channels.consoleMessages.enabled) {
                             discordMessage.sendMessage();
                         }
 

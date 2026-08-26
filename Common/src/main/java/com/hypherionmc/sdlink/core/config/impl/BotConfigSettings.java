@@ -9,6 +9,9 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.fields.RandomArrayList;
 import net.dv8tion.jda.api.entities.Activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author HypherionSA
  * Config Structure for the Core bot settings
@@ -18,6 +21,14 @@ public final class BotConfigSettings {
     @Path("botToken")
     @SpecComment("The token of the Discord Bot to use. This will be encrypted on first load. See https://sdlink.fdd-docs.com/installation/bot-creation/ to find this")
     public String botToken = "";
+
+    @Path("serverAvatar")
+    @SpecComment("A DIRECT link to an image to use as the avatar for server messages. Only used with webhooks and embeds")
+    public String serverAvatar = "";
+
+    @Path("serverName")
+    @SpecComment("The name to use when the Server is the author a message.")
+    public String serverName = "Minecraft Server";
 
     @Path("printInviteLink")
     @SpecComment("Print the bot invite link to the console on startup")
@@ -30,6 +41,10 @@ public final class BotConfigSettings {
     @Path("statusUpdateInterval")
     @SpecComment("How often the Bot Status will update on Discord (in Seconds). Set to 0 to disable")
     public int statusUpdateInterval = 30;
+
+    @Path("defaultChannels")
+    @SpecComment("Global Channels that can be used throughout the config. If you just use a single discord server, this is all you need")
+    public DefaultChannels defaultChannels = new DefaultChannels();
 
     @Path("botStatus")
     @SpecComment("Control what the Discord Bot will display as it's status message")
@@ -79,6 +94,22 @@ public final class BotConfigSettings {
         @Path("inviteMessage")
         @SpecComment("The message to show when someone uses /discord command. You can use %inviteurl%")
         public String inviteMessage = "Hey, check out our discord server here -> %inviteurl%";
+    }
+
+    public static class DefaultChannels {
+
+        @Path("default_chat")
+        @SpecComment("List of IDs to use for `default_chat` channels. Can be from the same discord, or different discord servers")
+        public List<String> default_chat =  new ArrayList<>();
+
+        @Path("default_event")
+        @SpecComment("List of IDs to use for `default_event` channels. Can be from the same discord, or different discord servers")
+        public List<String> default_event =  new ArrayList<>();
+
+        @Path("default_console")
+        @SpecComment("List of IDs to use for `default_console` channels. Can be from the same discord, or different discord servers")
+        public List<String> default_console =  new ArrayList<>();
+
     }
 
 }

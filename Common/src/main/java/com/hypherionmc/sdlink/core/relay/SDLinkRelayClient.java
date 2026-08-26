@@ -10,7 +10,6 @@ import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessage;
 import com.hypherionmc.sdlink.api.messaging.discord.DiscordMessageBuilder;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkRelayConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.server.ServerEvents;
 import com.hypherionmc.sdlink.util.SDLinkChatUtils;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
@@ -77,7 +76,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
             logger.info("Connecting to Relay Server at {}", SDLinkRelayConfig.INSTANCE.relayServer.relayServerUrl);
             encryption = new EncryptionUtil(identifier);
 
-            webSocket = new WebSocketFactory().createSocket(String.format("wss://%s?identifier=%s&serverName=%s", SDLinkRelayConfig.INSTANCE.relayServer.relayServerUrl, identifier, URLEncoder.encode(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName, StandardCharsets.UTF_8)));
+            webSocket = new WebSocketFactory().createSocket(String.format("wss://%s?identifier=%s&serverName=%s", SDLinkRelayConfig.INSTANCE.relayServer.relayServerUrl, identifier, URLEncoder.encode(SDLinkConfig.INSTANCE.botConfig.serverName, StandardCharsets.UTF_8)));
             webSocket.setPingInterval(10000); // Keep the WebSocket alive
             webSocket.addListener(this);
             webSocket.connectAsynchronously();
@@ -260,7 +259,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
         if (SDLinkRelayConfig.INSTANCE.messageConfig.relayMinecraftToDiscord) {
             switch (relayMessage.getType()) {
                 case CHAT -> {
-                    if (!SDLinkConfig.INSTANCE.chatConfig.playerMessages)
+                    if (!SDLinkConfig.INSTANCE.channels.chatMessages.sendFromMinecraft)
                         return;
 
                     String username = dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
@@ -270,7 +269,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                         username = Text.formatted(prefix + " " + username).asString();
                     }
 
-                    if (SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat) {
+                    if (SDLinkConfig.INSTANCE.channels.chatMessages.allowMentionsFromChat) {
                         msg = SDLinkChatUtils.parse(msg);
                     }
 
@@ -286,10 +285,10 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                 }
 
                 case JOIN -> {
-                    if (!SDLinkConfig.INSTANCE.chatConfig.playerJoin)
+                    if (!SDLinkConfig.INSTANCE.channels.joinMessages.enabled)
                         return;
 
-                    String msg = SDLinkConfig.INSTANCE.messageFormatting.playerJoined.replace("%player%", dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting));
+                    String msg = SDLinkConfig.INSTANCE.channels.joinMessages.format.replace("%player%", dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting));
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
                         msg = Text.formatted(prefix + " " + msg).asString();
@@ -305,10 +304,10 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                     discordMessage.sendMessage();
                 }
                 case LEAVE -> {
-                    if (!SDLinkConfig.INSTANCE.chatConfig.playerLeave)
+                    if (!SDLinkConfig.INSTANCE.channels.leaveMessages.enabled)
                         return;
 
-                    String msg = SDLinkConfig.INSTANCE.messageFormatting.playerLeft.replace("%player%", dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting));
+                    String msg = SDLinkConfig.INSTANCE.channels.leaveMessages.format.replace("%player%", dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting));
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
                         msg = Text.formatted(prefix + " " + msg).asString();
@@ -326,13 +325,13 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                 case DEATH -> {
                     String name = dataMessage.displayName().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
                     String msg = dataMessage.message().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
-                    String finalMessage = SDLinkConfig.INSTANCE.messageFormatting.death;
+                    String finalMessage = SDLinkConfig.INSTANCE.channels.deathMessages.format;
 
                     if (msg.startsWith(name + " ")) {
                         msg = msg.substring((name + " ").length());
                     }
 
-                    if (SDLinkConfig.INSTANCE.chatConfig.deathMessages.isFalse()) {
+                    if (SDLinkConfig.INSTANCE.channels.deathMessages.enabled.isFalse()) {
                         return;
                     }
 
@@ -356,7 +355,7 @@ public final class SDLinkRelayClient extends WebSocketAdapter {
                     String finalAdvancement = dataMessage.message().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
                     String advancementBody = dataMessage.additional().asString(SDLinkConfig.INSTANCE.chatConfig.formatting);
 
-                    String msg = SDLinkConfig.INSTANCE.messageFormatting.achievements.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody);
+                    String msg = SDLinkConfig.INSTANCE.channels.advancementMessages.format.replace("%player%", username).replace("%title%", finalAdvancement).replace("%description%", advancementBody);
 
                     if (!SDLinkRelayConfig.INSTANCE.messageConfig.relayMessagePrefix.isEmpty()) {
                         msg = Text.formatted(prefix + " " + msg).asString();

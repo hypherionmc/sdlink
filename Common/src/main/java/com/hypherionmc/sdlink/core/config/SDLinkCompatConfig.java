@@ -8,7 +8,6 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 import com.hypherionmc.sdlink.core.config.impl.compat.*;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.commons.io.FileUtils;
 

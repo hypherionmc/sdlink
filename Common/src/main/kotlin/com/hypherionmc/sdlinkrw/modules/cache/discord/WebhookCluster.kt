@@ -2,7 +2,7 @@ package com.hypherionmc.sdlinkrw.modules.cache.discord
 
 import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.external.JDAWebhookClient
-import com.hypherionmc.sdlink.api.messaging.MessageDestination
+import com.hypherionmc.sdlink.api.messaging.MessageType
 import com.hypherionmc.sdlinkrw.util.Debugger
 import net.dv8tion.jda.api.entities.Webhook
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
@@ -15,9 +15,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
  */
 object WebhookCluster {
 
-    val chatWebhooks: MutableMap<Long, JDAWebhookClient?> = mutableMapOf()
-    val eventWebhooks: MutableMap<Long, JDAWebhookClient?> = mutableMapOf()
-    val consoleWebhooks: MutableMap<Long, JDAWebhookClient?> = mutableMapOf()
+    val webhookCache: MutableMap<Long, JDAWebhookClient?> = mutableMapOf()
     val utilityWebhooks: MutableMap<Long, JDAWebhookClient?> = mutableMapOf()
 
     /**
@@ -27,37 +25,19 @@ object WebhookCluster {
      * @param id The ID of the channel
      * @return The webhook client
      */
-    fun getClient(type: MessageDestination, id: Long): JDAWebhookClient? {
+    fun getClient(type: MessageType, id: Long): JDAWebhookClient? {
         Debugger.log("Getting webhook client for $type $id")
 
-        when (type) {
-            MessageDestination.CHAT -> {
-                return chatWebhooks.computeIfAbsent(id) {
-                    val client = createWebhookClient(id, "Chat")
-                    Debugger.log("Created webhook client for $type $id")
-                    return@computeIfAbsent client
-                }
+        if (type == MessageType.RELAY) {
+            return utilityWebhooks.computeIfAbsent(id) {
+                val client = createWebhookClient(id, "Utility")
+                return@computeIfAbsent client
             }
-
-            MessageDestination.EVENT -> {
-                return eventWebhooks.computeIfAbsent(id) {
-                    val client = createWebhookClient(id, "Events")
-                    return@computeIfAbsent client
-                }
-            }
-
-            MessageDestination.CONSOLE -> {
-                return consoleWebhooks.computeIfAbsent(id) {
-                    val client = createWebhookClient(id, "Console")
-                    return@computeIfAbsent client
-                }
-            }
-
-            MessageDestination.RELAY -> {
-                return utilityWebhooks.computeIfAbsent(id) {
-                    val client = createWebhookClient(id, "Utility")
-                    return@computeIfAbsent client
-                }
+        } else {
+            return webhookCache.computeIfAbsent(id) {
+                val client = createWebhookClient(id, type.name)
+                Debugger.log("Created webhook client for $type $id")
+                return@computeIfAbsent client
             }
         }
     }
@@ -104,9 +84,7 @@ object WebhookCluster {
      * @return True if the webhook is an app webhook, false otherwise
      */
     fun isAppWebhook(id: Long): Boolean {
-        return chatWebhooks.values.stream().filter { it != null }.anyMatch({ c -> c!!.getId() === id })
-                || eventWebhooks.values.stream().filter { it != null }.anyMatch({ c -> c!!.getId() === id })
-                || consoleWebhooks.values.stream().filter { it != null }.anyMatch({ c -> c!!.getId() === id })
+        return webhookCache.values.stream().filter { it != null }.anyMatch({ c -> c!!.getId() === id })
                 || utilityWebhooks.values.stream().filter { it != null }.anyMatch({ c -> c!!.getId() === id })
     }
 
@@ -114,9 +92,7 @@ object WebhookCluster {
      * Shutdown all webhook clients.
      */
     fun shutdown() {
-        chatWebhooks.values.forEach { it?.close() }
-        eventWebhooks.values.forEach { it?.close() }
-        consoleWebhooks.values.forEach { it?.close() }
+        webhookCache.values.forEach { it?.close() }
         utilityWebhooks.values.forEach { it?.close() }
     }
 

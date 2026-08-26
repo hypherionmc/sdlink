@@ -76,6 +76,8 @@ subprojects {
         }
         shade("club.minnced:discord-webhooks:${orion.getProperty("webhooks")}") {}
 
+        shade("com.hypherionmc.tinyserver:tinyserver:0.0.1")
+
         // Utilities
         shade("org.apache.commons:commons-collections4:${orion.getProperty("commons4")}")
         shade("com.github.oshi:oshi-core:${orion.getProperty("oshi")}")
@@ -116,7 +118,7 @@ subprojects {
         }
         val buildProps = project.properties.toMap()
 
-        filesMatching(listOf("pack.mcmeta", "fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml", "paper-plugin.yml")) {
+        filesMatching(listOf("assets/sdlink/dash_version.txt", "pack.mcmeta", "fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml", "paper-plugin.yml")) {
             expand(buildProps)
         }
     }
@@ -188,6 +190,10 @@ subprojects {
             relocate("io.sentry", "${orion.getProperty("shade_group")}.io.sentry")
             relocate("com.google.crypto", "${orion.getProperty("shade_group")}.com.google.crypto")
             relocate("com.google.protobuf", "${orion.getProperty("shade_group")}.com.google.protobuf")
+
+            if (project.name == "PluginVersion") {
+                relocate("com.hypherionmc.craterlib.libs.kyori", "net.kyori")
+            }
         }
 
         exclude("META-INF/maven/**")
@@ -243,5 +249,14 @@ subprojects {
     tasks.register<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
         from(sourceSets.main.get().allJava)
+    }
+
+    tasks.register<Zip>("dashboardZip") {
+        archiveClassifier.set("dashboard")
+        from(project(":Common").sourceSets.main.get().resources.srcDirs.map {
+            fileTree(it) {
+                include("assets/sdlink/frontend/**")
+            }
+        })
     }
 }

@@ -6,9 +6,9 @@ import com.hypherionmc.craterlib.api.game.network.CraterFriendlyByteBuf;
 import com.hypherionmc.craterlib.api.game.resources.CraterIdentifier;
 import com.hypherionmc.craterlib.core.networking.data.PacketContext;
 import com.hypherionmc.craterlib.core.networking.data.PacketSide;
-import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.client.ClientEvents;
 
 import java.util.HashMap;
 
@@ -70,7 +70,7 @@ public final class MentionsSyncPacket {
         tag.put("roles", rolesTag);
         tag.put("channels", channelsTag);
         tag.put("users", usersTag);
-        tag.putBoolean("mentionsenabled", SDLinkConfig.INSTANCE.chatConfig.allowMentionsFromChat);
+        tag.putBoolean("mentionsenabled", SDLinkConfig.INSTANCE.channels.chatMessages.allowMentionsFromChat);
         friendlyByteBuf.writeNbt(tag);
     }
 

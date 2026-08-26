@@ -64,8 +64,8 @@ public final class DiscordMessageBuilder {
         }
 
         if (this.messageType == MessageType.CHAT
-                && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.useServerForChat
-                && SDLinkConfig.INSTANCE.channelsAndWebhooks.webhooks.enabled
+                && SDLinkConfig.INSTANCE.channels.chatMessages.useServerForChat
+                && SDLinkConfig.INSTANCE.channels.chatMessages.useFancy
         ) {
             this.author = DiscordAuthor.getServer();
         }

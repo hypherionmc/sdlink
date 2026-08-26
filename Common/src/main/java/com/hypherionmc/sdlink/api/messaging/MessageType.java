@@ -11,7 +11,9 @@ package com.hypherionmc.sdlink.api.messaging;
 public enum MessageType {
     CHAT,
     START,
+    STARTED,
     STOP,
+    STOPPED,
     JOIN,
     LEAVE,
     ADVANCEMENTS,
@@ -19,5 +21,7 @@ public enum MessageType {
     COMMANDS,
     CONSOLE,
     WHITELIST,
-    CUSTOM
+    WHITELIST_REMOVE,
+    CUSTOM,
+    RELAY
 }

@@ -7,7 +7,6 @@ import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.NamedTextColor
 import com.hypherionmc.craterlib.libs.kyori.adventure.text.format.Style;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
 import com.hypherionmc.sdlink.core.config.impl.MessageIgnoreConfig;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 
 import java.util.function.Predicate;

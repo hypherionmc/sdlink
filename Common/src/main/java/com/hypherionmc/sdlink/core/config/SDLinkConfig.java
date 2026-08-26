@@ -12,8 +12,9 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.Path;
 import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 import com.hypherionmc.craterlib.libs.moonconfig.core.file.CommentedFileConfig;
 import com.hypherionmc.sdlink.core.config.impl.*;
-import com.hypherionmc.sdlink.core.discord.BotController;
+import com.hypherionmc.sdlink.core.config.impl.channels.ChannelConfig;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.modules.cache.discord.SDLCache;
 import com.hypherionmc.sdlinkrw.modules.translations.TranslationManager;
 import com.hypherionmc.sdlinkrw.util.EncryptionUtil;
 import org.apache.commons.io.FileUtils;
@@ -21,8 +22,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-
-import static com.hypherionmc.sdlink.core.managers.CacheManager.reloadChannelConfigCache;
 
 /**
  * @author HypherionSA
@@ -33,33 +32,25 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     // DO NOT REMOVE TRANSIENT HERE... OTHERWISE, THE STUPID CONFIG LIBRARY
     // WILL TRY TO WRITE THESE TO THE CONFIG
     public transient static SDLinkConfig INSTANCE;
-    public transient static int configVer = 41;
+    public transient static int configVer = 43;
     public transient static boolean hasConfigLoaded = false;
     public transient static boolean wasReload = false;
 
     @Path("general")
-    @SpecComment("General Mod Config")
+    @SpecComment("General Mod Config. Check out https://sdlink.fdd-docs.com for help on configuring this")
     public GeneralConfigSettings generalConfig = new GeneralConfigSettings();
 
     @Path("botConfig")
     @SpecComment("Config specific to the discord bot")
     public BotConfigSettings botConfig = new BotConfigSettings();
 
-    @Path("channelsAndWebhooks")
-    @SpecComment("[DEPRECATED] Config relating to the discord channels and webhooks to use with the mod")
-    public ChannelWebhookConfig channelsAndWebhooks = new ChannelWebhookConfig();
-
     @Path("chat")
     @SpecComment("Configure which types of messages are delivered to Minecraft/Discord")
     public ChatSettingsConfig chatConfig = new ChatSettingsConfig();
 
-    @Path("messageFormatting")
-    @SpecComment("Change the format in which messages are displayed")
-    public MessageFormatting messageFormatting = new MessageFormatting();
-
-    @Path("messageDestinations")
-    @SpecComment("Change in which channel messages appear")
-    public MessageChannelConfig messageDestinations = new MessageChannelConfig();
+    @Path("channels")
+    @SpecComment("Manage Channels/and Messages")
+    public ChannelConfig channels = new ChannelConfig();
 
     @Path("accessControl")
     @SpecComment("Manage access to your server, similar to whitelisting")
@@ -130,7 +121,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
     public void configReloaded() {
         INSTANCE = readConfig(this);
         hasConfigLoaded = true;
-        reloadChannelConfigCache();
+        SDLCache.INSTANCE.reloadChannelConfigCache();
 
         try {
             TranslationManager.INSTANCE.loadTranslations(SDLinkConfig.INSTANCE.generalConfig.language);
@@ -168,8 +159,35 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
             String finalKey = subKey + (subKey.isEmpty() ? "" : ".") + key;
 
             if (ver < 40) {
-                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.chatChannelID") || finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.eventsChannelID") || finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.consoleChannelID")) {
-                    outputConfig.set(finalKey, Collections.singletonList(oldConfig.get(finalKey)));
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.chatChannelID")) {
+                    outputConfig.set("botConfig.defaultChannels.default_chat", Collections.singletonList(oldConfig.get(finalKey)));
+                    return;
+                }
+
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.eventsChannelID")) {
+                    outputConfig.set("botConfig.defaultChannels.default_event", Collections.singletonList(oldConfig.get(finalKey)));
+                    return;
+                }
+
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.consoleChannelID")) {
+                    outputConfig.set("botConfig.defaultChannels.default_console", Collections.singletonList(oldConfig.get(finalKey)));
+                    return;
+                }
+            }
+
+            if (ver < 41) {
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.chatChannelID")) {
+                    outputConfig.set("botConfig.defaultChannels.default_chat", oldConfig.get(finalKey));
+                    return;
+                }
+
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.eventsChannelID")) {
+                    outputConfig.set("botConfig.defaultChannels.default_event", oldConfig.get(finalKey));
+                    return;
+                }
+
+                if (finalKey.equalsIgnoreCase("channelsAndWebhooks.channels.consoleChannelID")) {
+                    outputConfig.set("botConfig.defaultChannels.default_console", oldConfig.get(finalKey));
                     return;
                 }
             }
@@ -190,7 +208,7 @@ public final class SDLinkConfig extends AbstractConfig<SDLinkConfig> {
 
                 if (finalKey.equalsIgnoreCase("chat.advancementMessages") || finalKey.equalsIgnoreCase("chat.deathMessages")) {
                     if (!(oldConfig.get(finalKey) instanceof Boolean)) return;
-                    outputConfig.set(finalKey, ((boolean) oldConfig.get(finalKey)) ? TriBoolean.ALWAYS : TriBoolean.NEVER);
+                    outputConfig.set(finalKey, ((boolean) oldConfig.get(finalKey)) ? GameRuleBoolean.ALWAYS : GameRuleBoolean.NEVER);
                     return;
                 }
             }

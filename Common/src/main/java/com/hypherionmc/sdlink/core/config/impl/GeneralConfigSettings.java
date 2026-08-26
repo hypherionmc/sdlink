@@ -26,6 +26,14 @@ public final class GeneralConfigSettings {
     @SpecComment("The active language to use for built in messages. Defaults to en_us if a language is not found")
     public String language = "en_us";
 
+    @Path("useRemoteEditor")
+    @SpecComment("Use a remote instance of the bundled web interface. Useful if you cannot open your own port for it. Will take effect after a restart")
+    public boolean useRemoteEditor = true;
+
+    @Path("configEditorPort")
+    @SpecComment("The port to use when running the web interface in local mode. Will take effect after a restart")
+    public int configEditorPort = 7000;
+
     @Path("configVersion")
     @SpecComment("Internal version control. DO NOT TOUCH!")
     public int configVersion = SDLinkConfig.configVer;

@@ -17,7 +17,7 @@ import com.hypherionmc.sdlink.core.managers.SpamManager;
 import com.hypherionmc.sdlink.core.relay.SDLinkRelayClient;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import com.hypherionmc.sdlinkrw.modules.cache.discord.WebhookCluster;
-import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorClient;
+import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorServer;
 import com.hypherionmc.sdlinkrw.util.EncryptionUtil;
 import com.hypherionmc.sdlinkrw.util.ThreadedEventManager;
 import com.jagrosh.jdautilities.command.CommandClient;
@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
@@ -226,11 +225,12 @@ public final class BotController {
 
         if (!isReload) {
             try {
-                ConfigEditorClient.INSTANCE.closeServer();
+                ConfigEditorServer.INSTANCE.closeServer();
 
                 // TODO: Remove on release
                 if (ExperimentalFeatures.INSTANCE.RELAY_SERVER)
                     SDLinkRelayClient.INSTANCE.closeServer(true);
+
             } catch (Exception ignored) {}
         }
     }

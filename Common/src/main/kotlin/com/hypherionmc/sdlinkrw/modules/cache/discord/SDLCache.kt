@@ -1,8 +1,9 @@
 package com.hypherionmc.sdlinkrw.modules.cache.discord
 
-import com.hypherionmc.sdlink.api.messaging.MessageDestination
+import com.hypherionmc.sdlink.api.messaging.MessageType
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig
 import com.hypherionmc.sdlink.core.config.SDLinkConfig
+import com.hypherionmc.sdlink.core.config.impl.channels.IChannelContainer
 import com.hypherionmc.sdlink.core.discord.BotController
 import com.hypherionmc.sdlinkrw.SDLinkConstants
 import com.hypherionmc.sdlinkrw.util.Debugger
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger
 object SDLCache {
 
     private val servers: MutableSet<DiscordServer> = mutableSetOf()
+    val messageDestinations: MutableMap<MessageType, IChannelContainer> = mutableMapOf()
 
     // Invite URL for bot shown in server logs
     const val DISCORD_INVITE: String = "https://discord.com/api/oauth2/authorize?client_id={bot_id}&permissions=277965401108&scope=bot%20applications.commands"
@@ -128,6 +130,8 @@ object SDLCache {
      * @return A list of all channels from all servers
      */
     fun getAllChannels() = servers.flatMap { it.guildChannels }
+
+    fun getAllChannels(destination: MessageType): List<Long> = getChannelDestinations(destination).map { it.idLong }
 
     /**
      * Retrieve all emojis from all servers
@@ -269,7 +273,27 @@ object SDLCache {
      * @param type The type of message destination to get
      * @return A list of channels that are destinations for the specified type of message
      */
-    fun getChannelDestinations(type: MessageDestination): List<GuildMessageChannel> {
+    fun getChannelDestinations(type: MessageType): List<GuildMessageChannel> {
         return servers.flatMap { it.channelMap[type] ?: emptyList() }
+    }
+
+    fun reloadChannelConfigCache() {
+        try {
+            messageDestinations.clear()
+            messageDestinations[MessageType.CHAT] = SDLinkConfig.INSTANCE.channels.chatMessages
+            messageDestinations[MessageType.START] = SDLinkConfig.INSTANCE.channels.startMessages
+            messageDestinations[MessageType.STARTED] = SDLinkConfig.INSTANCE.channels.startedMessages
+            messageDestinations[MessageType.STOP] = SDLinkConfig.INSTANCE.channels.stopMessages
+            messageDestinations[MessageType.STOPPED] = SDLinkConfig.INSTANCE.channels.stoppedMessages
+            messageDestinations[MessageType.JOIN] = SDLinkConfig.INSTANCE.channels.joinMessages
+            messageDestinations[MessageType.LEAVE] = SDLinkConfig.INSTANCE.channels.leaveMessages
+            messageDestinations[MessageType.ADVANCEMENTS] = SDLinkConfig.INSTANCE.channels.advancementMessages
+            messageDestinations[MessageType.DEATH] = SDLinkConfig.INSTANCE.channels.deathMessages
+            messageDestinations[MessageType.COMMANDS] = SDLinkConfig.INSTANCE.channels.commandMessages
+            messageDestinations[MessageType.WHITELIST] = SDLinkConfig.INSTANCE.channels.whitelistAddMessages
+            messageDestinations[MessageType.WHITELIST_REMOVE] = SDLinkConfig.INSTANCE.channels.whitelistRemoveMessages
+            messageDestinations[MessageType.CUSTOM] = SDLinkConfig.INSTANCE.channels.customMessages
+            messageDestinations[MessageType.CONSOLE] = SDLinkConfig.INSTANCE.channels.consoleMessages
+        } catch (_: Exception) {}
     }
 }

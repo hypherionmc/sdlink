@@ -2,7 +2,6 @@ package com.hypherionmc.sdlinkrw.modules.translations
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.hypherionmc.sdlink.core.discord.BotController
 import com.hypherionmc.sdlinkrw.SDLinkConstants
 import org.apache.commons.io.IOUtils
 import java.io.*

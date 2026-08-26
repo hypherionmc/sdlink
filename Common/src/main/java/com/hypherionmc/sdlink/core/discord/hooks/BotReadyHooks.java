@@ -5,7 +5,7 @@
 package com.hypherionmc.sdlink.core.discord.hooks;
 
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
-import com.hypherionmc.sdlink.api.messaging.MessageDestination;
+import com.hypherionmc.sdlink.api.messaging.MessageType;
 import com.hypherionmc.sdlink.compat.MModeCompat;
 import com.hypherionmc.sdlink.core.config.SDLinkCompatConfig;
 import com.hypherionmc.sdlink.core.config.SDLinkConfig;
@@ -92,7 +92,7 @@ public final class BotReadyHooks {
         BotController.INSTANCE.updatesManager.scheduleAtFixedRate(() -> {
             try {
                 if (BotController.INSTANCE.isBotReady() && (SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic != null && !SDLinkConfig.INSTANCE.botConfig.channelTopic.channelTopic.isEmpty())) {
-                    List<GuildMessageChannel> channels = SDLCache.INSTANCE.getChannelDestinations(MessageDestination.CHAT);
+                    List<GuildMessageChannel> channels = SDLCache.INSTANCE.getChannelDestinations(MessageType.CHAT);
 
                     channels.forEach(channel -> {
                         if (channel instanceof StandardGuildMessageChannel mc) {

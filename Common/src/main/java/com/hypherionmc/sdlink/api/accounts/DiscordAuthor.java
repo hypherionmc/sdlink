@@ -81,12 +81,12 @@ public final class DiscordAuthor {
 
     public static DiscordAuthor getServer() {
         return new DiscordAuthor(
-                SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName,
-                SDLinkConfig.INSTANCE.channelsAndWebhooks.serverAvatar,
+                SDLinkConfig.INSTANCE.botConfig.serverName,
+                SDLinkConfig.INSTANCE.botConfig.serverAvatar,
                 "server",
                 true,
                 ""
-        ).setPlayerName(SDLinkConfig.INSTANCE.channelsAndWebhooks.serverName);
+        ).setPlayerName(SDLinkConfig.INSTANCE.botConfig.serverName);
     }
 
     public static DiscordAuthor of(String displayName, String avatar, String username, boolean server) {

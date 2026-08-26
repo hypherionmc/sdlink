@@ -38,7 +38,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             group = "com.hypherionmc.sdlink"
-            artifactId = project.base.archivesName.get()
+            artifactId = "sdlink-paper"
 
             artifact(tasks.shadowJar) {
                 builtBy(tasks.shadowJar)

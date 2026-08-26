@@ -3,19 +3,20 @@ package com.hypherionmc.sdlink.loaders;
 import com.hypherionmc.craterlib.api.loader.CraterLoader;
 import com.hypherionmc.craterlib.api.loader.plugins.entrypoints.CraterPlugin;
 import com.hypherionmc.craterlib.core.event.CraterEventBus;
-import com.hypherionmc.sdlink.client.ClientEvents;
 import com.hypherionmc.sdlink.compat.MModeCompat;
 import com.hypherionmc.sdlink.compat.rolesync.impl.FTBRankSync;
 import com.hypherionmc.sdlink.compat.rolesync.impl.LuckPermsSync;
 import com.hypherionmc.sdlink.networking.SDLinkNetworking;
 import com.hypherionmc.sdlink.server.ServerEvents;
+import com.hypherionmc.sdlinkrw.SDLinkConstants;
+import com.hypherionmc.sdlinkrw.client.ClientEvents;
 import com.hypherionmc.sdlinkrw.util.Debugger;
 
 public class SDLCraterPlugin implements CraterPlugin {
 
     @Override
     public void onLoadClient() {
-        ClientEvents.init();
+        ClientEvents.INSTANCE.init();
     }
 
     @Override

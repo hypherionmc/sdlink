@@ -1,6 +1,5 @@
 package com.hypherionmc.sdlinkrw.util
 
-import com.hypherionmc.sdlink.core.discord.BotController
 import com.hypherionmc.sdlinkrw.SDLinkConstants
 import com.hypherionmc.sdlinkrw.modules.kotlin.java_ext.saltString
 import org.apache.commons.io.FileUtils

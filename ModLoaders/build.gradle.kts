@@ -53,6 +53,7 @@ publishing {
             }
             artifact(tasks.named("sourcesJar"))
             artifact(tasks.named("javadocJar"))
+            artifact(tasks.named("dashboardZip"))
         }
     }
 

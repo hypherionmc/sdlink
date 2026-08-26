@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=public-sans:400,500,600,700" rel="stylesheet" />
+
+  <title>Simple Discord Link Config Editor</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Simple Discord Link Config Editor" />
+  <meta property="og:url" content="https://editor.firstdark.dev" />
+  <meta property="og:description" content="A Config Editor for First Dark Dev Mods" />
+
+  <style>html { background-color: #ECEDF0 } html.dark { background-color: #04002A }</style>
+  <script>
+    (function () {
+      const mode = localStorage.getItem('vueuse-color-scheme') || 'auto';
+      const dark = mode === 'dark' || (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) {
+        document.documentElement.classList.add('dark')
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#04002A')
+      }
+    })()
+  </script>
+</head>
+
+<body>
+  <div id="app" class="isolate"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

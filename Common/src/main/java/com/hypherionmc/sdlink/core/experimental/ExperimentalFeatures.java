@@ -1,6 +1,5 @@
 package com.hypherionmc.sdlink.core.experimental;
 
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

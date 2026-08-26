@@ -3,8 +3,8 @@ package com.hypherionmc.sdlink.server.commands;
 import com.hypherionmc.craterlib.api.commands.CraterCommand;
 import com.hypherionmc.craterlib.api.events.server.CraterRegisterCommandEvent;
 import com.hypherionmc.craterlib.api.game.text.Text;
+import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorServer;
 import com.hypherionmc.sdlinkrw.modules.translations.SDText;
-import com.hypherionmc.sdlinkrw.modules.editor.ConfigEditorClient;
 
 public final class ConfigEditorCommand {
 
@@ -13,7 +13,7 @@ public final class ConfigEditorCommand {
                 .requiresPermission(4)
                 .withNode("sdlink.configeditor")
                 .execute(ctx -> {
-                    ConfigEditorClient.INSTANCE.openConnection(ctx);
+                    ConfigEditorServer.INSTANCE.createServer(ctx);
                     ctx.sendSuccess(() -> Text.literal(SDText.translate("mc.sdconfigeditor.opening").toString()), false);
                     return 1;
                 });

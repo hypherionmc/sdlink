@@ -6,7 +6,6 @@ package com.hypherionmc.sdlink.core.managers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.hypherionmc.sdlink.core.discord.BotController;
 import com.hypherionmc.sdlink.core.messaging.embeds.DiscordEmbed;
 import com.hypherionmc.sdlinkrw.SDLinkConstants;
 import org.apache.commons.io.FileUtils;

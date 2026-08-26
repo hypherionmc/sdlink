@@ -8,6 +8,7 @@
 **New Features**:
 
 - Multiple Discord Server Support. You can now use the bot in more than one discord, or use multiple channels from the same discord
+- Integrated configuration web interface. Allowing easy configuration of the mod
 
 **Changes**:
 
