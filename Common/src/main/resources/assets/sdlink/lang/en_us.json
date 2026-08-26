@@ -57,6 +57,10 @@
   "command.staffunverify.help": "Unverify another player's Minecraft account",
   "command.staffverify.help": "Allow staff members verify minecraft players, without verification",
 
+  "command.sync.help": "Force a resync of Discord and Minecraft",
+  "command.sync.synced": "Successfully resynced SDLink Storage with Minecraft",
+  "command.sync.access_control_disabled": "Access Control is disabled. Nothing to sync",
+
   "command.unverify.help": "Unverify your previously verified Minecraft account",
   "command.unverify.failed": "Sorry, we could not un-verify your Minecraft account. Please try again",
 

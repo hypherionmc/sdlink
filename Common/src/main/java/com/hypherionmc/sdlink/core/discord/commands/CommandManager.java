@@ -8,6 +8,7 @@ import com.hypherionmc.craterlib.core.event.CraterEventBus;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.HelpSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.PlayerListSlashCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.general.ServerStatusSlashCommand;
+import com.hypherionmc.sdlink.core.discord.commands.slash.general.SyncCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.hide.HiddenPlayersCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.hide.HidePlayerCommand;
 import com.hypherionmc.sdlink.core.discord.commands.slash.hide.UnhidePlayerCommand;
@@ -46,6 +47,7 @@ public final class CommandManager {
         commands.add(new StaffUnverifyCommand());
         commands.add(new StaffVerifyAccountCommand());
         commands.add(new ViewVerifiedAccounts());
+        commands.add(new SyncCommand());
 
         // Enable the Server Status command
         commands.add(new ServerStatusSlashCommand());
