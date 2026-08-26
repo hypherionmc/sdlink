@@ -286,7 +286,7 @@ public final class ServerEvents {
             }
         } catch (Exception ignored) {}
 
-        if (player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player))
+        if (player != null && !SDLinkMCPlatform.INSTANCE.playerIsActive(player) && SDLinkCompatConfig.INSTANCE.vanishCompat.hideCommandMessages)
             return;
 
         String command = Text.strip(cmd, "/");

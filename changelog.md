@@ -10,6 +10,7 @@
 **Changes**:
 
 - Added official config toggle to ignore canceled chat events (fixes compat with mods like FTB Teams, etc). Requires CraterLib update - HypherionSA
+- Add config toggle to relay commands used by hidden players. Disabled by default - HypherionSA
 
 **Bug Fixes**:
 

@@ -6,7 +6,7 @@ import com.hypherionmc.craterlib.libs.moonconfig.core.conversion.SpecComment;
 public final class CommonCompat {
 
     @Path("ignoreCancelled")
-    @SpecComment("Ignore cancelled chat events. Fixes compat with some mods like FTB Teams")
+    @SpecComment("Ignore cancelled chat events. Fixes compat with some mods like FTB Teams. Use at your own risk")
     public boolean ignoreCancelled = false;
 
     @Path("vanish")

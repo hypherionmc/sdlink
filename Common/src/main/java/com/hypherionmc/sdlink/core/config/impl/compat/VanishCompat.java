@@ -9,4 +9,7 @@ public final class VanishCompat {
     @SpecComment("Should Fake Join/Leave message be sent when players vanish/unvanish")
     public boolean sendFakeJoinLeaveMessage = true;
 
+    @Path("hideCommandMessages")
+    @SpecComment("Should commands used by Vanished players be relayed")
+    public boolean hideCommandMessages = false;
 }
