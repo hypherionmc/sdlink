@@ -96,6 +96,7 @@ public final class ServerEvents {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarting) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarting)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.serverStartingColor)
                     .author(DiscordAuthor.getServer())
                     .build();
 
@@ -109,6 +110,7 @@ public final class ServerEvents {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStarted) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.START)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStarted)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.serverStartedColor)
                     .author(DiscordAuthor.getServer())
                     .build();
 
@@ -136,6 +138,7 @@ public final class ServerEvents {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopping) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopping)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.serverStoppingColor)
                     .author(DiscordAuthor.getServer())
                     .afterSend(() -> {
                         // Stop Log Relay
@@ -158,6 +161,7 @@ public final class ServerEvents {
         if (canSendMessage() && SDLinkConfig.INSTANCE.chatConfig.serverStopped) {
             DiscordMessage message = new DiscordMessageBuilder(MessageType.STOP)
                     .message(SDLinkConfig.INSTANCE.messageFormatting.serverStopped)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.serverStoppedColor)
                     .author(DiscordAuthor.getServer())
                     .afterSend(() -> BotController.INSTANCE.shutdownBot(false))
                     .build();
@@ -241,6 +245,7 @@ public final class ServerEvents {
 
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                         .message(msg)
+                        .embedColor(SDLinkConfig.INSTANCE.messageFormatting.chatColor)
                         .author(!fromServer ? author : DiscordAuthor.getServer())
                         .build();
 
@@ -325,6 +330,7 @@ public final class ServerEvents {
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(author)
                     .message(msg)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.chatColor)
                     .build();
 
             discordMessage.sendMessage();
@@ -356,6 +362,7 @@ public final class ServerEvents {
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(author)
                     .message(event.getMessage().asString(SDLinkConfig.INSTANCE.chatConfig.formatting))
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.chatColor)
                     .build();
 
             discordMessage.sendMessage();
@@ -369,6 +376,7 @@ public final class ServerEvents {
             DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.CHAT)
                     .author(author)
                     .message(msg)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.chatColor)
                     .build();
 
             discordMessage.sendMessage();
@@ -416,6 +424,7 @@ public final class ServerEvents {
                                 .replace("%player%", username)
                                 .replace("%command%", command)
                 )
+                .embedColor(SDLinkConfig.INSTANCE.messageFormatting.commandsColor)
                 .build();
 
         discordMessage.sendMessage(sendImmediately);
@@ -461,6 +470,7 @@ public final class ServerEvents {
 
         DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.JOIN)
                 .message(msg)
+                .embedColor(SDLinkConfig.INSTANCE.messageFormatting.playerJoinedColor)
                 .author(DiscordAuthor.getServer()
                         .setPlayerName(event.getPlayer().getName().asString()).setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), event.getPlayer().getStringUUID()))
@@ -520,6 +530,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.LEAVE)
                 .message(msg)
+                .embedColor(SDLinkConfig.INSTANCE.messageFormatting.playerLeftColor)
                 .author(DiscordAuthor.getServer()
                         .setPlayerName(event.getPlayer().getName().asString()).setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerAvatar(event.getPlayer().getGameProfile().getName(), SDLinkMCPlatform.INSTANCE.getPlayerSkinUUID(event.getPlayer())))
@@ -588,6 +599,7 @@ public final class ServerEvents {
 
             DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                     .message(finalMessage)
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.deathColor)
                     .author(DiscordAuthor.getServer()
                             .setGameProfile(event.getPlayer().getGameProfile())
                             .setPlayerName(player.getDisplayName().asString())
@@ -638,6 +650,7 @@ public final class ServerEvents {
 
                 DiscordMessage discordMessage = new DiscordMessageBuilder(MessageType.ADVANCEMENTS)
                         .message(msg)
+                        .embedColor(SDLinkConfig.INSTANCE.messageFormatting.achievementsColor)
                         .author(DiscordAuthor.getServer()
                                 .setGameProfile(event.getPlayer().getGameProfile())
                                 .setPlayerName(event.getPlayer().getDisplayName().asString())
@@ -708,7 +721,11 @@ public final class ServerEvents {
         Debugger.INSTANCE.log("Relaying message from {}", thread);
 
         try {
-            DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT).author(DiscordAuthor.getServer()).message(event.getComponent().asString(SDLinkConfig.INSTANCE.chatConfig.formatting)).build();
+            DiscordMessage message = new DiscordMessageBuilder(MessageType.CHAT)
+                    .author(DiscordAuthor.getServer())
+                    .message(event.getComponent().asString(SDLinkConfig.INSTANCE.chatConfig.formatting))
+                    .embedColor(SDLinkConfig.INSTANCE.messageFormatting.chatColor)
+                    .build();
             message.sendMessage();
         } catch (Exception e) {
             Debugger.INSTANCE.log("Failed to broadcast message", e);
@@ -769,6 +786,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.DEATH)
                 .message(finalMessage.replace("%player%", name))
+                .embedColor(SDLinkConfig.INSTANCE.messageFormatting.deathColor)
                 .author(DiscordAuthor.getServer()
                         .setGameProfile(event.getPlayer().getGameProfile())
                         .setPlayerName(player.getDisplayName().asString())
@@ -785,6 +803,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistAdded.replace("%player%", event.getProfile().getName()))
+                .embedColor(SDLinkConfig.INSTANCE.messageFormatting.whitelistAddedColor)
                 .author(DiscordAuthor.getServer().setGameProfile(event.getProfile()))
                 .build();
 
@@ -798,6 +817,7 @@ public final class ServerEvents {
 
         DiscordMessage message = new DiscordMessageBuilder(MessageType.WHITELIST)
                 .message(SDLinkConfig.INSTANCE.messageFormatting.whitelistRemoved.replace("%player%", event.getProfile().getName()))
+                .embedColor(SDLinkConfig.INSTANCE.messageFormatting.whitelistRemovedColor)
                 .author(DiscordAuthor.getServer().setGameProfile(event.getProfile()))
                 .build();
 

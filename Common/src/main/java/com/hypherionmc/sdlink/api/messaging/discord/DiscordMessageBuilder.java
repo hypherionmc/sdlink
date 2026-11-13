@@ -26,6 +26,7 @@ public final class DiscordMessageBuilder {
     private final MessageType messageType;
     private DiscordAuthor author;
     private String message;
+    private String embedColor;
     private Runnable afterSend;
 
     /**
@@ -90,6 +91,14 @@ public final class DiscordMessageBuilder {
 
     public DiscordMessageBuilder afterSend(Runnable afterSend) {
         this.afterSend = afterSend;
+        return this;
+    }
+
+    /**
+     * Override the configured embed color for this message. Empty values keep the embed JSON color.
+     */
+    public DiscordMessageBuilder embedColor(String embedColor) {
+        this.embedColor = embedColor;
         return this;
     }
 

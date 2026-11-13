@@ -26,9 +26,11 @@ public enum AvatarType {
         return this.url;
     }
 
-    public String resolve(String uuid) {
+    public String resolve(String uuid, String username) {
         if (this == CUSTOM) {
-            return SDLinkConfig.INSTANCE.chatConfig.customAvatarService.replace("{uuid}", uuid);
+            return SDLinkConfig.INSTANCE.chatConfig.customAvatarService
+                    .replace("{uuid}", uuid)
+                    .replace("{username}", username);
         }
 
         return this.url.replace("{uuid}", uuid);

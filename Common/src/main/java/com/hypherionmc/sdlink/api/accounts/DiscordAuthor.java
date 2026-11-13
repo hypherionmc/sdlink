@@ -71,7 +71,7 @@ public final class DiscordAuthor {
     public static DiscordAuthor of(String displayName, String uuid, String username) {
         return new DiscordAuthor(
                 displayName,
-                SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkPlatform.minecraftHelper.isOnlineMode() ? uuid : username),
+                SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkPlatform.minecraftHelper.isOnlineMode() ? uuid : username, username),
                 username,
                 false,
                 uuid
@@ -99,7 +99,7 @@ public final class DiscordAuthor {
     }
 
     public DiscordAuthor setPlayerAvatar(String usr, String userid) {
-        realPlayerAvatar = SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkPlatform.minecraftHelper.isOnlineMode() ? userid : usr);
+        realPlayerAvatar = SDLinkConfig.INSTANCE.chatConfig.playerAvatarType.resolve(SDLinkPlatform.minecraftHelper.isOnlineMode() ? userid : usr, usr);
         return this;
     }
 
